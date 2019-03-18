@@ -106,7 +106,7 @@ public class JavaPosts implements Posts {
 	@Override
 	public Result<List<String>> getPosts(String userId) {
 		Set<String> res = userPosts.get(userId);
-		if (res == null)//Profs erro
+		if (res != null)//Profs erro
 			return ok(new ArrayList<>(res));
 		else
 			return error( NOT_FOUND );
