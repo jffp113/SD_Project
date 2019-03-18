@@ -103,6 +103,8 @@ public class JavaPosts implements Posts {
 			return error( NOT_FOUND );
 	}
 
+	//GOTTA WORK ON THESE BELLOW
+	
 	@Override
 	public Result<List<String>> getPosts(String userId) {
 		Set<String> res = userPosts.get(userId);
