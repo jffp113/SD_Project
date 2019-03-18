@@ -9,11 +9,12 @@ import microgram.api.rest.RestPosts;
 import microgram.impl.srv.java.JavaPosts;
 
 // Make this class concrete.
-public class _TODO_RestPostsResources extends RestResource implements RestPosts {
+////TODO We IMplemented
+public class RestPostsResources extends RestResource implements RestPosts {
 
 	final Posts impl;
 		
-	public _TODO_RestPostsResources(URI serverUri) {
+	public RestPostsResources(URI serverUri) {
 		this.impl = new JavaPosts();
 	}
 	
