@@ -48,7 +48,9 @@ public class JavaPosts implements Posts {
 		likes.remove(postId);
 		
 		//Remove the post from the user who posted
-		this.userPosts.remove(postRemoved.getOwnerId());
+		String userId = postRemoved.getOwnerId();
+		Set<String> uPosts = this.userPosts.get(userId);
+		uPosts.remove(postRemoved.getPostId());
 		
 		return ok();
 	}
