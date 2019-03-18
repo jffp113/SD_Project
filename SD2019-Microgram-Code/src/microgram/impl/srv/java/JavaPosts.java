@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +41,7 @@ public class JavaPosts implements Posts {
 	
 		Post postRemoved = posts.remove(postId);
 		if(postRemoved == null)
-			error(ErrorCode.NOT_FOUND);
+			error(NOT_FOUND);
 		
 		
 		//Remove all users that Liked The post
@@ -103,15 +104,20 @@ public class JavaPosts implements Posts {
 	@Override
 	public Result<List<String>> getPosts(String userId) {
 		Set<String> res = userPosts.get(userId);
-		if (res == null)
+		if (res == null)//Profs erro
 			return ok(new ArrayList<>(res));
 		else
 			return error( NOT_FOUND );
 	}
 	
-	
+	//We implemented
 	@Override
 	public Result<List<String>> getFeed(String userId) {
-		return error(NOT_IMPLEMENTED);
+		Set<String> userPosts = this.userPosts.get(userId);
+		
+		if(userPosts == null)
+			error(NOT_FOUND);
+		
+		return ok(new ArrayList<>(userPosts));
 	}
 }
