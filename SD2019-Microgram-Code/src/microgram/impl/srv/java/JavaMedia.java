@@ -8,9 +8,6 @@ import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 import java.io.File;
 import java.nio.file.Files;
 
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
-
 import microgram.api.java.Media;
 import microgram.api.java.Result;
 import utils.Hash;
@@ -53,6 +50,18 @@ public class JavaMedia implements Media {
 			return error(INTERNAL_ERROR);
 		}
  	}
+
+	@Override
+	public Result<Void> delete(String id) {
+		File file = new File(ROOT_DIR + id + MEDIA_EXTENSION);
+		
+		if(!file.exists())
+			return error(NOT_FOUND);
+		if(!file.delete())
+			return error(INTERNAL_ERROR);
+		
+		return ok();
+	}
 
 	
 	

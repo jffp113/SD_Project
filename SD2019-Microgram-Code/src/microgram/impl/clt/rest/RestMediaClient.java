@@ -36,4 +36,14 @@ public class RestMediaClient extends RestClient implements Media {
 		return responseContents(r, Status.OK, new GenericType<byte[]>() {
 		});
 	}
+
+	@Override
+	public Result<Void> delete(String id) {
+		Response r = target
+				.path(id)
+				.request()
+				.delete();
+		
+		return verifyResponse(r, Status.NO_CONTENT);
+	}
 }

@@ -21,4 +21,9 @@ public class RetryMediaClient extends RetryClient implements Media {
 	public Result<byte[]> download(String id) {
 		return reTry( () -> impl.download(id));
 	}
+
+	@Override
+	public Result<Void> delete(String id) {
+		return reTry(() -> impl.delete(id));
+	}
 }

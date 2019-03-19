@@ -1,7 +1,5 @@
 package microgram.impl.srv.rest;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 import microgram.api.java.Media;
 import microgram.api.rest.RestMediaStorage;
 import microgram.impl.srv.java.JavaMedia;
@@ -26,7 +24,7 @@ public class RestMediaResources extends RestResource implements RestMediaStorage
 
 	@Override
 	public void delete(String id) {
-		throw new NotImplementedException("Not implemented");
+		super.resultOrThrow(impl.delete(id));
 	}
 	
 }
