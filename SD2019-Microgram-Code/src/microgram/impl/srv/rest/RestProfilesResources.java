@@ -1,6 +1,5 @@
 package microgram.impl.srv.rest;
 
-
 import java.net.URI;
 import java.util.List;
 
@@ -26,6 +25,11 @@ public class RestProfilesResources extends RestResource implements RestProfiles 
 	public void createProfile(Profile profile) {
 		super.resultOrThrow(this.impl.createProfile(profile));
 		
+	}
+	
+	@Override
+	public void deleteProfile(String userId) {
+		super.resultOrThrow(this.impl.deleteProfile(userId));	
 	}
 
 	@Override

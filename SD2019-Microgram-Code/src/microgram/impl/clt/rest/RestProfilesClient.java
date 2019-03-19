@@ -14,9 +14,9 @@ import microgram.api.java.Profiles;
 import microgram.api.java.Result;
 import microgram.api.rest.RestProfiles;
 
-public class _TODO_RestProfilesClient extends RestClient implements Profiles {
+public class RestProfilesClient extends RestClient implements Profiles {
 
-	public _TODO_RestProfilesClient(URI serverUri) {
+	public RestProfilesClient(URI serverUri) {
 		super(serverUri, RestProfiles.PATH);
 	}
 
@@ -59,14 +59,24 @@ public class _TODO_RestProfilesClient extends RestClient implements Profiles {
 
 	@Override
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {
-		//TODO Auto-generated method stub
-		return null;
+		Response r = target.path(userId1)
+				.path("following")
+				.path(userId2)
+				.request()
+				.put(Entity.entity(isFollowing, MediaType.APPLICATION_JSON));
+		
+		return super.verifyResponse(r, Status.NO_CONTENT);
 	}
 
 	@Override
 	public Result<Boolean> isFollowing(String userId1, String userId2) {
-		// TODO Auto-generated method stub
-		return null;
+		Response r = target.path(userId1)
+				.path("following")
+				.path(userId2)
+				.request()
+				.get();
+		
+		return super.responseContents(r, Status.OK, new GenericType<Boolean>() {});
 	}
 	
 }
