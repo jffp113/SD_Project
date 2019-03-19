@@ -18,7 +18,7 @@ import javax.ws.rs.core.MediaType;
 @Path(RestMediaStorage.PATH)
 public interface RestMediaStorage {
 	
-	public static final String PATH="/media";
+	public static final String PATH = "/media";
 	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)

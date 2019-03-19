@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 import microgram.api.Profile;
 import microgram.api.java.Result;
-import microgram.api.java.Result.ErrorCode;
 import microgram.impl.srv.rest.RestResource;
 
 public class JavaProfiles extends RestResource implements microgram.api.java.Profiles {
@@ -47,12 +46,16 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	}
 	
 	@Override
-	public Result<Void> deleteProfile(String userId) {
+	public Result<Void> deleteProfile(String userId) {		//<----- MADE THIS
 		if (this.users.remove(userId) == null)
 			return error(NOT_FOUND);
 		
 		this.followers.remove(userId);
 		this.following.forEach((k, v) -> v.remove(userId));
+		//TODO Remove Posts from user
+		
+		
+		
 		return ok();
 	}
 	
