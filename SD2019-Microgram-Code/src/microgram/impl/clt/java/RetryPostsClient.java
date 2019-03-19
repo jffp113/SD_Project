@@ -6,11 +6,12 @@ import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.java.Result;
 
-public class _TODO_RetryPostsClient extends RetryClient implements Posts {
+//We implemented TODO
+public class RetryPostsClient extends RetryClient implements Posts {
 
 	final Posts impl;
 	
-	public _TODO_RetryPostsClient( Posts impl ) {
+	public RetryPostsClient( Posts impl ) {
 		this.impl = impl;
 	}
 
@@ -21,38 +22,32 @@ public class _TODO_RetryPostsClient extends RetryClient implements Posts {
 
 	@Override
 	public Result<String> createPost(Post post) {
-		// TODO Auto-generated method stub
-		return null;
+		return reTry(() -> impl.createPost(post));
 	}
 
 	@Override
 	public Result<Void> deletePost(String postId) {
-		// TODO Auto-generated method stub
-		return null;
+		return reTry(() -> impl.deletePost(postId));
 	}
 
 	@Override
 	public Result<Void> like(String postId, String userId, boolean isLiked) {
-		// TODO Auto-generated method stub
-		return null;
+		return reTry(() -> impl.like(postId, userId, isLiked));
 	}
 
 	@Override
 	public Result<Boolean> isLiked(String postId, String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		return reTry(() -> impl.isLiked(postId, userId));
 	}
 
 	@Override
 	public Result<List<String>> getPosts(String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		return reTry(() -> impl.getPosts(userId));
 	}
 
 	@Override
 	public Result<List<String>> getFeed(String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		return reTry(() -> impl.getFeed(userId));
 	}
 
 }
