@@ -12,7 +12,7 @@ public abstract class _TODO_PostsWebService extends SoapService implements SoapP
 	final Posts impl;
 	
 	protected _TODO_PostsWebService() {
-		this.impl = new JavaPosts();
+		this.impl = new JavaPosts(null,null);
 	}
 
 	@Override
