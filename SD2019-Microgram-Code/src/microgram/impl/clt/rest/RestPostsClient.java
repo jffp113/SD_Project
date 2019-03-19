@@ -53,7 +53,7 @@ public class RestPostsClient extends RestClient implements Posts {
 	public Result<Void> like(String postId, String userId, boolean isLiked) {
 		Response r = target
 				.path(postId)
-				.path("like")
+				.path("likes")
 				.path(userId)
 				.request()
 				.put( Entity.entity(isLiked, MediaType.APPLICATION_JSON));
