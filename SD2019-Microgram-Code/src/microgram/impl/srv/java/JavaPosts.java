@@ -4,21 +4,20 @@ import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
 import static microgram.api.java.Result.ErrorCode.CONFLICT;
 import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
-import static microgram.api.java.Result.ErrorCode.NOT_IMPLEMENTED;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import microgram.api.Post;
+import microgram.api.java.Media;
 import microgram.api.java.Posts;
+import microgram.api.java.Profiles;
 import microgram.api.java.Result;
-import microgram.api.java.Result.ErrorCode;
 import utils.Hash;
 
 public class JavaPosts implements Posts {
@@ -27,6 +26,17 @@ public class JavaPosts implements Posts {
 	protected Map<String, Set<String>> likes = new HashMap<>();
 	protected Map<String, Set<String>> userPosts = new HashMap<>();
 
+	private Profiles profiles;
+	private Media media;
+	
+	/*TODO
+	 * Check if this is legal 
+	 */
+	public JavaPosts(Profiles profiles,Media media) {
+		this.profiles = profiles;
+		this.media = media;
+	}
+	
 	@Override
 	public Result<Post> getPost(String postId) {
 		Post res = posts.get(postId);
@@ -36,6 +46,9 @@ public class JavaPosts implements Posts {
 	}
 	
 	//We implemented
+	/*
+	 * TODO: Communicate with RestStorageServer to delete the image associated with the Post
+	 */
 	@Override
 	public Result<Void> deletePost(String postId) {
 	
@@ -51,6 +64,9 @@ public class JavaPosts implements Posts {
 		String userId = postRemoved.getOwnerId();
 		Set<String> uPosts = this.userPosts.get(userId);
 		uPosts.remove(postRemoved.getPostId());
+		
+		//Remove the image associated with the Post
+		//media.
 		
 		return ok();
 	}
@@ -102,8 +118,6 @@ public class JavaPosts implements Posts {
 		else
 			return error( NOT_FOUND );
 	}
-
-	//GOTTA WORK ON THESE BELLOW
 	
 	@Override
 	public Result<List<String>> getPosts(String userId) {
@@ -115,6 +129,10 @@ public class JavaPosts implements Posts {
 	}
 	
 	//We implemented
+	/*Ask Teacher about creating a client to communicate with
+	 * ProfileServer Rest Or Soap in order to get the users that the userId is following,
+	 * 
+	 * */
 	@Override
 	public Result<List<String>> getFeed(String userId) {
 		Set<String> userPosts = this.userPosts.get(userId);
