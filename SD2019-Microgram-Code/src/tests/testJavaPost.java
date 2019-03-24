@@ -25,7 +25,7 @@ public class testJavaPost {
 		
 		Result<Post> post = client.getPost(resultPost.value());
 		
-		System.out.println(post.value().getOwnerId() + " " + post.value().getTimestamp());
+		System.out.println( post.value().getPostId()+  " " + post.value().getOwnerId() + " " + post.value().getTimestamp());
 		
 		System.out.println("Delete " + client.deletePost(resultPost.value()).error());
 		
