@@ -10,6 +10,7 @@ import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
 import microgram.api.rest.RestPosts;
 import microgram.impl.clt.rest.RestMediaClient;
+import microgram.impl.clt.rest.RestProfilesClient;
 import microgram.impl.srv.java.JavaPosts;
 
 // Make this class concrete.
@@ -19,11 +20,11 @@ public class RestPostsResources extends RestResource implements RestPosts {
 	final Posts impl;
 		
 	public RestPostsResources(URI serverUri) {
-		this.impl = new JavaPosts(null,null);
-		//this.impl = new JavaPosts(initProfileClient(),initStorageClients());
+		//this.impl = new JavaPosts(null,null);
+		this.impl = new JavaPosts(initProfileClient(),initStorageClients());
 	}
 	
-	 /*private Profiles initProfileClient() {
+	 private Profiles initProfileClient() {
 		URI[] profileUris = Discovery.findUrisOf(ProfilesRestServer.SERVICE, 1);
 		if(profileUris.length == 0)
 			return null;
@@ -35,8 +36,9 @@ public class RestPostsResources extends RestResource implements RestPosts {
 		URI[] storageUris = Discovery.findUrisOf(PostsRestServer.SERVICE, 1);
 		if(storageUris.length == 0)
 			return null;
+		
 		return new RestMediaClient(storageUris[0]);
-	}*/
+	}
 	
 	
 	@Override
