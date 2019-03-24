@@ -2,8 +2,7 @@ package microgram.impl.srv.java;
 
 import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
-import static microgram.api.java.Result.ErrorCode.CONFLICT;
-import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
+import static microgram.api.java.Result.ErrorCode.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +17,7 @@ import microgram.api.java.Media;
 import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
+import microgram.api.java.Result.ErrorCode;
 import utils.Hash;
 
 public class JavaPosts implements Posts {
@@ -65,8 +65,12 @@ public class JavaPosts implements Posts {
 		Set<String> uPosts = this.userPosts.get(userId);
 		uPosts.remove(postRemoved.getPostId());
 		
-		//Remove the image associated with the Post
-		//media.
+		//Remove the image associated with the Post (Check if can do this)
+		if(media == null)
+			return  error(ErrorCode.INTERNAL_ERROR);
+		Result<Void> r = media.delete(postRemoved.getMediaUrl());
+		if(!r.isOK())
+			return  error(ErrorCode.INTERNAL_ERROR);
 		
 		return ok();
 	}
@@ -122,7 +126,7 @@ public class JavaPosts implements Posts {
 	@Override
 	public Result<List<String>> getPosts(String userId) {
 		Set<String> res = userPosts.get(userId);
-		if (res != null)//Profs erro
+		if (res != null)
 			return ok(new ArrayList<>(res));
 		else
 			return error( NOT_FOUND );
