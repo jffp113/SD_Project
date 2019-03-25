@@ -2,6 +2,7 @@ package microgram.impl.clt.rest;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
@@ -77,6 +78,12 @@ public class RestProfilesClient extends RestClient implements Profiles {
 				.get();
 		
 		return super.responseContents(r, Status.OK, new GenericType<Boolean>() {});
+	}
+
+	@Override
+	public Result<Set<String>> getFollowing(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

@@ -2,6 +2,7 @@ package microgram.impl.clt.soap;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 import microgram.api.Profile;
 import microgram.api.java.Profiles;
@@ -47,6 +48,12 @@ public class SoapProfilesClient extends SoapClient implements Profiles {
 
 	@Override
 	public Result<Boolean> isFollowing(String userId1, String userId2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Result<Set<String>> getFollowing(String arg0) {
 		// TODO Auto-generated method stub
 		return null;
 	}

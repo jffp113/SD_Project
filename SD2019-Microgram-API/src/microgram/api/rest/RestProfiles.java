@@ -57,5 +57,5 @@ public interface RestProfiles {
 
 	@GET
 	@Path ("/following/{userId}")
-	public Result<Set<String>> getFollowing ( @PathParam("userId") String userId);
+	public Set<String> getFollowing ( @PathParam("userId") String userId);
 }
