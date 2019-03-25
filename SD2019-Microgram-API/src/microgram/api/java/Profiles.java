@@ -1,6 +1,7 @@
 package microgram.api.java;
 
 import java.util.List;
+import java.util.Set;
 
 import microgram.api.Profile;
 
@@ -57,4 +58,13 @@ public interface Profiles {
 	 * @return (OK,Boolean), NOT_FOUND if any of the profiles does not exist
 	 */
 	Result<Boolean> isFollowing( String userId1, String userId2);
+	
+	/**
+	 * Gets the users that are following the user that comes as a parameter
+	 * 
+	 * @see Don't forget to do this for the SOUP
+	 * @param userId The identifier of the user whose followers we are after
+	 * @return
+	 */
+	Result<Set<String>> getFollowing (String userId);
 }

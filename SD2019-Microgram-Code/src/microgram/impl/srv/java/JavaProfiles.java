@@ -13,15 +13,25 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import microgram.api.Profile;
+import microgram.api.java.Media;
+import microgram.api.java.Posts;
+import microgram.api.java.Profiles;
 import microgram.api.java.Result;
 import microgram.impl.srv.rest.RestResource;
 
 public class JavaProfiles extends RestResource implements microgram.api.java.Profiles {
 
-	Map<String, Profile> users = new HashMap<>();
-	Map<String, Set<String>> followers = new HashMap<>();
-	Map<String, Set<String>> following = new HashMap<>();
+	private Map<String, Profile> users = new HashMap<>();
+	private Map<String, Set<String>> followers = new HashMap<>();
+	private Map<String, Set<String>> following = new HashMap<>();
 	
+	private Profiles[] profiles;
+	private Posts[] posts;
+	private Media[] media;
+	
+	public JavaProfiles() {
+		super();
+	}
 	
 	@Override
 	public Result<Profile> getProfile(String userId) {
@@ -53,8 +63,6 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		this.followers.remove(userId);
 		this.following.forEach((k, v) -> v.remove(userId));
 		//TODO Remove Posts from user
-		
-		
 		
 		return ok();
 	}
@@ -95,4 +103,13 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 		else
 			return ok(s1.contains( userId2 ) && s2.contains( userId1 ));
 	}
+	
+	public Result<Set<String>> getFollowing (String userId) {
+		Set<String> followUser = this.following.get(userId);
+		if (followUser == null)
+			return error(NOT_FOUND);
+		else
+			return ok(followUser);
+	}
+	
 }
