@@ -81,9 +81,12 @@ public class RestProfilesClient extends RestClient implements Profiles {
 	}
 
 	@Override
-	public Result<Set<String>> getFollowing(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public Result<Set<String>> getFollowing(String userId) {
+		Response r = target.path(userId)
+				.request()
+				.get();
+		
+		return super.responseContents(r, Status.OK, new GenericType<Set<String>>() {});
 	}
 	
 }

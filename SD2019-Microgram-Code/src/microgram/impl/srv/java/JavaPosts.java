@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,11 +39,13 @@ public class JavaPosts implements Posts {
 
 	private Profiles[] profiles;
 	private Media[] media;
+	private Posts[] postClients;
 	
 	/*TODO
 	 * Check if this is legal 
 	 */
 	public JavaPosts() {
+		super();
 		this.profiles = null;
 		this.media = null;
 	}
@@ -78,7 +81,16 @@ public class JavaPosts implements Posts {
 		return profiles[0];
 	}
 	
-	
+	private Profiles posts() {
+		if(profiles == null) {
+			synchronized (this) {
+				if(profiles == null) {
+					this.profiles = ClientFactory.buildProfile();
+				}
+			}
+		}
+		return profiles[0];
+	}
 	
 	//We implemented
 	/*
@@ -166,13 +178,22 @@ public class JavaPosts implements Posts {
 	}
 	
 	//We implemented
-	/*Ask Teacher about creating a client to communicate with
-	 * ProfileServer Rest Or Soap in order to get the users that the userId is following,
-	 * 
-	 * */
 	@Override
 	public Result<List<String>> getFeed(String userId) {
-		throw new NotImplementedException("Not implemented");
-	
+		Result<Set<String>> reply = null;
+		Set<String> following = null;
+		List<String> result = new LinkedList<String>();
+		
+		reply = profiles().getFollowing(userId);
+		
+		if(!reply.isOK())
+			return  error(ErrorCode.INTERNAL_ERROR);
+		
+		following = reply.value();
+		
+		following
+			.forEach(f -> result.addAll(userPosts.get(f)));
+		
+		return ok(result);
 	}
 }
