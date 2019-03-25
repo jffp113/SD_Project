@@ -2,6 +2,8 @@ package microgram.impl.srv.soap;
 
 import java.util.List;
 
+import javax.jws.WebService;
+
 import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.soap.MicrogramException;
@@ -9,12 +11,13 @@ import microgram.api.soap.SoapPosts;
 import microgram.impl.srv.java.JavaPosts;
 
 //We implemented
+@WebService(serviceName = SoapPosts.NAME, targetNamespace = SoapPosts.NAMESPACE, endpointInterface = SoapPosts.INTERFACE)
 public class PostsWebService extends SoapService implements SoapPosts {
 
 	final Posts impl;
 	
 	protected PostsWebService() {
-		this.impl = new JavaPosts(null,null);
+		this.impl = new JavaPosts();
 	}
 	@Override
 	public Post getPost( String postId ) throws MicrogramException {

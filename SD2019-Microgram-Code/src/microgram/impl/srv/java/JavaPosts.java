@@ -4,6 +4,7 @@ import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
 import static microgram.api.java.Result.ErrorCode.*;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,12 +13,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.sql.rowset.spi.SyncResolver;
+
+import org.apache.commons.lang3.NotImplementedException;
+
+import discovery.Discovery;
 import microgram.api.Post;
 import microgram.api.java.Media;
 import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
 import microgram.api.java.Result.ErrorCode;
+import microgram.impl.clt.rest.RestMediaClient;
+import microgram.impl.clt.rest.RestProfilesClient;
+import microgram.impl.srv.rest.PostsRestServer;
+import microgram.impl.srv.rest.ProfilesRestServer;
 import utils.Hash;
 
 public class JavaPosts implements Posts {
@@ -26,15 +36,15 @@ public class JavaPosts implements Posts {
 	protected Map<String, Set<String>> likes = new HashMap<>();
 	protected Map<String, Set<String>> userPosts = new HashMap<>();
 
-	private Profiles profiles;
-	private Media media;
+	private Profiles[] profiles;
+	private Media[] media;
 	
 	/*TODO
 	 * Check if this is legal 
 	 */
-	public JavaPosts(Profiles profiles,Media media) {
-		this.profiles = profiles;
-		this.media = media;
+	public JavaPosts() {
+		this.profiles = null;
+		this.media = null;
 	}
 	
 	@Override
@@ -44,6 +54,31 @@ public class JavaPosts implements Posts {
 			return ok(res);
 			return error(NOT_FOUND);
 	}
+	
+	
+	private Media media() {
+		if(media == null) {
+			synchronized (this) {
+				if(media == null) {
+					this.media = ClientFactory.buildMedia();
+				}
+			}
+		}
+		return media[0];
+	}
+	
+	private Profiles profiles() {
+		if(profiles == null) {
+			synchronized (this) {
+				if(profiles == null) {
+					this.profiles = ClientFactory.buildProfile();
+				}
+			}
+		}
+		return profiles[0];
+	}
+	
+	
 	
 	//We implemented
 	/*
@@ -66,9 +101,7 @@ public class JavaPosts implements Posts {
 		uPosts.remove(postRemoved.getPostId());
 		
 		//Remove the image associated with the Post (Check if can do this)
-		if(media == null)
-			return  error(ErrorCode.INTERNAL_ERROR);
-		Result<Void> r = media.delete(postRemoved.getMediaUrl());
+		Result<Void> r = media().delete(postRemoved.getMediaUrl());
 		if(!r.isOK())
 			return  error(ErrorCode.INTERNAL_ERROR);
 		
@@ -139,11 +172,7 @@ public class JavaPosts implements Posts {
 	 * */
 	@Override
 	public Result<List<String>> getFeed(String userId) {
-		Set<String> userPosts = this.userPosts.get(userId);
-		
-		if(userPosts == null)
-			error(NOT_FOUND);
-		
-		return ok(new ArrayList<>(userPosts));
+		throw new NotImplementedException("Not implemented");
+	
 	}
 }
