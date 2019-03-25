@@ -1,6 +1,7 @@
 package microgram.impl.clt.java;
 
 import java.util.List;
+import java.util.Set;
 
 import microgram.api.Profile;
 import microgram.api.java.Profiles;
@@ -45,6 +46,12 @@ public class _TODO_RetryProfilesClient extends RetryClient implements Profiles {
 
 	@Override
 	public Result<Boolean> isFollowing(String userId1, String userId2) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Result<Set<String>> getFollowing(String arg0) {
 		// TODO Auto-generated method stub
 		return null;
 	}
