@@ -4,7 +4,6 @@ import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
 import static microgram.api.java.Result.ErrorCode.*;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,29 +13,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.sql.rowset.spi.SyncResolver;
-
-import org.apache.commons.lang3.NotImplementedException;
-
-import discovery.Discovery;
 import microgram.api.Post;
 import microgram.api.java.Media;
 import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
 import microgram.api.java.Result.ErrorCode;
-import microgram.impl.clt.rest.RestMediaClient;
-import microgram.impl.clt.rest.RestProfilesClient;
-import microgram.impl.srv.rest.PostsRestServer;
-import microgram.impl.srv.rest.ProfilesRestServer;
 import utils.Hash;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class JavaPosts implements Posts {
 
-	protected Map<String, Post> posts = new HashMap<>();
-	protected Map<String, Set<String>> likes = new HashMap<>();
-	protected Map<String, Set<String>> userPosts = new HashMap<>();
+	protected Map<String, Post> posts = 
+			new ConcurrentHashMap<>(new HashMap<>());
+	protected Map<String, Set<String>> likes = 
+			new ConcurrentHashMap<>(new HashMap<>());
+	protected Map<String, Set<String>> userPosts =
+			new ConcurrentHashMap<>(new HashMap<>());
 
+	/*
+	 * Should sets be concurrent too?
+	 * Does ConcurrentMaps destroy parallelism?
+	 * 
+	 * */
+
+	
 	private Profiles[] profiles;
 	private Media[] media;
 	private Posts[] postClients;
