@@ -51,7 +51,8 @@ public class RestProfilesClient extends RestClient implements Profiles {
 
 	@Override
 	public Result<List<Profile>> search(String prefix) {
-		Response r = target.path(prefix)
+		Response r = target
+				.queryParam("name", prefix)
 				.request()
 				.get();
 		
@@ -82,7 +83,9 @@ public class RestProfilesClient extends RestClient implements Profiles {
 
 	@Override
 	public Result<Set<String>> getFollowing(String userId) {
-		Response r = target.path(userId)
+		Response r = target
+				.path("following")
+				.path(userId)
 				.request()
 				.get();
 		
