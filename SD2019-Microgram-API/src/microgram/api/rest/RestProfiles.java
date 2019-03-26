@@ -15,7 +15,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import microgram.api.Profile;
-import microgram.api.java.Result;
 
 /**
  * REST API of the Profiles service.
