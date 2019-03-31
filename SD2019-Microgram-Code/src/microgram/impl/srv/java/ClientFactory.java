@@ -6,6 +6,9 @@ import discovery.Discovery;
 import microgram.api.java.Media;
 import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
+import microgram.impl.clt.java.RetryMediaClient;
+import microgram.impl.clt.java.RetryPostsClient;
+import microgram.impl.clt.java.RetryProfilesClient;
 import microgram.impl.clt.rest.RestMediaClient;
 import microgram.impl.clt.rest.RestPostsClient;
 import microgram.impl.clt.rest.RestProfilesClient;
@@ -23,39 +26,38 @@ class ClientFactory {
 	private static final String REST = "rest";
 	private static final String SOAP = "soap";
 	
-	
-	
-
-	
 	private static Media buildAMedia(URI uri) {
 		String uriStr = uri.toString();
+		Media result = null;
 		
 		if(uriStr.endsWith(REST))
-			return new RestMediaClient(uri);
+			result = new RestMediaClient(uri);
 		
-		return null;
+		return result != null ? new RetryMediaClient(result) : null;
 	}
 	
 	private static Posts buildAPost(URI uri) {
 		String uriStr = uri.toString();
+		Posts result = null;
 		
 		if(uriStr.endsWith(REST))
-			return new RestPostsClient(uri);
+			result = new RestPostsClient(uri);
 		else if(uriStr.endsWith(SOAP))
-			return new SoapPostsClient(uri);
+			result = new SoapPostsClient(uri);
 		
-		return null;
+		return result != null ? new RetryPostsClient(result) : null;
 	}
 	
 	private static Profiles buildAProfile(URI uri) {
 		String uriStr = uri.toString();
+		Profiles result = null;
 		
 		if(uriStr.endsWith(REST))
-			return new RestProfilesClient(uri);
+			result = new RestProfilesClient(uri);
 		else if(uriStr.endsWith(SOAP))
-			return new SoapProfilesClient(uri);
+			result = new SoapProfilesClient(uri);
 		
-		return null;
+		return result != null ? new RetryProfilesClient(result) : null;
 	}
 	
 	static Profiles[] buildProfile() {
@@ -100,8 +102,4 @@ class ClientFactory {
 		return posts;
 	}
 	
-	
-	public static void main(String[] args) {
-		
-	}
 }
