@@ -7,10 +7,11 @@ import java.util.Set;
 import microgram.api.Profile;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
+import microgram.api.soap.SoapProfiles;
 
-//TODO Make this class concrete
 public class SoapProfilesClient extends SoapClient implements Profiles {
 
+	SoapProfiles prf;
 
 	public SoapProfilesClient(URI serverUri) {
 		super(serverUri);
@@ -18,43 +19,36 @@ public class SoapProfilesClient extends SoapClient implements Profiles {
 
 	@Override
 	public Result<Profile> getProfile(String userId) {
-		return null;
-	
+		return super.tryCatchResult(() -> this.prf.getProfile(userId));
 	}
 
 	@Override
 	public Result<Void> createProfile(Profile profile) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.tryCatchVoid(() -> this.prf.createProfile(profile));
 	}
 
 	@Override
 	public Result<Void> deleteProfile(String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.tryCatchVoid(() -> this.prf.deleteProfile(userId));
 	}
 
 	@Override
 	public Result<List<Profile>> search(String prefix) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.tryCatchResult(() -> this.prf.search(prefix));
 	}
 
 	@Override
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.tryCatchVoid(() -> this.prf.follow(userId1, userId2, isFollowing));
 	}
 
 	@Override
 	public Result<Boolean> isFollowing(String userId1, String userId2) {
-		// TODO Auto-generated method stub
-		return null;
+		return super.tryCatchResult(() -> this.prf.isFollowing(userId1, userId2));
 	}
 
 	@Override
-	public Result<Set<String>> getFollowing(String arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public Result<Set<String>> getFollowing(String userId) {
+		return super.tryCatchResult(() -> this.prf.getFollowing(userId));
 	}
 }

@@ -1,6 +1,7 @@
 package microgram.api.soap;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
@@ -30,5 +31,8 @@ public interface SoapProfiles {
 	void follow( String userId1, String userId2, boolean isFollowing) throws MicrogramException;
 	
 	@WebMethod
-	boolean isFollowing( String userId1, String userId2) throws MicrogramException;			
+	boolean isFollowing( String userId1, String userId2) throws MicrogramException;		
+	
+	@WebMethod
+	Set<String> getFollowing (String userId) throws MicrogramException;
 }
