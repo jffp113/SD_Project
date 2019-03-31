@@ -19,47 +19,40 @@ class ClientFactory {
 	public static final int N_PROFILES = 1;
 	public static final int N_MEDIA = 1;
 	public static final int N_POSTS = 1;
-	
-	private static final String RESOURCE_SEPARATOR = "/";
+
 	private static final String REST = "rest";
 	private static final String SOAP = "soap";
 	
 	
 	
-	private static String resourceType(URI uri) {
-		String uriStr = uri.toString();
-		int lastBar = uriStr.lastIndexOf(RESOURCE_SEPARATOR);
-		String resource = uriStr.substring(lastBar + 1);
-		
-		return resource;
-	}
+
 	
 	private static Media buildAMedia(URI uri) {
-		String resource = resourceType(uri);
+		String uriStr = uri.toString();
 		
-		if(resource.equals(REST))
+		if(uriStr.endsWith(REST))
 			return new RestMediaClient(uri);
 		
 		return null;
 	}
 	
 	private static Posts buildAPost(URI uri) {
-		String resource = resourceType(uri);
+		String uriStr = uri.toString();
 		
-		if(resource.equals(REST))
+		if(uriStr.endsWith(REST))
 			return new RestPostsClient(uri);
-		else if(resource.equals(SOAP))
+		else if(uriStr.endsWith(SOAP))
 			return new SoapPostsClient(uri);
 		
 		return null;
 	}
 	
 	private static Profiles buildAProfile(URI uri) {
-		String resource = resourceType(uri);
+		String uriStr = uri.toString();
 		
-		if(resource.equals(REST))
+		if(uriStr.endsWith(REST))
 			return new RestProfilesClient(uri);
-		else if(resource.equals(SOAP))
+		else if(uriStr.endsWith(SOAP))
 			return new SoapProfilesClient(uri);
 		
 		return null;
