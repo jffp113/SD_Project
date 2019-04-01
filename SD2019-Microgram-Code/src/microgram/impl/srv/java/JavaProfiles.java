@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import microgram.api.Profile;
@@ -21,9 +22,18 @@ import microgram.impl.srv.rest.RestResource;
 
 public class JavaProfiles extends RestResource implements microgram.api.java.Profiles {
 
-	private Map<String, Profile> users = new HashMap<>();
-	private Map<String, Set<String>> followers = new HashMap<>();
-	private Map<String, Set<String>> following = new HashMap<>();
+	private Map<String, Profile> users =
+			new ConcurrentHashMap<>(new HashMap<>());
+	private Map<String, Set<String>> followers = 
+			new ConcurrentHashMap<>(new HashMap<>());
+	private Map<String, Set<String>> following = 
+			new ConcurrentHashMap<>(new HashMap<>());
+	
+	/*
+	 * Should sets be concurrent too?
+	 * Does ConcurrentMaps destroy parallelism?
+	 * 
+	 * */
 	
 	private Profiles[] profiles;
 	private Posts[] posts;

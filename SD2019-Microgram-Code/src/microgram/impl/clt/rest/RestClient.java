@@ -14,6 +14,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
 import org.glassfish.jersey.client.ClientConfig;
+import org.glassfish.jersey.client.ClientProperties;
 
 import microgram.api.java.Result;
 import microgram.api.java.Result.ErrorCode;
@@ -34,6 +35,12 @@ abstract class RestClient extends RetryClient {
 		this.config = new ClientConfig();
 		this.client = ClientBuilder.newClient(config);
 		this.target = this.client.target(uri).path(path);
+		this.setTimeout();
+	}
+
+	private void setTimeout() {
+		config.property(ClientProperties.CONNECT_TIMEOUT, CONNECT_TIMEOUT);
+		config.property(ClientProperties.READ_TIMEOUT, READ_TIMEOUT);
 	}
 
 	// Get the actual response, when the status matches what was expected, otherwise

@@ -1,4 +1,4 @@
-package tests;
+ package tests;
 
 import java.net.URI;
 
@@ -13,7 +13,7 @@ import microgram.impl.srv.rest.RestPostsResources;
 
 public class testJavaPost {
 	public static void main(String[] args) {
-		URI[] uris = Discovery.findUrisOf(PostsRestServer.SERVICE, 1);
+		/*URI[] uris = Discovery.findUrisOf(PostsRestServer.SERVICE, 1);
 		
 		if(uris.length == 0)
 			System.err.println("No Servers Found");
@@ -30,6 +30,8 @@ public class testJavaPost {
 		System.out.println("Delete " + client.deletePost(resultPost.value()).error());
 		
 		System.out.println();
-		//...
+		//...*/
+		
+		
 	}
 }

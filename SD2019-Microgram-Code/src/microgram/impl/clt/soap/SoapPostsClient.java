@@ -1,11 +1,10 @@
 package microgram.impl.clt.soap;
 
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.util.List;
 
 import javax.xml.namespace.QName;
+import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 
 import discovery.Discovery;
@@ -19,9 +18,9 @@ public class SoapPostsClient extends SoapClient implements Posts {
 
 	SoapPosts impl;
 
-	public SoapPostsClient() {
+	/*public SoapPostsClient() {
 		this( Discovery.findUrisOf("???", 1)[0]); //TODO
-	}
+	}*/
 	
 	
 	public SoapPostsClient(URI serverUri) {
@@ -41,18 +40,11 @@ public class SoapPostsClient extends SoapClient implements Posts {
 					QName QNAME = new QName(SoapPosts.NAMESPACE ,SoapPosts.NAME);
 					Service service = Service.create(urlOrNull(uri),QNAME);
 					impl = service.getPort(SoapPosts.class);
+					super.setTimeout((BindingProvider) impl);
 				}
 			}
 		}
 		return impl;
-	}
-	
-	private URL urlOrNull(URI uri) {
-		try {
-			return uri.toURL();
-		} catch (MalformedURLException e) {
-			return null;
-		}
 	}
 
 

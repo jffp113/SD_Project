@@ -4,7 +4,12 @@ package microgram.impl.clt.soap;
 import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
+
+import javax.xml.ws.BindingProvider;
+
 
 import microgram.api.java.Result;
 import microgram.api.java.Result.ErrorCode;
@@ -12,6 +17,9 @@ import microgram.api.soap.MicrogramException;
 
 abstract class SoapClient {
 
+	final int SOAP_CONN_TIMEOUT = 2000;
+	final int SOAP_RECV_TIMEOUT = 5000;
+	
 	protected final URI uri;
 	
 	public SoapClient(URI uri) {
@@ -47,6 +55,20 @@ abstract class SoapClient {
 		} catch( MicrogramException e ) {
 			return error(errorCode(e));
 		}
+	}
+	
+	protected URL urlOrNull(URI uri) {
+		try {
+			return uri.toURL();
+		} catch (MalformedURLException e) {
+			return null;
+		}
+	}
+	
+	protected void setTimeout(BindingProvider b) {
+		//b.getRequestContext().put(BindingProviderProperties.REQUEST_TIMEOUT, SOAP_RECV_TIMEOUT);
+		//b.getRequestContext().getRequestContext().put(BindingProviderProperties.CONNECT_TIMEOUT, SOAP_CONN_TIMEOUT);
+		
 	}
 	
 	//Translates the MicrogramException into an ErrorCode

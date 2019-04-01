@@ -62,7 +62,5 @@ public class JavaMedia implements Media {
 		
 		return ok();
 	}
-
-	
 	
 }
