@@ -20,7 +20,7 @@ import microgram.api.java.Profiles;
 import microgram.api.java.Result;
 import microgram.impl.srv.rest.RestResource;
 
-public class JavaProfiles extends RestResource implements microgram.api.java.Profiles {
+public class JavaProfiles implements Profiles {
 
 	private Map<String, Profile> users =
 			new ConcurrentHashMap<>(new HashMap<>());
@@ -41,6 +41,9 @@ public class JavaProfiles extends RestResource implements microgram.api.java.Pro
 	
 	public JavaProfiles() {
 		super();
+		this.profiles = null;
+		this.posts = null;
+		this.media = null;
 	}
 	
 	@Override
