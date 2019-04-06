@@ -52,15 +52,6 @@ public class JavaPosts implements Posts {
 		this.media = null;
 	}
 	
-	@Override
-	public Result<Post> getPost(String postId) {
-		Post res = posts.get(postId);
-		if (res != null)
-			return ok(res);
-			return error(NOT_FOUND);
-	}
-	
-	
 	private Media media() {
 		if(media == null) {
 			synchronized (this) {
@@ -93,7 +84,15 @@ public class JavaPosts implements Posts {
 		}
 		return profiles[0];
 	}
-	
+
+	@Override
+	public Result<Post> getPost(String postId) {
+		Post res = posts.get(postId);
+		if (res != null)
+			return ok(res);
+		return error(NOT_FOUND);
+	}
+
 	//We implemented
 	/*
 	 * TODO: Communicate with RestStorageServer to delete the image associated with the Post
