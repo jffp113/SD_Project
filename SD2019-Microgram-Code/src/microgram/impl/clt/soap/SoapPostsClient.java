@@ -82,4 +82,9 @@ public class SoapPostsClient extends SoapClient implements Posts {
 	public Result<List<String>> getFeed(String userId) {
 		return super.tryCatchResult(() -> impl().getFeed(userId));
 	}
+
+	@Override
+	public Result<Void> removeAllPostsFromUser(String userId) {
+		return super.tryCatchVoid(() -> impl().removeAllPostsFromUser(userId));
+	}
 }

@@ -68,4 +68,12 @@ public interface Posts {
 	 * @return (OK,List<PostId>|empty list), NOT_FOUND if the user profile is not known
 	 */
 	Result<List<String>> getFeed( String userId);
+
+	/**
+	 * Removes all posts from a user
+	 * @param userId
+	 * @return
+	 */
+	Result<Void> removeAllPostsFromUser(String userId);
+
 }

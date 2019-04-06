@@ -98,4 +98,14 @@ public class RestPostsClient extends RestClient implements Posts {
 		return super.responseContents(r, Status.OK, new GenericType<List<String>>(){});
 	}
 
+
+	public Result<Void> removeAllPostsFromUser(String userId){
+		Response r = target
+				.path("/allPosts")
+				.path(userId)
+				.request()
+				.delete();
+
+		return super.verifyResponse(r,Status.NO_CONTENT);
+	}
 }

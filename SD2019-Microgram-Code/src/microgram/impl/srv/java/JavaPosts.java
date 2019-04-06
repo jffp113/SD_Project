@@ -198,4 +198,17 @@ public class JavaPosts implements Posts {
 		
 		return ok(result);
 	}
+
+	//Code Review TODO
+    public Result<Void> removeAllPostsFromUser(String userId){
+		Set<String> userSetPosts = userPosts.get(userId);
+
+		if(userSetPosts == null)
+			return error(NOT_FOUND);
+
+		for(String postId :userSetPosts)
+			this.deletePost(postId);
+
+	    return ok();
+    }
 }

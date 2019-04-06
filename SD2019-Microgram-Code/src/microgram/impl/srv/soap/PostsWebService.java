@@ -53,5 +53,9 @@ public class PostsWebService extends SoapService implements SoapPosts {
 	public List<String> getFeed(String userId) throws MicrogramException {
 		return super.resultOrThrow(impl.getFeed(userId));
 	}
-	
+
+	@Override
+	public void removeAllPostsFromUser(String userId) throws MicrogramException{
+		super.resultOrThrow(impl.removeAllPostsFromUser(userId));
+	}
 }

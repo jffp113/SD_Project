@@ -15,23 +15,27 @@ public interface SoapPosts {
 	static final String INTERFACE = "microgram.api.soap.SoapPosts";
 	
 	@WebMethod
-	Post getPost( String postId ) throws MicrogramException;
+	Post getPost(String postId ) throws MicrogramException;
 		
 	@WebMethod
-	void deletePost( String postId ) throws MicrogramException;
+	void deletePost(String postId ) throws MicrogramException;
 	
 	@WebMethod
-	String createPost( Post post ) throws MicrogramException;
+	String createPost(Post post ) throws MicrogramException;
 
 	@WebMethod
 	boolean isLiked(String postId, String userId) throws MicrogramException;
 
 	@WebMethod
-	void like( String postId, String userId, boolean isLiked) throws MicrogramException;
+	void like(String postId, String userId, boolean isLiked) throws MicrogramException;
 		
 	@WebMethod
-	List<String> getPosts( String userId) throws MicrogramException;
+	List<String> getPosts(String userId) throws MicrogramException;
 	
 	@WebMethod
-	List<String> getFeed( String userId) throws MicrogramException;
+	List<String> getFeed(String userId) throws MicrogramException;
+
+    @WebMethod
+    void removeAllPostsFromUser(String userId) throws MicrogramException;
+
 }

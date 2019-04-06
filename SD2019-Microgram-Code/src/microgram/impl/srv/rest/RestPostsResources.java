@@ -60,5 +60,9 @@ public class RestPostsResources extends RestResource implements RestPosts {
 		return super.resultOrThrow(impl.getFeed(userId));
 		
 	}
+
+	public void removeAllPostsFromUser(String userId){
+		super.resultOrThrow(impl.removeAllPostsFromUser(userId));
+	}
  
 }
