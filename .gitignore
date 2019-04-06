@@ -1,2 +1,4 @@
 /.metadata/
 /bin/
+*.iml
+*/.idea
