@@ -19,10 +19,14 @@ import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
 import microgram.api.java.Result.ErrorCode;
+import microgram.impl.srv.rest.PostsRestServer;
 import utils.Hash;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 public class JavaPosts implements Posts {
+
+	private static Logger Log = Logger.getLogger(JavaPosts.class.getName());
 
 	protected Map<String, Post> posts = 
 			new ConcurrentHashMap<>(new HashMap<>());
@@ -125,6 +129,7 @@ public class JavaPosts implements Posts {
 	@Override
 	public Result<String> createPost(Post post) {
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
+		Log.info("I'm here");
 		if (posts.putIfAbsent(postId, post) == null) {
 
 			post.setPostId(postId);
