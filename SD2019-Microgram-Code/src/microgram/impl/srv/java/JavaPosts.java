@@ -109,7 +109,7 @@ public class JavaPosts implements Posts {
 	 */
 	@Override
 	public Result<Void> deletePost(String postId) {
-		Log.info("Start Deleting Post");
+		Log.info("Start Deleting Post\n");
 		Post postRemoved = posts.remove(postId);
 
 		if(postRemoved == null)
@@ -126,8 +126,8 @@ public class JavaPosts implements Posts {
 		
 		//Remove the image associated with the Post (Check if can do this)
 		Result<Void> r = media().delete(postRemoved.getMediaUrl());
-		if(!r.isOK())
-			return  error(ErrorCode.INTERNAL_ERROR);
+		/*if(!r.isOK())
+			return  error(ErrorCode.INTERNAL_ERROR);*/
 
 		return ok();
 	}
