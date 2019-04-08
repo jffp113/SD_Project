@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import microgram.api.Profile;
@@ -21,6 +23,8 @@ import microgram.api.java.Result;
 import microgram.impl.srv.rest.RestResource;
 
 public class JavaProfiles implements Profiles {
+
+	private static Logger Log = Logger.getLogger(JavaProfiles.class.getName());
 
 	private Map<String, Profile> users =
 			new ConcurrentHashMap<>(new HashMap<>());
@@ -38,7 +42,12 @@ public class JavaProfiles implements Profiles {
 	private Profiles[] profiles;
 	private Posts[] posts;
 	private Media[] media;
-	
+
+	static{
+		Log.setLevel( Level.FINER );
+		Log.info("Initiated JavaProfiles class\n");
+	}
+
 	public JavaProfiles() {
 		super();
 		/*this.profiles = null;

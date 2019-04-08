@@ -109,10 +109,11 @@ public class JavaPosts implements Posts {
 	 */
 	@Override
 	public Result<Void> deletePost(String postId) {
-	
+		Log.info("Start Deleting Post");
 		Post postRemoved = posts.remove(postId);
+
 		if(postRemoved == null)
-			error(NOT_FOUND);
+			return error(NOT_FOUND);
 		
 		
 		//Remove all users that Liked The post
@@ -123,11 +124,11 @@ public class JavaPosts implements Posts {
 		Set<String> uPosts = this.userPosts.get(userId);
 		uPosts.remove(postRemoved.getPostId());
 		
-		//Remove the image associated with the Post (Check if can do this) TODO
-		/*Result<Void> r = media().delete(postRemoved.getMediaUrl());
+		//Remove the image associated with the Post (Check if can do this)
+		Result<Void> r = media().delete(postRemoved.getMediaUrl());
 		if(!r.isOK())
 			return  error(ErrorCode.INTERNAL_ERROR);
-		*/
+
 		return ok();
 	}
 
