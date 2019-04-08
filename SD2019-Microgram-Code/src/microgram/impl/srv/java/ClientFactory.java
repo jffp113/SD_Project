@@ -87,7 +87,8 @@ class ClientFactory {
 			}
 		}
 		
-		return Arrays.copyOf(profiles, profiles.length - errorsFound);
+		return errorsFound == NO_ERRORS ?
+				profiles : Arrays.copyOf(profiles, profiles.length - errorsFound);
 	}
 		
 	static Media[] buildMedia() throws NoServersAvailableException {
@@ -102,7 +103,8 @@ class ClientFactory {
 				errorsFound++;
 			}
 			
-		return Arrays.copyOf(medias, medias.length - errorsFound);
+		return errorsFound == NO_ERRORS ?
+				medias : Arrays.copyOf(medias, medias.length - errorsFound);
 	}
 	
 	static Posts[] buildPosts() throws NoServersAvailableException {
@@ -117,7 +119,8 @@ class ClientFactory {
 				errorsFound++;
 			}
 
-		return Arrays.copyOf(posts, posts.length - errorsFound);
+		return errorsFound == NO_ERRORS ?
+				posts : Arrays.copyOf(posts, posts.length - errorsFound);
 	}
 	
 }
