@@ -127,8 +127,9 @@ public class JavaPosts implements Posts {
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
 		if (posts.putIfAbsent(postId, post) == null) {
 
+			post.setPostId(postId);
 			likes.put(postId, new HashSet<>());
-
+			
 			Set<String> posts = userPosts.get(post.getOwnerId());
 			if (posts == null)
 				userPosts.put(post.getOwnerId(), posts = new LinkedHashSet<>());
