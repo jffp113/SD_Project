@@ -22,6 +22,7 @@ import microgram.api.java.Result.ErrorCode;
 import microgram.impl.srv.rest.PostsRestServer;
 import utils.Hash;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class JavaPosts implements Posts {
@@ -41,7 +42,12 @@ public class JavaPosts implements Posts {
 	 * 
 	 * */
 
-	
+	static{
+        Log.setLevel( Level.FINER );
+        Log.info("Initiated JavaPost class");
+    }
+
+
 	private Profiles[] profiles;
 	private Media[] media;
 	private Posts[] postClients;
