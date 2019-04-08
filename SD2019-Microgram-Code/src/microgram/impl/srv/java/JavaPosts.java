@@ -43,9 +43,9 @@ public class JavaPosts implements Posts {
 	 * */
 
 	static{
-        Log.setLevel( Level.FINER );
-        Log.info("Initiated JavaPost class");
-    }
+		Log.setLevel( Level.FINER );
+		Log.info("Initiated JavaPost class\n");
+	}
 
 
 	private Profiles[] profiles;
@@ -134,8 +134,9 @@ public class JavaPosts implements Posts {
 	
 	@Override
 	public Result<String> createPost(Post post) {
+		Log.info("JavaPost: Creating Post\n");
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
-		Log.info("I'm here");
+
 		if (posts.putIfAbsent(postId, post) == null) {
 
 			post.setPostId(postId);

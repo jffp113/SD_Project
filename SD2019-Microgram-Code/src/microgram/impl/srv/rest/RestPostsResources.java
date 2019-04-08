@@ -2,6 +2,7 @@ package microgram.impl.srv.rest;
 
 import java.net.URI;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import discovery.Discovery;
@@ -24,7 +25,11 @@ public class RestPostsResources extends RestResource implements RestPosts {
 		//this.impl = new JavaPosts(null,null);
 		this.impl = new JavaPosts();
 	}
-	
+
+	static{
+		Log.setLevel( Level.FINER );
+		Log.info("Initiated RestPostsResource class\n");
+	}
 	
 	@Override
 	public Post getPost(String postId) {
@@ -38,7 +43,7 @@ public class RestPostsResources extends RestResource implements RestPosts {
 
 	@Override
 	public String createPost(Post post) {
-		Log.info("Started creating Post");
+		Log.info("RestPostsResources: Started creating Post\n");
 
 		return super.resultOrThrow(impl.createPost(post));
 	}
