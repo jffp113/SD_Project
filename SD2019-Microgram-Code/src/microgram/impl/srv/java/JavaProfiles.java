@@ -24,9 +24,9 @@ public class JavaProfiles implements Profiles {
 
 	private Map<String, Profile> users =
 			new ConcurrentHashMap<>(new HashMap<>());
-	private Map<String, Set<String>> followers =
+	private Map<String, Set<String>> followers = 
 			new ConcurrentHashMap<>(new HashMap<>());
-	private Map<String, Set<String>> following =
+	private Map<String, Set<String>> following = 
 			new ConcurrentHashMap<>(new HashMap<>());
 	
 	/*
@@ -41,9 +41,9 @@ public class JavaProfiles implements Profiles {
 	
 	public JavaProfiles() {
 		super();
-		this.profiles = null;
+		/*this.profiles = null;
 		this.posts = null;
-		this.media = null;
+		this.media = null;*/
 	}
 	
 	@Override
