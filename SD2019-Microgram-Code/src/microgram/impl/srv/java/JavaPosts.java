@@ -57,9 +57,6 @@ public class JavaPosts implements Posts {
 	 */
 	public JavaPosts() {
 		super();
-		/*this.profiles = null;
-		this.posts = null;
-		this.media = null;*/
 	}
 	
 	private Media media() {

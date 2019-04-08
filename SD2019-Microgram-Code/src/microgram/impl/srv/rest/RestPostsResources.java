@@ -43,8 +43,6 @@ public class RestPostsResources extends RestResource implements RestPosts {
 
 	@Override
 	public String createPost(Post post) {
-		Log.info("RestPostsResources: Started creating Post\n");
-
 		return super.resultOrThrow(impl.createPost(post));
 	}
 
