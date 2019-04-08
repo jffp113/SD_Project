@@ -134,11 +134,12 @@ public class JavaPosts implements Posts {
 	
 	@Override
 	public Result<String> createPost(Post post) {
-		Log.info("JavaPost: Creating Post\n");
+		Log.info("JavaPost: Creating Post for the owner " + post.getOwnerId() + "\n");
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
-
-		if (posts.putIfAbsent(postId, post) == null) {
 		Log.info("JavaPost: adding post with id=" + postId + "\n");
+		
+		if (posts.putIfAbsent(postId, post) == null) {
+
 			post.setPostId(postId);
 			likes.put(postId, new HashSet<>());
 			
