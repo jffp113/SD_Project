@@ -38,7 +38,7 @@ public class JavaPosts implements Posts {
 
 	/*
 	 * Should sets be concurrent too?
-	 * Does ConcurrentMaps destroy parallelism?
+	 * Do ConcurrentMaps destroy parallelism?
 	 * 
 	 * */
 
@@ -85,10 +85,10 @@ public class JavaPosts implements Posts {
 	}
 	
 	private Profiles posts() {
-		if(profiles == null) {
+		if(postClients == null) {
 			synchronized (this) {
-				if(profiles == null) {
-					this.profiles = ClientFactory.buildProfile();
+				if(postClients == null) {
+					this.postClients = ClientFactory.buildPosts();
 				}
 			}
 		}
