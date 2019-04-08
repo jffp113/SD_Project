@@ -123,11 +123,11 @@ public class JavaPosts implements Posts {
 		Set<String> uPosts = this.userPosts.get(userId);
 		uPosts.remove(postRemoved.getPostId());
 		
-		//Remove the image associated with the Post (Check if can do this)
-		Result<Void> r = media().delete(postRemoved.getMediaUrl());
+		//Remove the image associated with the Post (Check if can do this) TODO
+		/*Result<Void> r = media().delete(postRemoved.getMediaUrl());
 		if(!r.isOK())
 			return  error(ErrorCode.INTERNAL_ERROR);
-		
+		*/
 		return ok();
 	}
 
