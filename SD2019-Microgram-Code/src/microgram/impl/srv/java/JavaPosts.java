@@ -138,7 +138,7 @@ public class JavaPosts implements Posts {
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
 
 		if (posts.putIfAbsent(postId, post) == null) {
-
+		Log.info("JavaPost: adding post with id=" + postId + "\n");
 			post.setPostId(postId);
 			likes.put(postId, new HashSet<>());
 			
