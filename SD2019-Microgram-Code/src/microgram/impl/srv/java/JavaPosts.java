@@ -57,9 +57,9 @@ public class JavaPosts implements Posts {
 	 */
 	public JavaPosts() {
 		super();
-		this.profiles = null;
+		/*this.profiles = null;
 		this.posts = null;
-		this.media = null;
+		this.media = null;*/
 	}
 	
 	private Media media() {
@@ -137,7 +137,7 @@ public class JavaPosts implements Posts {
 		Log.info("JavaPost: Creating Post for the owner " + post.getOwnerId() + "\n");
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
 		Log.info("JavaPost: adding post with id=" + postId + "\n");
-		
+		Log.info ("getting post id:" + posts.get(postId) +  "\n");
 		if (posts.putIfAbsent(postId, post) == null) {
 
 			post.setPostId(postId);
