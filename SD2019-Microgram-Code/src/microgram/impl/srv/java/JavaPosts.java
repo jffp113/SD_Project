@@ -66,7 +66,11 @@ public class JavaPosts implements Posts {
 		if(media == null) {
 			synchronized (this) {
 				if(media == null) {
-					this.media = ClientFactory.buildMedia();
+					try {
+						this.media = ClientFactory.buildMedia();
+					} catch (NoServersAvailableException e){
+						this.media = null;
+					}
 				}
 			}
 		}
@@ -77,7 +81,11 @@ public class JavaPosts implements Posts {
 		if(profiles == null) {
 			synchronized (this) {
 				if(profiles == null) {
+					try{
 					this.profiles = ClientFactory.buildProfile();
+					} catch (NoServersAvailableException e){
+						this.media = null;
+					}
 				}
 			}
 		}
@@ -88,7 +96,11 @@ public class JavaPosts implements Posts {
 		if(postClients == null) {
 			synchronized (this) {
 				if(postClients == null) {
-					this.postClients = ClientFactory.buildPosts();
+					try {
+						this.postClients = ClientFactory.buildPosts();
+					}catch (NoServersAvailableException e){
+						this.media = null;
+					}
 				}
 			}
 		}
@@ -192,7 +204,6 @@ public class JavaPosts implements Posts {
 	//We implemented
 	@Override
 	public Result<List<String>> getFeed(String userId) {
-		
 		Result<Set<String>> reply = null;
 		Set<String> following = null;
 		List<String> result = new LinkedList<String>();
