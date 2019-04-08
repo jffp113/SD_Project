@@ -109,7 +109,6 @@ public class JavaPosts implements Posts {
 	 */
 	@Override
 	public Result<Void> deletePost(String postId) {
-		Log.info("Start Deleting Post\n");
 		Post postRemoved = posts.remove(postId);
 
 		if(postRemoved == null)
@@ -135,10 +134,7 @@ public class JavaPosts implements Posts {
 	
 	@Override
 	public Result<String> createPost(Post post) {
-		Log.info("JavaPost: Creating Post for the owner " + post.getOwnerId() + "\n");
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
-		Log.info("JavaPost: adding post with id=" + postId + "\n");
-		Log.info ("getting post id:" + posts.get(postId) +  "\n");
 		if (posts.putIfAbsent(postId, post) == null) {
 
 			post.setPostId(postId);
@@ -196,6 +192,7 @@ public class JavaPosts implements Posts {
 	//We implemented
 	@Override
 	public Result<List<String>> getFeed(String userId) {
+		
 		Result<Set<String>> reply = null;
 		Set<String> following = null;
 		List<String> result = new LinkedList<String>();
