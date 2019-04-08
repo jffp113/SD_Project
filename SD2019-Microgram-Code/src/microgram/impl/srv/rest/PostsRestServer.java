@@ -19,7 +19,7 @@ public class PostsRestServer {
 		System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s: %5$s");
 	}
 	
-	public static final int PORT = 7777;
+	public static final int PORT = 8888;
 	public static final String SERVICE = "Microgram-Posts";
 	public static String SERVER_BASE_URI = "http://%s:%s/rest";
 	
