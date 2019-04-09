@@ -23,70 +23,16 @@ import microgram.api.Post;
 @Path( RestPosts.PATH )
 public interface RestPosts {
 
-	static final String PATH = "/posts";
-	
-	//METHODS PATH CONSTANT COMPONENTS
-	
-	static final String IS_LIKED_PATH_CONSTANT_COMPONENT =
-			"likes";
-	
-	static final String LIKE_PATH_CONSTANT_COMPONENT =
-			"likes";
-	
-	static final String GET_POSTS_PATH_CONSTANT_COMPONENT =
-			"from";
-	
-	static final String GET_FEED_PATH_CONSTANT_COMPONENT =
-			"feed";
-	
-	static final String REMOVE_ALL_POSTS_PATH_CONSTANT_COMPONENT =
-			"allPosts";
-	
-	//METHODS PATH VARIABLES
-	
-	static final String POST_ID = "postId";
-	
-	static final String USER_ID = "userId";
-	
-	
-	//METHODS PATH
-	
-	static final String GET_POST_PATH =
-			"/{" + POST_ID + "}";
-	
-	static final String DELETE_POST_PATH =
-			"/{" + POST_ID + "}";
-	
-	static final String IS_LIKED_PATH =
-			"/{" + POST_ID + "}/" + 
-			IS_LIKED_PATH_CONSTANT_COMPONENT +
-			"/{" + USER_ID + "}";
-	
-	static final String LIKE_PATH =
-			"/{" + POST_ID + "}/" +
-			LIKE_PATH_CONSTANT_COMPONENT + 
-			"/{" + USER_ID + "}";
-	
-	static final String GET_POSTS_PATH =
-			"/" + GET_POSTS_PATH_CONSTANT_COMPONENT +
-			"/{" + USER_ID + "}";
-	
-	static final String GET_FEED_PATH =
-			"/" + GET_FEED_PATH_CONSTANT_COMPONENT +
-			"/{" + USER_ID + "}";
-	
-	static final String REMOVE_ALL_POSTS_FROM_USER_PATH =
-			"/" + REMOVE_ALL_POSTS_PATH_CONSTANT_COMPONENT +
-			"/{" + USER_ID + "}";
+static final String PATH="/posts";
 	
 	@GET
-	@Path(GET_POST_PATH)
+	@Path("/{postId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	Post getPost( @PathParam(POST_ID) String postId );
+	Post getPost( @PathParam("postId") String postId );
 		
 	@DELETE
-	@Path(DELETE_POST_PATH)
-	void deletePost( @PathParam(POST_ID) String postId );
+	@Path("/{postId}")
+	void deletePost( @PathParam("postId") String postId );
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -94,25 +40,25 @@ public interface RestPosts {
 	String createPost( Post post );
 
 	@GET
-	@Path(IS_LIKED_PATH)
-	boolean isLiked( @PathParam(POST_ID) String postId, @PathParam(USER_ID) String userId);
+	@Path("/{postId}/likes/{userId}")
+	boolean isLiked( @PathParam("postId") String postId, @PathParam("userId") String userId);
 
 	@PUT
-	@Path(LIKE_PATH)	
+	@Path("/{postId}/likes/{userId}")	
 	@Consumes(MediaType.APPLICATION_JSON)
-	void like( @PathParam(POST_ID) String postId, @PathParam(USER_ID) String userId, boolean isLiked);
+	void like( @PathParam("postId") String postId, @PathParam("userId") String userId, boolean isLiked);
 		
 	@GET
-	@Path(GET_POSTS_PATH)
+	@Path("/from/{userId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	List<String> getPosts( @PathParam(USER_ID) String userId);
+	List<String> getPosts( @PathParam("userId") String userId);
 	
 	@GET
-	@Path(GET_FEED_PATH)
+	@Path("/feed/{userId}")
 	@Produces(MediaType.APPLICATION_JSON)
-	List<String> getFeed(@PathParam(USER_ID) String userId);
+	List<String> getFeed(@PathParam("userId") String userId);
 
 	@DELETE
-	@Path(REMOVE_ALL_POSTS_FROM_USER_PATH)
-	void removeAllPostsFromUser(@PathParam(USER_ID) String userId);
+	@Path("/allPosts/{userId}")
+	void removeAllPostsFromUser(@PathParam("userId") String userId);
 }
