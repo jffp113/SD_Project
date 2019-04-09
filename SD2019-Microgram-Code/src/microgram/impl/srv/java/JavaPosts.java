@@ -212,6 +212,7 @@ public class JavaPosts implements Posts {
 		Log.info("Is profile server null? " + (profiles() == null) +"\n" );
 		reply = profiles().getFollowing(userId);
 
+
 		//DEBUG
 		Log.info("Start Debugging\n");
 		Log.info(profiles().getProfile(userId).toString() + "\n");

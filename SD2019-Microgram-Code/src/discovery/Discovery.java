@@ -1,5 +1,7 @@
 package discovery;
 
+import microgram.impl.srv.java.JavaPosts;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -9,6 +11,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -99,7 +102,14 @@ public class Discovery {
 	 *
 	 */
 	private static class findUrisClass {
-		
+
+        private static Logger Log = Logger.getLogger(findUrisClass.class.getName());
+
+        static{
+            Log.setLevel( Level.FINER );
+            Log.info("Initiated findUrisClass class teste\n");
+        }
+
 		public static final String N_SERVER_FOUND = "Found %d different Servers\n";
 		
 		/**
@@ -152,7 +162,7 @@ public class Discovery {
 			String strData = new String(this.buffer,0,receive.getLength());
 			String[] strParsedURI = strData.split(DELIMITER);
 			
-			if (strParsedURI.length != 2 && !strParsedURI[0].equals(this.serviceName))
+			if (!strParsedURI[0].equals(this.serviceName))
 				return null;
 			
 			try {
@@ -196,7 +206,9 @@ public class Discovery {
 			try {
 				while (this.minRepliesNeeded > this.uniqueURI.size()) {
 						uri = getAnUri();
+
 					if (!this.uniqueURI.contains(uri)) {
+                        Log.info(uri.toString() + "\n");
 						this.uniqueURI.add(uri);
 						this.waitTimeLeft = DISCOVERY_TIMEOUT;
 					}

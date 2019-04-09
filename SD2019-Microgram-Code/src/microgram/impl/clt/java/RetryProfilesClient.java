@@ -49,4 +49,5 @@ public class RetryProfilesClient extends RetryClient implements Profiles {
 	public Result<Set<String>> getFollowing(String userId) {
 		return super.reTry(() -> impl.getFollowing(userId));
 	}
+
 }
