@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import microgram.api.Post;
+import microgram.api.Profile;
 import microgram.api.java.Media;
 import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
@@ -44,7 +45,7 @@ public class JavaPosts implements Posts {
 
 	static{
 		Log.setLevel( Level.FINER );
-		Log.info("Initiated JavaPost class\n");
+		Log.info("Initiated JavaPost class teste\n");
 	}
 
 
@@ -75,13 +76,14 @@ public class JavaPosts implements Posts {
 	}
 	
 	private Profiles profiles() {
+		Log.info("JavaPosts: profile() invoked\n");
 		if(profiles == null) {
 			synchronized (this) {
 				if(profiles == null) {
 					try{
 					this.profiles = ClientFactory.buildProfile();
 					} catch (NoServersAvailableException e){
-						this.media = null;
+						this.profiles = null;
 					}
 				}
 			}
@@ -96,7 +98,7 @@ public class JavaPosts implements Posts {
 					try {
 						this.postClients = ClientFactory.buildPosts();
 					}catch (NoServersAvailableException e){
-						this.media = null;
+						this.profiles = null;
 					}
 				}
 			}
@@ -201,14 +203,23 @@ public class JavaPosts implements Posts {
 	//We implemented
 	@Override
 	public Result<List<String>> getFeed(String userId) {
-		Result<Set<String>> reply = null;
-		Set<String> following = null;
-		List<String> result = new LinkedList<String>();
-		
+		Result<Set<String>> reply;
+		Set<String> following;
+		List<String> result = new LinkedList<>();
+
+		Log.info("Requesting for user following : " + userId + "\n");
 		reply = profiles().getFollowing(userId);
-		
+
+		//DEBUG
+		Log.info("Start Debugging\n");
+		Log.info(profiles().getProfile(userId).toString() + "\n");
+		//END
+
+		Log.info("Profiles Size"+ profiles.length + "\n");
+		Log.info("Success? " + reply.error() + "\n");
+
 		if(!reply.isOK())
-			return  error(ErrorCode.INTERNAL_ERROR);
+			return  error(NOT_FOUND);
 		
 		following = reply.value();
 		

@@ -2,6 +2,8 @@ package microgram.impl.srv.java;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import discovery.Discovery;
 import microgram.api.java.Media;
@@ -28,7 +30,14 @@ class ClientFactory {
 
 	private static final String REST = "rest";
 	private static final String SOAP = "soap";
-	
+
+	private static Logger Log = Logger.getLogger(ClientFactory.class.getName());
+
+	static{
+		Log.setLevel( Level.FINER );
+		Log.info("Initiated ClientFactory class\n");
+	}
+
 	private static Media buildAMedia(URI uri) throws NotAWebserviceException {
 		String uriStr = uri.toString();		
 		if(uriStr.endsWith(REST))
@@ -72,7 +81,9 @@ class ClientFactory {
 	}
 	
 	static Profiles[] buildProfile() throws NoServersAvailableException {
-		URI[] profileUris = discoverURI(ProfilesRestServer.SERVICE, N_PROFILES);		
+		Log.info("Starting finding Posts Servers");
+		URI[] profileUris = discoverURI(ProfilesRestServer.SERVICE, N_PROFILES);
+		Log.info("Found " + profileUris.length + "servers \n");
 		Profiles[] profiles = new Profiles[profileUris.length];
 		
 		/*
@@ -108,7 +119,9 @@ class ClientFactory {
 	}
 	
 	static Posts[] buildPosts() throws NoServersAvailableException {
-		URI[] postsUris = discoverURI(PostsRestServer.SERVICE, N_POSTS);	
+		Log.info("Starting finding Posts Servers");
+		URI[] postsUris = discoverURI(PostsRestServer.SERVICE, N_POSTS);
+		Log.info("Found " + postsUris.length + "servers \n");
 		Posts[] posts = new Posts[postsUris.length];
 		
 		int errorsFound = NO_ERRORS;

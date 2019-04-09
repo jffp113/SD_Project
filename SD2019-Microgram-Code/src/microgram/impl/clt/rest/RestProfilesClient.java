@@ -3,6 +3,8 @@ package microgram.impl.clt.rest;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.GenericType;
@@ -14,11 +16,19 @@ import microgram.api.Profile;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
 import microgram.api.rest.RestProfiles;
+import microgram.impl.srv.java.JavaProfiles;
 
 public class RestProfilesClient extends RestClient implements Profiles {
 
 	public RestProfilesClient(URI serverUri) {
 		super(serverUri, RestProfiles.PATH);
+	}
+
+	private static Logger Log = Logger.getLogger(JavaProfiles.class.getName());
+
+	static{
+		Log.setLevel( Level.FINER );
+		Log.info("Initiated RestProfilesClient class\n");
 	}
 
 	@Override
@@ -83,6 +93,7 @@ public class RestProfilesClient extends RestClient implements Profiles {
 
 	@Override
 	public Result<Set<String>> getFollowing(String userId) {
+		Log.info("RestProfilesClient: getFollowing");
 		Response r = target
 				.path("following")
 				.path(userId)

@@ -3,6 +3,8 @@ package microgram.impl.srv.rest;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import microgram.api.Profile;
 import microgram.api.java.Profiles;
@@ -12,7 +14,14 @@ import microgram.impl.srv.java.JavaProfiles;
 public class RestProfilesResources extends RestResource implements RestProfiles {
 
 	final Profiles impl;
-	
+
+	private static Logger Log = Logger.getLogger(JavaProfiles.class.getName());
+
+	static{
+		Log.setLevel( Level.FINER );
+		Log.info("Initiated RestProfilesResources class\n");
+	}
+
 	public RestProfilesResources(URI serverUri) {
 		this.impl = new JavaProfiles();
 	}
@@ -51,6 +60,9 @@ public class RestProfilesResources extends RestResource implements RestProfiles 
 
 	@Override
 	public Set<String> getFollowing(String userId) {
-		return super.resultOrThrow(this.impl.getFollowing(userId));
-	}	
+		Log.info("RestProfilesResources: getFollowing=" + userId + "\n");
+		Set<String> r = super.resultOrThrow(this.impl.getFollowing(userId));
+		Log.info(r.size() + "\n");
+		return r;
+	}
 }

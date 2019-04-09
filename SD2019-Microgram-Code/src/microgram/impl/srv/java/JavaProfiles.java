@@ -45,7 +45,7 @@ public class JavaProfiles implements Profiles {
 
 	static{
 		Log.setLevel( Level.FINER );
-		Log.info("Initiated JavaProfiles class\n");
+		Log.info("Initiated JavaProfiles class test\n");
 	}
 
 	public JavaProfiles() {
@@ -71,7 +71,8 @@ public class JavaProfiles implements Profiles {
 		Profile res = users.putIfAbsent( profile.getUserId(), profile );
 		if( res != null ) 
 			return error(CONFLICT);
-		
+
+		Log.info("Creating profile: "+ profile.getUserId() + "\n");
 		followers.put( profile.getUserId(), new HashSet<>());
 		following.put( profile.getUserId(), new HashSet<>());
 		return ok();
@@ -129,11 +130,16 @@ public class JavaProfiles implements Profiles {
 	}
 	
 	public Result<Set<String>> getFollowing (String userId) {
+		Log.info("Starting getting following for: "+ userId+ "\n");
 		Set<String> followUser = this.following.get(userId);
+
+		if((followUser != null))
+			Log.info(followUser.size() + "\n");
+
 		if (followUser == null)
 			return error(NOT_FOUND);
-		else
-			return ok(followUser);
+
+		Log.info("Returning followUsers\n");
+		return ok(followUser);
 	}
-	
 }
