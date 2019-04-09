@@ -14,6 +14,11 @@ import microgram.api.java.Posts;
 import microgram.api.java.Result;
 import microgram.api.rest.RestPosts;
 
+import static microgram.api.rest.RestPosts.LIKE_PATH_CONSTANT_COMPONENT;
+import static microgram.api.rest.RestPosts.IS_LIKED_PATH_CONSTANT_COMPONENT;
+import static microgram.api.rest.RestPosts.GET_FEED_PATH_CONSTANT_COMPONENT;
+import static microgram.api.rest.RestPosts.REMOVE_ALL_POSTS_PATH_CONSTANT_COMPONENT;
+
 //TODO We implemented
 public class RestPostsClient extends RestClient implements Posts {
 
@@ -53,7 +58,7 @@ public class RestPostsClient extends RestClient implements Posts {
 	public Result<Void> like(String postId, String userId, boolean isLiked) {
 		Response r = target
 				.path(postId)
-				.path("likes")
+				.path(LIKE_PATH_CONSTANT_COMPONENT)
 				.path(userId)
 				.request()
 				.put( Entity.entity(isLiked, MediaType.APPLICATION_JSON));
@@ -66,7 +71,7 @@ public class RestPostsClient extends RestClient implements Posts {
 	public Result<Boolean> isLiked(String postId, String userId) {
 		Response r = target
 				.path(postId)
-				.path("likes")
+				.path(IS_LIKED_PATH_CONSTANT_COMPONENT)
 				.path(userId)
 				.request()
 				.get();	
@@ -90,7 +95,7 @@ public class RestPostsClient extends RestClient implements Posts {
 	@Override
 	public Result<List<String>> getFeed(String userId) {
 		Response r = target
-				.path("feed")
+				.path(GET_FEED_PATH_CONSTANT_COMPONENT)
 				.path(userId)
 				.request()
 				.get();
@@ -101,7 +106,7 @@ public class RestPostsClient extends RestClient implements Posts {
 
 	public Result<Void> removeAllPostsFromUser(String userId){
 		Response r = target
-				.path("/allPosts")
+				.path(REMOVE_ALL_POSTS_PATH_CONSTANT_COMPONENT)
 				.path(userId)
 				.request()
 				.delete();
