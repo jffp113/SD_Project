@@ -52,9 +52,11 @@ public interface RestProfiles {
 	
 	@GET
 	@Path("/{userId1}/following/{userId2}")
+	@Produces(MediaType.APPLICATION_JSON)
 	boolean isFollowing( @PathParam("userId1") String userId1, @PathParam("userId2") String userId2);
 
 	@GET
 	@Path ("/following/{userId}")
-	public Set<String> getFollowing ( @PathParam("userId") String userId);
+	@Produces(MediaType.APPLICATION_JSON)
+	Set<String> getFollowing ( @PathParam("userId") String userId);
 }

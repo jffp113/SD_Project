@@ -5,11 +5,7 @@ import static microgram.api.java.Result.ok;
 import static microgram.api.java.Result.ErrorCode.CONFLICT;
 import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -74,8 +70,10 @@ public class JavaProfiles implements Profiles {
 			return error(CONFLICT);
 
 		Log.info("Creating profile: "+ profile.getUserId() + "\n");
-		followers.put( profile.getUserId(), new HashSet<>());
-		following.put( profile.getUserId(), new HashSet<>());
+
+		new ConcurrentHashMap<>().newKeySet();
+		followers.put( profile.getUserId(), Collections.synchronizedSet(new HashSet<>()));
+		following.put( profile.getUserId(), Collections.synchronizedSet(new HashSet<>()));
 		return ok();
 	}
 	

@@ -4,14 +4,7 @@ import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
 import static microgram.api.java.Result.ErrorCode.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import microgram.api.Post;
 import microgram.api.Profile;
@@ -153,7 +146,7 @@ public class JavaPosts implements Posts {
 			
 			Set<String> posts = userPosts.get(post.getOwnerId());
 			if (posts == null)
-				userPosts.put(post.getOwnerId(), posts = new LinkedHashSet<>());
+				userPosts.put(post.getOwnerId(), posts = Collections.synchronizedSet(new LinkedHashSet<>()));
 			posts.add(postId);
 
 			return ok(postId);
@@ -164,7 +157,7 @@ public class JavaPosts implements Posts {
 
 	@Override
 	public Result<Void> like(String postId, String userId, boolean isLiked) {
-		
+		Log.info("Like " + postId + " " + userId +  " " + isLiked + "\n") ;
 		Set<String> res = likes.get(postId);
 		if (res == null)
 			return error( NOT_FOUND );
