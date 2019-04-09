@@ -207,7 +207,9 @@ public class JavaPosts implements Posts {
 		Set<String> following;
 		List<String> result = new LinkedList<>();
 
+		Log.info("Is list null? " + (result ==  null)+ "\n");
 		Log.info("Requesting for user following : " + userId + "\n");
+		Log.info("Is profile server null? " + (profiles() == null) +"\n" );
 		reply = profiles().getFollowing(userId);
 
 		//DEBUG

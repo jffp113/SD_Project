@@ -201,7 +201,7 @@ public class Discovery {
 						this.waitTimeLeft = DISCOVERY_TIMEOUT;
 					}
 				}
-			} catch (IOException e) {
+			} catch (Exception e) {
 				System.err.printf(N_SERVER_FOUND,uniqueURI.size());
 				e.printStackTrace();
 			}

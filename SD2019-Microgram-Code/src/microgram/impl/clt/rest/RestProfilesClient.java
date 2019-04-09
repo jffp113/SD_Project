@@ -37,7 +37,7 @@ public class RestProfilesClient extends RestClient implements Profiles {
 				.request()
 				.accept(MediaType.APPLICATION_JSON)
 				.get();
-		
+		Log.info("Client: Finding User STATUS: "+ r.getStatus() + "\n");
 		return super.responseContents(r, Status.OK, new GenericType<Profile>() {});
 	}
 

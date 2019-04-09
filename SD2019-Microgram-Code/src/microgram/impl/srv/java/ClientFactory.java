@@ -22,9 +22,9 @@ import microgram.impl.srv.rest.PostsRestServer;
 import microgram.impl.srv.rest.ProfilesRestServer;
 
 class ClientFactory {
-	public static final int N_PROFILES = 1;
-	public static final int N_MEDIA = 1;
-	public static final int N_POSTS = 1;
+	public static final int N_PROFILES = 10;
+	public static final int N_MEDIA = 10;
+	public static final int N_POSTS = 10;
 	
 	private static final int NO_ERRORS = 0;
 

@@ -58,6 +58,7 @@ public class JavaProfiles implements Profiles {
 	@Override
 	public Result<Profile> getProfile(String userId) {
 		Profile res = users.get( userId );
+		Log.info("JavaProfiles:getProfile(" + userId+ ")\n");
 		if( res == null ) 
 			return error(NOT_FOUND);
 
