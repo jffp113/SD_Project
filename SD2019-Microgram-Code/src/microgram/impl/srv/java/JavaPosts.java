@@ -200,19 +200,7 @@ public class JavaPosts implements Posts {
 		Set<String> following;
 		List<String> result = new LinkedList<>();
 
-		Log.info("Is list null? " + (result ==  null)+ "\n");
-		Log.info("Requesting for user following : " + userId + "\n");
-		Log.info("Is profile server null? " + (profiles() == null) +"\n" );
 		reply = profiles().getFollowing(userId);
-
-
-		//DEBUG
-		Log.info("Start Debugging\n");
-		Log.info(profiles().getProfile(userId).toString() + "\n");
-		//END
-
-		Log.info("Profiles Size"+ profiles.length + "\n");
-		Log.info("Success? " + reply.error() + "\n");
 
 		if(!reply.isOK())
 			return  error(NOT_FOUND);
