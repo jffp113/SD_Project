@@ -82,8 +82,13 @@ public class Profile {
 	public void changeFollowing (int change) {
 		this.following += change;
 	}
-	
+
 	public void changeFollowers (int change) {
 		this.followers += change;
 	}
+
+	public void changeNumberOfPosts(int change) {
+		this.posts += change;
+	}
+
 }

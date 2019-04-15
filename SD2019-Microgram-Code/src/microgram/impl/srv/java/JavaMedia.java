@@ -18,7 +18,6 @@ public class JavaMedia implements Media {
 
 	private static final String MEDIA_EXTENSION = ".jpg";
 	private static final String ROOT_DIR = "/tmp/microgram/";
-//	private static Logger Log = Logger.getLogger(JavaPosts.class.getName());
 	
 	/*enum MediaEventKeys {
 		UPLOAD, DOWNLOAD, DELETE
@@ -33,18 +32,15 @@ public class JavaMedia implements Media {
 		initKafkaSubscriber();
 	}
 
+	//TODO test
 	private void initKafkaSubscriber() {
 		subscriber = new KafkaSubscriber(Arrays.asList(JavaPosts.JAVA_POST_EVENTS));
-
 		new Thread( () -> {
-			System.out.println("Thread");
 			subscriber.consume(((topic, key, value) ->  {
-				System.out.printf("Kafka: topic: %s key: %s value: %s\n", topic, key, value);
 				String[] result = value.split(" ");
-//				Log.info("Deleting " + result[result.length - 1]);
-				if(key.equals(JavaPosts.PostsEventKeys.DELETE.name())) {
+				if(key.equals(JavaPosts.PostsEventKeys.DELETE.name()) ||
+						key.equals(JavaPosts.PostsEventKeys.CREATE_FAIL.name())){
 					delete(result[result.length - 1]);
-//					Log.info("Deleting " + result[result.length - 1]);
 				}
 			}));
 		}).start();

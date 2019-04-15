@@ -7,9 +7,9 @@ import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import kakfa.KafkaSubscriber;
 import microgram.api.Profile;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
@@ -20,27 +20,46 @@ public class JavaProfiles implements Profiles {
 	
 	private static final int DECREASE = -1;
 
-	private static Logger Log = Logger.getLogger(JavaProfiles.class.getName());
-
 	private Map<String, Profile> users =
 			new ConcurrentHashMap<>(new HashMap<>());
 	private Map<String, Set<String>> followers = 
 			new ConcurrentHashMap<>(new HashMap<>());
 	private Map<String, Set<String>> following = 
 			new ConcurrentHashMap<>(new HashMap<>());
-	
-	/*
-	 * Should sets be concurrent too?
-	 * Does ConcurrentMaps destroy parallelism?
-	 * 
-	 * */
-	
+
 	private final ServerInstantiator si = new ServerInstantiator();
-	
+
+	private KafkaSubscriber subscriber;
+
+	public JavaProfiles() {
+		initKafkaSubscriber();
+	}
+
+	//Needed to test TODO
+	private void initKafkaSubscriber() {
+		subscriber = new KafkaSubscriber(Arrays.asList(JavaPosts.JAVA_POST_EVENTS));
+		new Thread( () -> {
+			subscriber.consume(((topic, key, value) ->  {
+				String[] result = value.split(" ");
+				int change;
+				if(key.equals(JavaPosts.PostsEventKeys.DELETE.name())) {
+					changeUserPostsValue(DECREASE,result[result.length - 2]);
+				}
+				else if(key.equals(JavaPosts.PostsEventKeys.CREATE.name())) {
+					changeUserPostsValue(INCREASE,result[result.length - 2]);
+				}
+			}));
+		}).start();
+	}
+
+	private void changeUserPostsValue(int change,String user){
+		Profile profile = users.get(user);
+		profile.changeNumberOfPosts(change);
+	}
+
 	@Override
 	public Result<Profile> getProfile(String userId) {
 		Profile res = users.get( userId );
-		Log.info("JavaProfiles:getProfile(" + userId+ ")\n");
 		if( res == null ) 
 			return error(NOT_FOUND);
 
@@ -55,9 +74,6 @@ public class JavaProfiles implements Profiles {
 		if( res != null ) 
 			return error(CONFLICT);
 
-		Log.info("Creating profile: "+ profile.getUserId() + "\n");
-
-		new ConcurrentHashMap<>().newKeySet();
 		followers.put( profile.getUserId(), Collections.synchronizedSet(new HashSet<>()));
 		following.put( profile.getUserId(), Collections.synchronizedSet(new HashSet<>()));
 		return ok();
@@ -128,16 +144,12 @@ public class JavaProfiles implements Profiles {
 	}
 	
 	public Result<Set<String>> getFollowing (String userId) {
-		Log.info("Starting getting following for: "+ userId+ "\n");
 		Set<String> followUser = this.following.get(userId);
-
-		if((followUser != null))
-			Log.info(followUser.size() + "\n");
 
 		if (followUser == null)
 			return error(NOT_FOUND);
 
-		Log.info("Returning followUsers\n");
 		return ok(followUser);
 	}
+
 }

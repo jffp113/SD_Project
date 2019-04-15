@@ -7,6 +7,8 @@ import static microgram.api.java.Result.ErrorCode.*;
 import java.util.*;
 
 import kakfa.KafkaPublisher;
+import kakfa.KafkaSubscriber;
+import kakfa.KafkaUtils;
 import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.java.Result;
@@ -23,7 +25,7 @@ public class JavaPosts implements Posts {
 	public static final String JAVA_POST_EVENTS = "Microgram-JavaPosts";
 
 	public enum PostsEventKeys {
-		CREATE,DELETE
+		CREATE,DELETE,CREATE_FAIL
 	};
 
 	protected Map<String, Post> posts = 
@@ -34,6 +36,7 @@ public class JavaPosts implements Posts {
 			new ConcurrentHashMap<>(new HashMap<>());
 
 	private KafkaPublisher publisher;
+	private KafkaSubscriber subscriber;
 
 	private final ServerInstantiator si = new ServerInstantiator();
 
@@ -55,9 +58,8 @@ public class JavaPosts implements Posts {
 		return error(NOT_FOUND);
 	}
 
-
 	private void deleteImageNotification(Post post) {
-		String message = String.format("OK %s %s %s", IP.hostAddress(),post.getPostId(),post.getMediaUrl());
+		String message = String.format("%s %s %s %s", IP.hostAddress(),post.getPostId(),post.getOwnerId(),post.getMediaUrl());
 		publisher.publish(JAVA_POST_EVENTS,PostsEventKeys.DELETE.name(),message);
 		System.out.println("DELETE_NOTIFICATION");
 	}
@@ -68,8 +70,7 @@ public class JavaPosts implements Posts {
 
 		if(postRemoved == null)
 			return error(NOT_FOUND);
-		
-		
+
 		//Remove all users that Liked The post
 		likes.remove(postId);
 		
@@ -80,25 +81,18 @@ public class JavaPosts implements Posts {
 
 		deleteImageNotification(postRemoved);
 
-		try {
-			Thread.sleep(1000);
-		}catch (Exception e){
-			throw new RuntimeException();
-		}
-		throw new RuntimeException();
-
-		//return ok();
+		return ok();
 	}
-
 
 	private void postCreatedNotification(Post post) {
 		String message = String.format("OK %s %s %s", IP.hostAddress(),post.getPostId(),post.getOwnerId());
 		publisher.publish(JAVA_POST_EVENTS,PostsEventKeys.CREATE.name(),message);
 		System.out.println("CREATE_NOTIFICATION_POST_OK");
 	}
+
 	private void postNotCreatedNotification(Post post){
-		String message = String.format("CONFLICT %s %s",IP.hostAddress(),post.getPostId(),post.getMediaUrl());
-		publisher.publish(JAVA_POST_EVENTS,PostsEventKeys.CREATE.name(),message);
+		String message = String.format("%s %s %s",IP.hostAddress(),post.getPostId(),post.getMediaUrl());
+		publisher.publish(JAVA_POST_EVENTS,PostsEventKeys.CREATE_FAIL.name(),message);
 		System.out.println("CREATE_NOTIFICATION_POST_CONFLICT");
 	}
 
@@ -160,8 +154,7 @@ public class JavaPosts implements Posts {
 		else
 			return error( NOT_FOUND );
 	}
-	
-	//We implemented
+
 	@Override
 	public Result<List<String>> getFeed(String userId) {
 		Result<Set<String>> reply;
