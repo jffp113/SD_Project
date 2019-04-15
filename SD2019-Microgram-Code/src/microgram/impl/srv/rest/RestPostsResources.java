@@ -21,8 +21,7 @@ public class RestPostsResources extends RestResource implements RestPosts {
 
 	final Posts impl;
 	private static Logger Log = Logger.getLogger(RestPostsResources.class.getName());
-	public RestPostsResources(URI serverUri) {
-		//this.impl = new JavaPosts(null,null);
+	public RestPostsResources() {
 		this.impl = new JavaPosts();
 	}
 
