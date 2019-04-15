@@ -8,8 +8,6 @@ import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import kakfa.KafkaSubscriber;
 import microgram.api.java.Media;
@@ -20,13 +18,16 @@ public class JavaMedia implements Media {
 
 	private static final String MEDIA_EXTENSION = ".jpg";
 	private static final String ROOT_DIR = "/tmp/microgram/";
-	private static Logger Log = Logger.getLogger(JavaPosts.class.getName());
+//	private static Logger Log = Logger.getLogger(JavaPosts.class.getName());
+	
+	/*enum MediaEventKeys {
+		UPLOAD, DOWNLOAD, DELETE
+	};*/
 
 	final String baseUri;
 	private KafkaSubscriber subscriber;
 
 	public JavaMedia(String baseUri ) {
-		Log.setLevel( Level.FINER );
 		this.baseUri = baseUri;
 		new File( ROOT_DIR ).mkdirs();
 		initKafkaSubscriber();
@@ -38,11 +39,12 @@ public class JavaMedia implements Media {
 		new Thread( () -> {
 			System.out.println("Thread");
 			subscriber.consume(((topic, key, value) ->  {
+				System.out.printf("Kafka: topic: %s key: %s value: %s\n", topic, key, value);
 				String[] result = value.split(" ");
-				Log.info("Deleting " + result[result.length - 1]);
-				if(key.equals(JavaPosts.PostsEventKeys.DELETE)) {
+//				Log.info("Deleting " + result[result.length - 1]);
+				if(key.equals(JavaPosts.PostsEventKeys.DELETE.name())) {
 					delete(result[result.length - 1]);
-					Log.info("Deleting " + result[result.length - 1]);
+//					Log.info("Deleting " + result[result.length - 1]);
 				}
 			}));
 		}).start();
