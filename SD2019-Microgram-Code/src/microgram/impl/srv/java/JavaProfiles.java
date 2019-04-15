@@ -133,11 +133,18 @@ public class JavaProfiles implements Profiles {
 	public Result<Void> deleteProfile(String userId) {		//<----- MADE THIS
 		if (this.users.remove(userId) == null)
 			return error(NOT_FOUND);
-		
+				
 		this.followers.remove(userId);
-		this.following.forEach((k, v) -> v.remove(userId));
-		posts().removeAllPostsFromUser(userId);
 		
+		this.following.forEach((k, v) ->{ 
+			if (v.remove(userId)) {
+				final Profile p = this.users.get(k);
+				p.changeFollowing(DECREASE);
+			}
+		});
+		
+		posts().removeAllPostsFromUser(userId);
+
 		return ok();
 	}
 	
