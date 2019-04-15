@@ -21,7 +21,7 @@ public class KafkaPublisher {
 		Properties props = new Properties();
 
 		// Localização dos servidores kafka (lista de máquinas + porto)
-		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092, kafka:9092");
+		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka:9092");
 
 		// Classe para serializar as chaves dos eventos (string)
 		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
@@ -38,8 +38,7 @@ public class KafkaPublisher {
 
 	public void publish(String topic, String key, String value) {
 		try {
-			producer.send(new ProducerRecord<String, String>(topic, key, value)).get();
-
+			producer.send(new ProducerRecord<>(topic, key, value)).get();
 		} catch (ExecutionException | InterruptedException x) {
 			x.printStackTrace();
 		}

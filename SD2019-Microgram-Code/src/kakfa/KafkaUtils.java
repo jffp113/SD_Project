@@ -34,7 +34,7 @@ public class KafkaUtils {
 
 	static private AdminClient create() {
 		Properties props = new Properties();
-		props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+		props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka:9092");
 		props.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, "5000");
 		return AdminClient.create(props);
 	}

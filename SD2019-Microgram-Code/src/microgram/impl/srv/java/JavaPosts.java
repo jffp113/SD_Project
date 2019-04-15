@@ -6,10 +6,13 @@ import static microgram.api.java.Result.ErrorCode.*;
 
 import java.util.*;
 
+import kakfa.KafkaPublisher;
 import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.java.Result;
 import utils.Hash;
+import utils.IP;
+
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +20,11 @@ import java.util.logging.Logger;
 public class JavaPosts implements Posts {
 
 	private static Logger Log = Logger.getLogger(JavaPosts.class.getName());
+	public static final String JAVA_POST_EVENTS = "Microgram-JavaPosts";
+
+	public enum PostsEventKeys {
+		CREATE,DELETE
+	};
 
 	protected Map<String, Post> posts = 
 			new ConcurrentHashMap<>(new HashMap<>());
@@ -25,12 +33,19 @@ public class JavaPosts implements Posts {
 	protected Map<String, Set<String>> userPosts =
 			new ConcurrentHashMap<>(new HashMap<>());
 
-	static{
-		Log.setLevel( Level.FINER );
-		Log.info("Initiated JavaPost class teste\n");
-	}
-	
+	private KafkaPublisher publisher;
+
 	private final ServerInstantiator si = new ServerInstantiator();
+
+	public JavaPosts() {
+		Log.setLevel( Level.FINER );
+		initializeKafka();
+	}
+
+	private void initializeKafka(){
+		publisher = new KafkaPublisher();
+		//KafkaUtils.createTopic(JAVA_POST_EVENTS);
+	}
 
 	@Override
 	public Result<Post> getPost(String postId) {
@@ -40,10 +55,13 @@ public class JavaPosts implements Posts {
 		return error(NOT_FOUND);
 	}
 
-	//We implemented
-	/*
-	 * TODO: Communicate with RestStorageServer to delete the image associated with the Post
-	 */
+
+	private void deleteImageNotification(Post post) {
+		String message = String.format("OK %s %s %s", IP.hostAddress(),post.getPostId(),post.getMediaUrl());
+		publisher.publish(JAVA_POST_EVENTS,PostsEventKeys.DELETE.name(),message);
+		System.out.println("DELETE_NOTIFICATION");
+	}
+
 	@Override
 	public Result<Void> deletePost(String postId) {
 		Post postRemoved = posts.remove(postId);
@@ -59,16 +77,31 @@ public class JavaPosts implements Posts {
 		String userId = postRemoved.getOwnerId();
 		Set<String> uPosts = this.userPosts.get(userId);
 		uPosts.remove(postRemoved.getPostId());
-		
-		//Remove the image associated with the Post (Check if can do this)
-		Result<Void> r = this.si.media().delete(postRemoved.getMediaUrl());
-		/*if(!r.isOK())
-			return  error(ErrorCode.INTERNAL_ERROR);*/
 
-		return ok();
+		deleteImageNotification(postRemoved);
+
+		try {
+			Thread.sleep(1000);
+		}catch (Exception e){
+			throw new RuntimeException();
+		}
+		throw new RuntimeException();
+
+		//return ok();
 	}
 
-	
+
+	private void postCreatedNotification(Post post) {
+		String message = String.format("OK %s %s %s", IP.hostAddress(),post.getPostId(),post.getOwnerId());
+		publisher.publish(JAVA_POST_EVENTS,PostsEventKeys.CREATE.name(),message);
+		System.out.println("CREATE_NOTIFICATION_POST_OK");
+	}
+	private void postNotCreatedNotification(Post post){
+		String message = String.format("CONFLICT %s %s",IP.hostAddress(),post.getPostId(),post.getMediaUrl());
+		publisher.publish(JAVA_POST_EVENTS,PostsEventKeys.CREATE.name(),message);
+		System.out.println("CREATE_NOTIFICATION_POST_CONFLICT");
+	}
+
 	@Override
 	public Result<String> createPost(Post post) {
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
@@ -82,15 +115,17 @@ public class JavaPosts implements Posts {
 				userPosts.put(post.getOwnerId(), posts = Collections.synchronizedSet(new LinkedHashSet<>()));
 			posts.add(postId);
 
+			postCreatedNotification(post);
 			return ok(postId);
 		}
-		else
+		else {
+			postNotCreatedNotification(post);
 			return error(CONFLICT);
+		}
 	}
 
 	@Override
 	public Result<Void> like(String postId, String userId, boolean isLiked) {
-		Log.info("Like " + postId + " " + userId +  " " + isLiked + "\n") ;
 		Set<String> res = likes.get(postId);
 		if (res == null)
 			return error( NOT_FOUND );
@@ -146,7 +181,6 @@ public class JavaPosts implements Posts {
 		return ok(result);
 	}
 
-	//Code Review TODO
     public Result<Void> removeAllPostsFromUser(String userId){
 		Set<String> userSetPosts = userPosts.get(userId);
 
@@ -158,4 +192,5 @@ public class JavaPosts implements Posts {
 
 	    return ok();
     }
+
 }

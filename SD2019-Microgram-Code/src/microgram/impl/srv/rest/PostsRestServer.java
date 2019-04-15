@@ -22,6 +22,7 @@ public class PostsRestServer {
 	public static final String SERVICE = "Microgram-Posts";
 	
 	public static void main(String[] args){
+		System.out.println(IP.hostAddress());
 		(new RestServiceExecuter()).execute(SERVICE,Log,new RestPostsResources());
 	}
 }
