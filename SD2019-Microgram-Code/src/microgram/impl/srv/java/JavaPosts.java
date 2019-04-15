@@ -7,13 +7,8 @@ import static microgram.api.java.Result.ErrorCode.*;
 import java.util.*;
 
 import microgram.api.Post;
-import microgram.api.Profile;
-import microgram.api.java.Media;
 import microgram.api.java.Posts;
-import microgram.api.java.Profiles;
 import microgram.api.java.Result;
-import microgram.api.java.Result.ErrorCode;
-import microgram.impl.srv.rest.PostsRestServer;
 import utils.Hash;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
@@ -42,62 +37,7 @@ public class JavaPosts implements Posts {
 	}
 
 
-	private Profiles[] profiles;
-	private Media[] media;
-	private Posts[] postClients;
-	
-	/*TODO
-	 * Check if this is legal 
-	 */
-	public JavaPosts() {
-		super();
-	}
-	
-	private Media media() {
-		if(media == null) {
-			synchronized (this) {
-				if(media == null) {
-					try {
-						this.media = ClientFactory.buildMedia();
-					} catch (NoServersAvailableException e){
-						this.media = null;
-					}
-				}
-			}
-		}
-		return media[0];
-	}
-	
-	private Profiles profiles() {
-		Log.info("JavaPosts: profile() invoked\n");
-		if(profiles == null) {
-			synchronized (this) {
-				if(profiles == null) {
-					try{
-					this.profiles = ClientFactory.buildProfile();
-					} catch (NoServersAvailableException e){
-						this.profiles = null;
-					}
-				}
-			}
-		}
-		return profiles[0];
-	}
-	
-	private Posts posts() {
-		if(postClients == null) {
-			synchronized (this) {
-				if(postClients == null) {
-					try {
-						this.postClients = ClientFactory.buildPosts();
-					}catch (NoServersAvailableException e){
-						this.postClients = null;
-					}
-				}
-			}
-		}
-		return postClients[0];
-	}
+	private final ServerInstantiator si = new ServerInstantiator();
 
 	@Override
 	public Result<Post> getPost(String postId) {
@@ -128,7 +68,7 @@ public class JavaPosts implements Posts {
 		uPosts.remove(postRemoved.getPostId());
 		
 		//Remove the image associated with the Post (Check if can do this)
-		Result<Void> r = media().delete(postRemoved.getMediaUrl());
+		Result<Void> r = this.si.media().delete(postRemoved.getMediaUrl());
 		/*if(!r.isOK())
 			return  error(ErrorCode.INTERNAL_ERROR);*/
 
@@ -200,7 +140,7 @@ public class JavaPosts implements Posts {
 		Set<String> following;
 		List<String> result = new LinkedList<>();
 
-		reply = profiles().getFollowing(userId);
+		reply = this.si.profiles().getFollowing(userId);
 
 		if(!reply.isOK())
 			return  error(NOT_FOUND);

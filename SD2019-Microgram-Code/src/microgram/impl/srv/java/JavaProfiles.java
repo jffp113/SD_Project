@@ -7,16 +7,12 @@ import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import microgram.api.Profile;
-import microgram.api.java.Media;
-import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
-import microgram.impl.srv.rest.RestResource;
 
 public class JavaProfiles implements Profiles {
 	
@@ -39,69 +35,7 @@ public class JavaProfiles implements Profiles {
 	 * 
 	 * */
 	
-	private Profiles[] profiles;
-	private Posts[] postClients;
-	private Media[] media;
-
-	static{
-		Log.setLevel( Level.FINER );
-		Log.info("Initiated JavaProfiles class test\n");
-	}
-
-	public JavaProfiles() {
-		super();
-		/*this.profiles = null;
-		this.posts = null;
-		this.media = null;*/
-	}
-	
-	//// TODO Generalize 
-	private Media media() {
-		if(media == null) {
-			synchronized (this) {
-				if(media == null) {
-					try {
-						this.media = ClientFactory.buildMedia();
-					} catch (NoServersAvailableException e){
-						this.media = null;
-					}
-				}
-			}
-		}
-		return media[0];
-	}
-	
-	private Profiles profiles() {
-		Log.info("JavaPosts: profile() invoked\n");
-		if(profiles == null) {
-			synchronized (this) {
-				if(profiles == null) {
-					try{
-					this.profiles = ClientFactory.buildProfile();
-					} catch (NoServersAvailableException e){
-						this.profiles = null;
-					}
-				}
-			}
-		}
-		return profiles[0];
-	}
-	
-	private Posts posts() {
-		if(postClients == null) {
-			synchronized (this) {
-				if(postClients == null) {
-					try {
-						this.postClients = ClientFactory.buildPosts();
-					}catch (NoServersAvailableException e){
-						this.postClients = null;
-					}
-				}
-			}
-		}
-		return postClients[0];
-	}
-	///
+	private final ServerInstantiator si = new ServerInstantiator();
 	
 	@Override
 	public Result<Profile> getProfile(String userId) {
@@ -143,7 +77,7 @@ public class JavaProfiles implements Profiles {
 			}
 		});
 		
-		posts().removeAllPostsFromUser(userId);
+		this.si.posts().removeAllPostsFromUser(userId);
 
 		return ok();
 	}
