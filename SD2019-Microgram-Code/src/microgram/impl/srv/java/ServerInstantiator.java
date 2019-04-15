@@ -10,13 +10,13 @@ import microgram.api.java.Profiles;
 /**
  *
  */
-class ServerInstantiator {
+public class ServerInstantiator {
 	
 	private Profiles[] profiles;
 	private Media[] media;
 	private Posts[] postClients;
 	
-	Media media() {
+	public Media[] media() {
 		if(media == null) {
 			synchronized (this) {
 				if(media == null) {
@@ -28,10 +28,10 @@ class ServerInstantiator {
 				}
 			}
 		}
-		return media[0];
+		return media;
 	}
 	
-	Profiles profiles() {
+	public Profiles[] profiles() {
 		if(profiles == null) {
 			synchronized (this) {
 				if(profiles == null) {
@@ -43,10 +43,10 @@ class ServerInstantiator {
 				}
 			}
 		}
-		return profiles[0];
+		return profiles;
 	}
 	
-	Posts posts() {
+	public Posts[] posts() {
 		if(postClients == null) {
 			synchronized (this) {
 				if(postClients == null) {
@@ -58,7 +58,7 @@ class ServerInstantiator {
 				}
 			}
 		}
-		return postClients[0];
+		return postClients;
 	}
 
 }

@@ -87,4 +87,9 @@ public class SoapPostsClient extends SoapClient implements Posts {
 	public Result<Void> removeAllPostsFromUser(String userId) {
 		return super.tryCatchVoid(() -> impl().removeAllPostsFromUser(userId));
 	}
+
+	@Override
+	public URI getServiceURI() {
+		return super.uri;
+	}
 }

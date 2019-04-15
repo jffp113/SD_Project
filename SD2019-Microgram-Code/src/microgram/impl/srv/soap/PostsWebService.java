@@ -1,5 +1,6 @@
 package microgram.impl.srv.soap;
 
+import java.net.URI;
 import java.util.List;
 
 import javax.jws.WebService;
@@ -15,9 +16,13 @@ import microgram.impl.srv.java.JavaPosts;
 public class PostsWebService extends SoapService implements SoapPosts {
 
 	final Posts impl;
-	
-	protected PostsWebService() {
-		this.impl = new JavaPosts();
+
+	public PostsWebService() {
+		this.impl = new JavaPosts(null);
+	}
+
+	public PostsWebService(URI uri) {
+		this.impl = new JavaPosts(uri);
 	}
 	@Override
 	public Post getPost( String postId ) throws MicrogramException {

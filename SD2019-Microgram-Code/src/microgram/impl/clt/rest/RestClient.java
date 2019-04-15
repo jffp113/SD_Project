@@ -30,6 +30,7 @@ abstract class RestClient extends RetryClient {
 	protected final WebTarget target;
 	protected final ClientConfig config;
 
+
 	public RestClient(URI uri, String path) {
 		this.uri = uri;
 		this.config = new ClientConfig();
@@ -69,6 +70,10 @@ abstract class RestClient extends RetryClient {
 		} finally {
 			r.close();
 		}
+	}
+
+	public URI getUri() {
+		return uri;
 	}
 
 	@Override

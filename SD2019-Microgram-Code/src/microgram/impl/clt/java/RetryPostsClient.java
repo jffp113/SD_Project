@@ -1,5 +1,6 @@
 package microgram.impl.clt.java;
 
+import java.net.URI;
 import java.util.List;
 
 import microgram.api.Post;
@@ -53,5 +54,10 @@ public class RetryPostsClient extends RetryClient implements Posts {
 	@Override
 	public Result<Void> removeAllPostsFromUser(String userId) {
 		return super.reTry(() -> impl.removeAllPostsFromUser(userId));
+	}
+
+	@Override
+	public URI getServiceURI() {
+		return impl.getServiceURI();
 	}
 }

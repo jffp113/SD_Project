@@ -1,6 +1,7 @@
 package microgram.api.java;
 
 
+import java.net.URI;
 import java.util.List;
 
 import microgram.api.Post;
@@ -75,5 +76,11 @@ public interface Posts {
 	 * @return
 	 */
 	Result<Void> removeAllPostsFromUser(String userId);
+
+	/**
+	 * Get Server associated complete URI
+	 * @return
+	 */
+	URI getServiceURI();
 
 }

@@ -41,7 +41,7 @@ public class JavaProfiles implements Profiles {
 		new Thread( () -> {
 			subscriber.consume(((topic, key, value) ->  {
 				String[] result = value.split(" ");
-				int change;
+
 				if(key.equals(JavaPosts.PostsEventKeys.DELETE.name())) {
 					changeUserPostsValue(DECREASE,result[result.length - 2]);
 				}
@@ -93,7 +93,7 @@ public class JavaProfiles implements Profiles {
 			}
 		});
 		
-		this.si.posts().removeAllPostsFromUser(userId);
+		this.si.posts()[0].removeAllPostsFromUser(userId);
 
 		return ok();
 	}

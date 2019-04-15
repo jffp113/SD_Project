@@ -22,7 +22,7 @@ public class RestProfilesResources extends RestResource implements RestProfiles 
 		Log.info("Initiated RestProfilesResources class\n");
 	}
 
-	public RestProfilesResources() {
+	public RestProfilesResources(URI uri) {
 		this.impl = new JavaProfiles();
 	}
 	

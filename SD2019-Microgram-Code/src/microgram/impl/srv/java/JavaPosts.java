@@ -4,11 +4,11 @@ import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
 import static microgram.api.java.Result.ErrorCode.*;
 
+import java.net.URI;
 import java.util.*;
 
 import kakfa.KafkaPublisher;
 import kakfa.KafkaSubscriber;
-import kakfa.KafkaUtils;
 import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.java.Result;
@@ -37,11 +37,13 @@ public class JavaPosts implements Posts {
 
 	private KafkaPublisher publisher;
 	private KafkaSubscriber subscriber;
+	private URI uri;
 
 	private final ServerInstantiator si = new ServerInstantiator();
 
-	public JavaPosts() {
+	public JavaPosts(URI uri) {
 		Log.setLevel( Level.FINER );
+		this.uri = uri;
 		initializeKafka();
 	}
 
@@ -161,7 +163,7 @@ public class JavaPosts implements Posts {
 		Set<String> following;
 		List<String> result = new LinkedList<>();
 
-		reply = this.si.profiles().getFollowing(userId);
+		reply = this.si.profiles()[0].getFollowing(userId);
 
 		if(!reply.isOK())
 			return  error(NOT_FOUND);
@@ -186,4 +188,7 @@ public class JavaPosts implements Posts {
 	    return ok();
     }
 
+	public URI getServiceURI() {
+		return this.uri;
+	}
 }
