@@ -19,6 +19,10 @@ import microgram.api.java.Result;
 import microgram.impl.srv.rest.RestResource;
 
 public class JavaProfiles implements Profiles {
+	
+	private static final int INCREASE = 1;
+	
+	private static final int DECREASE = -1;
 
 	private static Logger Log = Logger.getLogger(JavaProfiles.class.getName());
 
@@ -36,7 +40,7 @@ public class JavaProfiles implements Profiles {
 	 * */
 	
 	private Profiles[] profiles;
-	private Posts[] posts;
+	private Posts[] postClients;
 	private Media[] media;
 
 	static{
@@ -50,6 +54,54 @@ public class JavaProfiles implements Profiles {
 		this.posts = null;
 		this.media = null;*/
 	}
+	
+	//// TODO Generalize 
+	private Media media() {
+		if(media == null) {
+			synchronized (this) {
+				if(media == null) {
+					try {
+						this.media = ClientFactory.buildMedia();
+					} catch (NoServersAvailableException e){
+						this.media = null;
+					}
+				}
+			}
+		}
+		return media[0];
+	}
+	
+	private Profiles profiles() {
+		Log.info("JavaPosts: profile() invoked\n");
+		if(profiles == null) {
+			synchronized (this) {
+				if(profiles == null) {
+					try{
+					this.profiles = ClientFactory.buildProfile();
+					} catch (NoServersAvailableException e){
+						this.profiles = null;
+					}
+				}
+			}
+		}
+		return profiles[0];
+	}
+	
+	private Posts posts() {
+		if(postClients == null) {
+			synchronized (this) {
+				if(postClients == null) {
+					try {
+						this.postClients = ClientFactory.buildPosts();
+					}catch (NoServersAvailableException e){
+						this.postClients = null;
+					}
+				}
+			}
+		}
+		return postClients[0];
+	}
+	///
 	
 	@Override
 	public Result<Profile> getProfile(String userId) {
@@ -84,7 +136,7 @@ public class JavaProfiles implements Profiles {
 		
 		this.followers.remove(userId);
 		this.following.forEach((k, v) -> v.remove(userId));
-		//TODO Remove Posts from user
+		posts().removeAllPostsFromUser(userId);
 		
 		return ok();
 	}
@@ -100,6 +152,8 @@ public class JavaProfiles implements Profiles {
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {		
 		Set<String> s1 = following.get( userId1 );
 		Set<String> s2 = followers.get( userId2 );
+		Profile p1 = users.get(userId1);
+		Profile p2 = users.get(userId2);
 		
 		if( s1 == null || s2 == null)
 			return error(NOT_FOUND);
@@ -107,11 +161,15 @@ public class JavaProfiles implements Profiles {
 		if( isFollowing ) {
 			boolean added1 = s1.add(userId2 ), added2 = s2.add( userId1 );
 			if( ! added1 || ! added2 )
-				return error(CONFLICT);		
+				return error(CONFLICT);	
+			p1.changeFollowing(INCREASE);
+			p2.changeFollowers(INCREASE);
 		} else {
 			boolean removed1 = s1.remove(userId2), removed2 = s2.remove( userId1);
 			if( ! removed1 || ! removed2 )
-				return error(NOT_FOUND);					
+				return error(NOT_FOUND);
+			p1.changeFollowing(DECREASE);
+			p2.changeFollowers(DECREASE);
 		}
 		return ok();
 	}

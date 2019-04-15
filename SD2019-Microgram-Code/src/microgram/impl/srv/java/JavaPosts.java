@@ -84,19 +84,19 @@ public class JavaPosts implements Posts {
 		return profiles[0];
 	}
 	
-	private Profiles posts() {
+	private Posts posts() {
 		if(postClients == null) {
 			synchronized (this) {
 				if(postClients == null) {
 					try {
 						this.postClients = ClientFactory.buildPosts();
 					}catch (NoServersAvailableException e){
-						this.profiles = null;
+						this.postClients = null;
 					}
 				}
 			}
 		}
-		return profiles[0];
+		return postClients[0];
 	}
 
 	@Override

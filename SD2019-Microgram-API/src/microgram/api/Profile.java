@@ -78,4 +78,12 @@ public class Profile {
 	public void setFollowers(int followers) {
 		this.followers = followers;
 	}
+	
+	public void changeFollowing (int change) {
+		this.following += change;
+	}
+	
+	public void changeFollowers (int change) {
+		this.followers += change;
+	}
 }
