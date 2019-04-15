@@ -29,5 +29,6 @@ public class RestServiceExecuter {
         Log.info(String.format("%s Server ready @ %s\n",  SERVICE, serverURI));
 
         Discovery.announce(SERVICE, serverURI);
+        Log.info("Server Should be Annoucing");
     }
 }

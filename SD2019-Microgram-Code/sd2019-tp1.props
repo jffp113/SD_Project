@@ -1,5 +1,5 @@
 posts-rest-service-mainclass=microgram.impl.srv.rest.PostsRestServer
-posts-rest-service-port=8888
+posts-rest-service-port=7777
 
 profiles-rest-service-mainclass=microgram.impl.srv.rest.ProfilesRestServer
 profiles-rest-service-port=7777

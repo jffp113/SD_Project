@@ -25,18 +25,11 @@ public class JavaPosts implements Posts {
 	protected Map<String, Set<String>> userPosts =
 			new ConcurrentHashMap<>(new HashMap<>());
 
-	/*
-	 * Should sets be concurrent too?
-	 * Do ConcurrentMaps destroy parallelism?
-	 * 
-	 * */
-
 	static{
 		Log.setLevel( Level.FINER );
 		Log.info("Initiated JavaPost class teste\n");
 	}
-
-
+	
 	private final ServerInstantiator si = new ServerInstantiator();
 
 	@Override

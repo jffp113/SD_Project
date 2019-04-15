@@ -21,7 +21,7 @@ public class PostsRestServer {
 
 	public static final String SERVICE = "Microgram-Posts";
 	
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args){
 		(new RestServiceExecuter()).execute(SERVICE,Log,new RestPostsResources());
 	}
 }

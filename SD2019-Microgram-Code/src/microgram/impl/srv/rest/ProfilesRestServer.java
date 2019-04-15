@@ -19,8 +19,6 @@ public class ProfilesRestServer {
 		System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s: %5$s");
 	}
 
-
-
 	public static final String SERVICE = "Microgram-Profiles";
 
 	
