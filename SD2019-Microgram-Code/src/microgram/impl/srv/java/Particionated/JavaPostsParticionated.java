@@ -7,6 +7,10 @@ import microgram.impl.srv.java.ServerInstantiator;
 import utils.Hash;
 import java.util.*;
 
+import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
+import static microgram.api.java.Result.error;
+import static microgram.api.java.Result.ok;
+
 public class JavaPostsParticionated implements Posts{
 
     private Posts imp;
@@ -66,26 +70,74 @@ public class JavaPostsParticionated implements Posts{
         int postLocation = postId.hashCode() % numPostServers;
         if (postLocation == this.serverId % numPostServers)
             return imp.isLiked(postId, userId);
-        
+
         return si.posts(postLocation).isLiked(postId, userId);
     }
 
     @Override
     public Result<List<String>> getPosts(String userId) {
+        Set<String> res = new TreeSet<>();
+        int numPostServers = si.getNumPostsServers();
+        boolean foundUser = false;
+        Result<List<String>> serverPosts;
 
-        return null;
+        for (int i = 0; i < numPostServers; i++) {
+
+            if(serverId == i)
+                serverPosts = imp.getPosts(userId);
+            else
+                serverPosts = si.posts(i).getPosts(userId);
+
+            if (serverPosts.isOK()) {
+                foundUser = true;
+                res.addAll(serverPosts.value());
+            }
+        }
+
+        if (!foundUser)
+            return error(NOT_FOUND);
+        return ok (new ArrayList<>(res));
     }
 
     @Override
     public Result<List<String>> getFeed(String userId) {
+        Set<String> res = new TreeSet<>();
+        int numPostServers = si.getNumPostsServers();
+        boolean foundUser = false;
+        Result<List<String>> serverPosts;
+        for (int i = 0; i < numPostServers; i++) {
+            if(serverId == i)
+                serverPosts = imp.getFeed(userId);
+            else
+                serverPosts = si.posts(i).getFeed(userId);
 
-        return null;
+            if (serverPosts.isOK()) {
+                foundUser = true;
+                res.addAll(serverPosts.value());
+            }
+        }
+
+        if (!foundUser)
+            return error(NOT_FOUND);
+        return ok (new ArrayList<>(res));
     }
 
     @Override
     public Result<Void> removeAllPostsFromUser(String userId) {
+        int numPostServers = si.getNumPostsServers();
+        boolean foundDeletes = false;
+        Result<Void> reply;
 
-        return null;
+        for (int i = 0; i < numPostServers; i++) {
+            reply = si.posts(i).removeAllPostsFromUser(userId);
+            if (reply.isOK())
+                foundDeletes = true;
+        }
+
+        if (!foundDeletes)
+            return error(NOT_FOUND);
+
+        return ok ();
     }
 
     //NEW
