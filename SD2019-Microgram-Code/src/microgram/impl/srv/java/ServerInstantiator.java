@@ -8,15 +8,27 @@ import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
 
 /**
- *
+ * Finds the active servers.
  */
-public class ServerInstantiator {
+class ServerInstantiator {
 	
+	/**
+	 * Array containing the active Profiles servers, ordered by their URI hash. 
+	 */
 	private Profiles[] profiles;
+	
+	/**
+	 * Array containing the active Media servers, ordered by their URI hash. 
+	 */
 	private Media[] media;
+	
+	/**
+	 * Array containing the active Posts servers, ordered by their URI hash.
+	 */
 	private Posts[] postClients;
 	
-	public Media[] media() {
+	
+	Media media() {
 		if(media == null) {
 			synchronized (this) {
 				if(media == null) {
@@ -28,10 +40,10 @@ public class ServerInstantiator {
 				}
 			}
 		}
-		return media;
+		return media[0];
 	}
 	
-	public Profiles[] profiles() {
+	Profiles profiles() {
 		if(profiles == null) {
 			synchronized (this) {
 				if(profiles == null) {
@@ -43,10 +55,10 @@ public class ServerInstantiator {
 				}
 			}
 		}
-		return profiles;
+		return profiles[0];
 	}
 	
-	public Posts[] posts() {
+	Posts posts() {
 		if(postClients == null) {
 			synchronized (this) {
 				if(postClients == null) {
@@ -58,7 +70,7 @@ public class ServerInstantiator {
 				}
 			}
 		}
-		return postClients;
+		return postClients[0];
 	}
 
 }

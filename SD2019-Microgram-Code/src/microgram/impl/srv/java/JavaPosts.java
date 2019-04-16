@@ -16,34 +16,52 @@ import utils.Hash;
 import utils.IP;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class JavaPosts implements Posts {
 
-	private static Logger Log = Logger.getLogger(JavaPosts.class.getName());
+	/**
+	 * Tag used by the topics related with the messages JavaPost publishes.
+	 */
 	public static final String JAVA_POST_EVENTS = "Microgram-JavaPosts";
 
+	/**
+	 * Keys used by the messages JavaPosts publishes.	 *
+	 */
 	public enum PostsEventKeys {
 		CREATE,DELETE,CREATE_FAIL
 	};
 
-	protected Map<String, Post> posts = 
-			new ConcurrentHashMap<>(new HashMap<>());
-	protected Map<String, Set<String>> likes = 
-			new ConcurrentHashMap<>(new HashMap<>());
-	protected Map<String, Set<String>> userPosts =
-			new ConcurrentHashMap<>(new HashMap<>());
+	/**
+	 * Maps posts to by their id. Supports concurrency. 
+	 */
+	protected Map<String, Post> posts = new ConcurrentHashMap<>(new HashMap<>());
+	
+	/**
+	 * Maps a userId to the ids of the posts he/she likes. Supports concurrency.
+	 */
+	protected Map<String, Set<String>> likes = new ConcurrentHashMap<>(new HashMap<>());
+	
+	/**
+	 * Maps a userId to his/her posts' ids. Supports concurrenncy. 
+	 */
+	protected Map<String, Set<String>> userPosts = new ConcurrentHashMap<>(new HashMap<>());
 
+	/**
+	 * Publishes messages.
+	 */
 	private KafkaPublisher publisher;
+	
+	/**
+	 * Subscribes to the content published by other servers.
+	 */
 	private KafkaSubscriber subscriber;
-	private URI uri;
-
+	
+	/**
+	 * Allows this server to contact others.
+	 */
 	private final ServerInstantiator si = new ServerInstantiator();
 
-	public JavaPosts(URI uri) {
-		Log.setLevel( Level.FINER );
-		this.uri = uri;
+	public JavaPosts() {
 		initializeKafka();
 	}
 

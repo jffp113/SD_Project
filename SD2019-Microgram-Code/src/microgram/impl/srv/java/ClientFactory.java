@@ -22,21 +22,36 @@ import microgram.impl.srv.rest.PostsRestServer;
 import microgram.impl.srv.rest.ProfilesRestServer;
 
 class ClientFactory {
+	
+	/**
+	 * Default max number of Profiles servers.
+	 */
 	public static final int N_PROFILES = 10;
+	
+	/**
+	 * Default max number of Media servers.
+	 */
 	public static final int N_MEDIA = 10;
+	
+	/**
+	 * Default max number of Posts servers.
+	 */
 	public static final int N_POSTS = 10;
 	
+	/**
+	 * Represents that no errors in the discovered servers happened.
+	 */
 	private static final int NO_ERRORS = 0;
 
+	/**
+	 * Represents that the found server is Rest.
+	 */
 	private static final String REST = "rest";
+	
+	/**
+	 * Represents that the found server is Soap.
+	 */
 	private static final String SOAP = "soap";
-
-	private static Logger Log = Logger.getLogger(ClientFactory.class.getName());
-
-	static{
-		Log.setLevel( Level.FINER );
-		Log.info("Initiated ClientFactory class\n");
-	}
 
 	private static Media buildAMedia(URI uri) throws NotAWebserviceException {
 		String uriStr = uri.toString();		
@@ -81,9 +96,9 @@ class ClientFactory {
 	}
 	
 	static Profiles[] buildProfile() throws NoServersAvailableException {
-		Log.info("Starting finding Posts Servers");
+		System.out.println("Starting finding Posts Servers");
 		URI[] profileUris = discoverURI(ProfilesRestServer.SERVICE, N_PROFILES);
-		Log.info("Found " + profileUris.length + "servers \n");
+		System.out.println("Found " + profileUris.length + "servers \n");
 		Profiles[] profiles = new Profiles[profileUris.length];
 		
 		/*
@@ -119,9 +134,9 @@ class ClientFactory {
 	}
 	
 	static Posts[] buildPosts() throws NoServersAvailableException {
-		Log.info("Starting finding Posts Servers");
+		System.out.println("Starting finding Posts Servers");
 		URI[] postsUris = discoverURI(PostsRestServer.SERVICE, N_POSTS);
-		Log.info("Found " + postsUris.length + "servers \n");
+		System.out.println("Found " + postsUris.length + "servers \n");
 		Posts[] posts = new Posts[postsUris.length];
 		
 		int errorsFound = NO_ERRORS;

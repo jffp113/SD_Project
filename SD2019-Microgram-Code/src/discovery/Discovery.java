@@ -1,6 +1,7 @@
 package discovery;
 
 import microgram.impl.srv.java.JavaPosts;
+import utils.Hash;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -10,7 +11,9 @@ import java.net.MulticastSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -84,7 +87,7 @@ public class Discovery {
 	 */
 	public static URI[] findUrisOf(String serviceName, int minRepliesNeeded) {
 		
-		Set<URI> uniqueURI = null;
+		Map<Integer, URI> uniqueURI = null;
 		
 		try(MulticastSocket sock = new MulticastSocket(DEAFAULT_MULTICAST_PORT)) {
 			sock.joinGroup(DISCOVERY_ADDR.getAddress());
@@ -94,7 +97,12 @@ public class Discovery {
 			e.printStackTrace();
 		} 
 		
-		return uniqueURI.toArray(new URI[uniqueURI.size()]);
+		//return uniqueURI.toArray(new URI[uniqueURI.size()]);
+		URI[] uris = new URI[uniqueURI.size()];
+		int i = 0;
+		for (Map.Entry<Integer, URI> entry : uniqueURI.entrySet())
+		     uris[i++] = entry.getValue();
+		return uris;
 	}
 	
 	/**
@@ -102,13 +110,6 @@ public class Discovery {
 	 *
 	 */
 	private static class findUrisClass {
-
-        private static Logger Log = Logger.getLogger(findUrisClass.class.getName());
-
-        static{
-            Log.setLevel( Level.FINER );
-            Log.info("Initiated findUrisClass class teste\n");
-        }
 
 		public static final String N_SERVER_FOUND = "Found %d different Servers\n";
 		
@@ -140,7 +141,7 @@ public class Discovery {
 		/**
 		 * Set containing the received URI
 		 */
-		private Set<URI> uniqueURI;
+		private Map<Integer, URI> uniqueURI;
 		
 		/**
 		 * Time left for the client to be waiting for an URI before acknowledging something's wrong
@@ -151,7 +152,7 @@ public class Discovery {
 			this.sock = sock;
 			this.serviceName = serviceName;
 			this.minRepliesNeeded = minRepliesNeeded;
-			this.uniqueURI = new HashSet<URI>(minRepliesNeeded);
+			this.uniqueURI = new TreeMap<Integer, URI>();
 		}
 		
 		/**
@@ -200,16 +201,18 @@ public class Discovery {
 		 * Stops listening if the server hasn't communicated for too long
 		 * @return The set containing the URI received
 		 */
-		public Set<URI> getRequiredUris () {
+		public Map<Integer, URI> getRequiredUris () {
 			
-			URI uri;			
+			URI uri;
+			int uriHash;
 			try {
 				while (this.minRepliesNeeded > this.uniqueURI.size()) {
 						uri = getAnUri();
-
-					if (!this.uniqueURI.contains(uri)) {
+						uriHash = uri.hashCode();
+						
+					if (!this.uniqueURI.containsKey(uriHash)) {
                         Log.info(uri.toString() + "\n");
-						this.uniqueURI.add(uri);
+						this.uniqueURI.put(uriHash, uri);
 						this.waitTimeLeft = DISCOVERY_TIMEOUT;
 					}
 				}
