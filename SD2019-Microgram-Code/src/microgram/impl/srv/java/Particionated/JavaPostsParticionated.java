@@ -19,6 +19,7 @@ public class JavaPostsParticionated implements Posts{
     private int serverId;
 
     public JavaPostsParticionated(Posts imp){
+        //this.serverId = uri.hashCode();
         this.imp = imp;
 
     }
@@ -140,19 +141,4 @@ public class JavaPostsParticionated implements Posts{
         return ok ();
     }
 
-    //NEW
-    @Override
-    public Result<List<String>> getPostsServer(String userId) {
-        return null;
-    }
-
-    @Override
-    public Result<List<String>> getFeedServer(String userId) {
-        return null;
-    }
-
-    @Override
-    public Result<Void> removeAllPostsFromUserServer(String userId) {
-        return null;
-    }
 }
