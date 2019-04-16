@@ -142,11 +142,12 @@ public class JavaPosts implements Posts {
 		int numPostServers = this.si.getNumPostsServers();
 		int postLocation = postId.hashCode() % numPostServers;
 		if (postLocation == this.serverId % numPostServers)
-			return createPostAux(post, postId);
+			return createPostAux(post);
 		return si.posts(postLocation).createPost(post);
 	}
 	
-	private Result<String> createPostAux (Post post, String postId) {
+	private Result<String> createPostAux (Post post) {
+		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
 		if (posts.putIfAbsent(postId, post) == null) {
 
 			post.setPostId(postId);
@@ -257,6 +258,9 @@ public class JavaPosts implements Posts {
 			return error(NOT_FOUND);
 		return ok (new ArrayList<>(res));
 	}
+
+	/*Se isto ficar
+	* acrescentar na interface do Rest e do Soap e implementar os Serves e Clientes (o Retry too)*/
 	
 	@Override
 	public Result<List<String>> getFeedServer (String userId) {

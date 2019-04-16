@@ -12,7 +12,7 @@ import microgram.api.java.Profiles;
 /**
  * Finds the active servers.
  */
-class ServerInstantiator {
+public class ServerInstantiator {
 	
 	/**
 	 * Array containing the active Profiles servers, ordered by their URI hash. 
@@ -78,37 +78,37 @@ class ServerInstantiator {
 	}
 
 
-	Media media(int index) {
+	public Media media(int index) {
 		if(this.media == null) 
 			this.findServersMedia();
 		return this.media[index];
 	}
 	
-	Profiles profiles(int index) {
+	public Profiles profiles(int index) {
 		if(this.profiles == null) 
 			this.findServersProfiles();
 		return this.profiles[index];
 	}
 	
-	Posts posts(int index) {
+	public Posts posts(int index) {
 		if(this.postClients == null) 
 			this.findServersPosts();
 		return this.postClients[index];
 	}
 	
-	int getNumProfilesServers() {
+	public int getNumProfilesServers() {
 		if (this.profiles == null)
 			this.findServersProfiles();
 		return this.profiles.length;
 	}
 	
-	int getNumPostsServers() {
+	public int getNumPostsServers() {
 		if (this.postClients == null)
 			this.findServersProfiles();
 		return this.postClients.length;
 	}
 	
-	int getNumMediaServers() {
+	public int getNumMediaServers() {
 		if (this.media == null)
 			this.findServersProfiles();
 		return this.media.length;

@@ -80,7 +80,7 @@ public class JavaProfiles implements Profiles {
 	}
 	
 	@Override
-	public Result<Void> deleteProfile(String userId) {		//<----- MADE THIS
+	public Result<Void> deleteProfile(String userId) {
 		if (this.users.remove(userId) == null)
 			return error(NOT_FOUND);
 				
@@ -93,7 +93,7 @@ public class JavaProfiles implements Profiles {
 			}
 		});
 		
-		this.si.posts()[0].removeAllPostsFromUser(userId);
+		this.si.posts(0).removeAllPostsFromUser(userId);
 
 		return ok();
 	}

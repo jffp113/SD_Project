@@ -55,9 +55,5 @@ public class RetryPostsClient extends RetryClient implements Posts {
 	public Result<Void> removeAllPostsFromUser(String userId) {
 		return super.reTry(() -> impl.removeAllPostsFromUser(userId));
 	}
-
-	@Override
-	public URI getServiceURI() {
-		return impl.getServiceURI();
-	}
+	
 }

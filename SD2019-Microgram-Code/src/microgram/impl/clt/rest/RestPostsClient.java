@@ -109,8 +109,4 @@ public class RestPostsClient extends RestClient implements Posts {
 		return super.verifyResponse(r,Status.NO_CONTENT);
 	}
 
-	@Override
-	public URI getServiceURI() {
-		return super.uri;
-	}
 }
