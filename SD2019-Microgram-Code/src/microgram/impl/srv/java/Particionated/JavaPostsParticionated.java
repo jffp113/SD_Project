@@ -1,8 +1,10 @@
 package microgram.impl.srv.java.Particionated;
 
+import kakfa.KafkaSubscriber;
 import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.java.Result;
+import microgram.impl.srv.java.JavaPosts;
 import microgram.impl.srv.java.ServerInstantiator;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -18,16 +20,29 @@ public class JavaPostsParticionated implements Posts{
 
     private SortedSet<Node<Posts>> servers;
     private Map<String,Node<Posts>> mapper;
-
     private Map<String,String> postsLocation;
+
+    private KafkaSubscriber subscriber;
 
     public JavaPostsParticionated(Posts imp){
         this.imp = imp;
         servers = null;
+        initKafkaSubscriber();
     }
 
     private String parseKey(String uri){
         throw new NotImplementedException();
+    }
+
+    //TODO test
+    private void initKafkaSubscriber() {
+        subscriber = new KafkaSubscriber(Arrays.asList(JavaPosts.JAVA_POST_EVENTS));
+        new Thread( () -> {
+            subscriber.consume(((topic, key, value) ->  {
+                String[] result = value.split(" ");
+
+            }));
+        }).start();
     }
 
     private void serverFinder() {
