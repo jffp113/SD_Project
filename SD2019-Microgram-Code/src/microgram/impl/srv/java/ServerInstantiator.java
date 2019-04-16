@@ -3,6 +3,8 @@
  */
 package microgram.impl.srv.java;
 
+//import java.util.function.Supplier;
+
 import microgram.api.java.Media;
 import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
@@ -27,50 +29,89 @@ class ServerInstantiator {
 	 */
 	private Posts[] postClients;
 	
-	
-	Media media() {
-		if(media == null) {
-			synchronized (this) {
-				if(media == null) {
-					try {
-						this.media = ClientFactory.buildMedia();
-					} catch (NoServersAvailableException e){
-						this.media = null;
-					}
+	/*private void findServers (E[] servers, Supplier<T> func) {
+		synchronized (this) {
+			if (servers == null) {
+				try {
+					servers = func();
+				} catch (NoServersAvailableException e){
+					servers = null;
 				}
 			}
 		}
-		return media[0];
+	}*/
+	
+	private void findServersMedia () {
+		synchronized (this) {
+			if(media == null) {
+				try {
+					this.media = ClientFactory.buildMedia();
+				} catch (NoServersAvailableException e){
+					this.media = null;
+				}
+			}
+		}
 	}
 	
-	Profiles profiles() {
-		if(profiles == null) {
-			synchronized (this) {
-				if(profiles == null) {
-					try{
-					this.profiles = ClientFactory.buildProfile();
-					} catch (NoServersAvailableException e){
-						this.profiles = null;
-					}
+	private void findServersPosts () {
+		synchronized (this) {
+			if(postClients == null) {
+				try {
+					this.postClients = ClientFactory.buildPosts();
+				}catch (NoServersAvailableException e){
+					this.postClients = null;
 				}
 			}
 		}
-		return profiles[0];
 	}
 	
-	Posts posts() {
-		if(postClients == null) {
-			synchronized (this) {
-				if(postClients == null) {
-					try {
-						this.postClients = ClientFactory.buildPosts();
-					}catch (NoServersAvailableException e){
-						this.postClients = null;
-					}
+	private void findServersProfiles () {
+		synchronized (this) {
+			if(profiles == null) {
+				try{
+				this.profiles = ClientFactory.buildProfile();
+				} catch (NoServersAvailableException e){
+					this.profiles = null;
 				}
 			}
 		}
-		return postClients[0];
+	}
+
+
+	Media media(int index) {
+		if(this.media == null) 
+			this.findServersMedia();
+		return this.media[index];
+	}
+	
+	Profiles profiles(int index) {
+		if(this.profiles == null) 
+			this.findServersProfiles();
+		return this.profiles[index];
+	}
+	
+	Posts posts(int index) {
+		if(this.postClients == null) 
+			this.findServersPosts();
+		return this.postClients[index];
+	}
+	
+	int getNumProfilesServers() {
+		if (this.profiles == null)
+			this.findServersProfiles();
+		return this.profiles.length;
+	}
+	
+	int getNumPostsServers() {
+		if (this.postClients == null)
+			this.findServersProfiles();
+		return this.postClients.length;
+	}
+	
+	int getNumMediaServers() {
+		if (this.media == null)
+			this.findServersProfiles();
+		return this.media.length;
 	}
 
 }

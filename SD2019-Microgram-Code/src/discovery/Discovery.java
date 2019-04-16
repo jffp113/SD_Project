@@ -97,7 +97,6 @@ public class Discovery {
 			e.printStackTrace();
 		} 
 		
-		//return uniqueURI.toArray(new URI[uniqueURI.size()]);
 		URI[] uris = new URI[uniqueURI.size()];
 		int i = 0;
 		for (Map.Entry<Integer, URI> entry : uniqueURI.entrySet())

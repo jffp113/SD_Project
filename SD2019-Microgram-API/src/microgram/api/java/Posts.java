@@ -1,7 +1,6 @@
 package microgram.api.java;
 
 
-import java.net.URI;
 import java.util.List;
 
 import microgram.api.Post;
@@ -62,6 +61,14 @@ public interface Posts {
 	 */
 	Result<List<String>> getPosts( String userId);
 	
+	/**
+	 * 	Retrieves the list of post identifiers of the posts published by the given user profile,
+	 * in this server.
+	 * @param userId the user profile that owns the requested posts
+	 * @return (OK, List<PostId>|empty list) or NOT_FOUND if the user profile is not known
+	 */
+	Result<List<String>> getPostsServer (String userId);
+	
 	
 	/**
 	 * Returns the feed of the user profile. The feed is the list of Posts made by user profiles followed by the userId profile.
@@ -69,6 +76,14 @@ public interface Posts {
 	 * @return (OK,List<PostId>|empty list), NOT_FOUND if the user profile is not known
 	 */
 	Result<List<String>> getFeed( String userId);
+	
+	/**
+	 * Returns the feed of the user profile in the server the method is called.
+	 * The feed is the list of Posts made by user profiles followed by the userId profile.
+	 * @param userId user profile of the requested feed
+	 * @return (OK,List<PostId>|empty list), NOT_FOUND if the user profile is not known
+	 */
+	Result<List<String>> getFeedServer (String userId);
 
 	/**
 	 * Removes all posts from a user
@@ -76,11 +91,12 @@ public interface Posts {
 	 * @return
 	 */
 	Result<Void> removeAllPostsFromUser(String userId);
-
+	
 	/**
-	 * Get Server associated complete URI
+	 * Remove all posts from a user in a specific server.
+	 * @param userId
 	 * @return
 	 */
-	URI getServiceURI();
+	Result<Void> removeAllPostsFromUserServer (String userId);
 
 }

@@ -25,7 +25,7 @@ public class JavaPosts implements Posts {
 	public static final String JAVA_POST_EVENTS = "Microgram-JavaPosts";
 
 	/**
-	 * Keys used by the messages JavaPosts publishes.	 *
+	 * Keys used by the messages JavaPosts publishes.
 	 */
 	public enum PostsEventKeys {
 		CREATE,DELETE,CREATE_FAIL
@@ -56,12 +56,15 @@ public class JavaPosts implements Posts {
 	 */
 	private KafkaSubscriber subscriber;
 	
+	private int serverId;
+	
 	/**
 	 * Allows this server to contact others.
 	 */
 	private final ServerInstantiator si = new ServerInstantiator();
 
-	public JavaPosts() {
+	public JavaPosts(URI uri) {
+		this.serverId = uri.hashCode();
 		initializeKafka();
 	}
 
@@ -72,6 +75,15 @@ public class JavaPosts implements Posts {
 
 	@Override
 	public Result<Post> getPost(String postId) {
+		int numPostServers = this.si.getNumPostsServers();
+		int postLocation = postId.hashCode() % numPostServers;
+		if (postLocation == this.serverId % numPostServers)
+			return getPostAux(postId);
+		
+		return si.posts(postLocation).getPost(postId);
+	}
+	
+	private Result<Post> getPostAux (String postId) {
 		Post res = posts.get(postId);
 		if (res != null)
 			return ok(res);
@@ -86,6 +98,14 @@ public class JavaPosts implements Posts {
 
 	@Override
 	public Result<Void> deletePost(String postId) {
+		int numPostServers = this.si.getNumPostsServers();
+		int postLocation = postId.hashCode() % numPostServers;
+		if (postLocation == this.serverId % numPostServers)
+			return deletePostAux(postId);
+		return si.posts(postLocation).deletePost(postId);
+	}
+	
+	private Result<Void> deletePostAux (String postId) {
 		Post postRemoved = posts.remove(postId);
 
 		if(postRemoved == null)
@@ -119,6 +139,14 @@ public class JavaPosts implements Posts {
 	@Override
 	public Result<String> createPost(Post post) {
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
+		int numPostServers = this.si.getNumPostsServers();
+		int postLocation = postId.hashCode() % numPostServers;
+		if (postLocation == this.serverId % numPostServers)
+			return createPostAux(post, postId);
+		return si.posts(postLocation).createPost(post);
+	}
+	
+	private Result<String> createPostAux (Post post, String postId) {
 		if (posts.putIfAbsent(postId, post) == null) {
 
 			post.setPostId(postId);
@@ -140,6 +168,14 @@ public class JavaPosts implements Posts {
 
 	@Override
 	public Result<Void> like(String postId, String userId, boolean isLiked) {
+		int numPostServers = this.si.getNumPostsServers();
+		int postLocation = postId.hashCode() % numPostServers;
+		if (postLocation == this.serverId % numPostServers)
+			return likeAux(postId, userId, isLiked);
+		return si.posts(postLocation).like(postId, userId, isLiked);
+	}
+	
+	private Result<Void> likeAux (String postId, String userId, boolean isLiked) {
 		Set<String> res = likes.get(postId);
 		if (res == null)
 			return error( NOT_FOUND );
@@ -158,6 +194,14 @@ public class JavaPosts implements Posts {
 
 	@Override
 	public Result<Boolean> isLiked(String postId, String userId) {
+		int numPostServers = this.si.getNumPostsServers();
+		int postLocation = postId.hashCode() % numPostServers;
+		if (postLocation == this.serverId % numPostServers)
+			return isLikedAux(postId, userId);
+		return si.posts(postLocation).isLiked(postId, userId);
+	}
+	
+	private Result<Boolean> isLikedAux (String postId, String userId) {
 		Set<String> res = likes.get(postId);
 		
 		if (res != null)
@@ -168,20 +212,59 @@ public class JavaPosts implements Posts {
 	
 	@Override
 	public Result<List<String>> getPosts(String userId) {
+		Set<String> res = new TreeSet<String>();
+		int numPostServers = si.getNumPostsServers();
+		boolean foundUser = false;
+		Result<List<String>> serverPosts;
+		for (int i = 0; i < numPostServers; i++) {
+			serverPosts = si.posts(i).getPostsServer(userId);
+			if (serverPosts.isOK()) {
+				foundUser = true;
+				res.addAll(serverPosts.value());
+			}
+		}
+		
+		if (!foundUser)
+			return error(NOT_FOUND);
+		return ok (new ArrayList<>(res));
+	}
+	
+	@Override
+	public Result<List<String>> getPostsServer (String userId) {
 		Set<String> res = userPosts.get(userId);
 		if (res != null)
 			return ok(new ArrayList<>(res));
 		else
+		
 			return error( NOT_FOUND );
 	}
 
 	@Override
 	public Result<List<String>> getFeed(String userId) {
+		Set<String> res = new TreeSet<String>();
+		int numPostServers = si.getNumPostsServers();
+		boolean foundUser = false;
+		Result<List<String>> serverPosts;
+		for (int i = 0; i < numPostServers; i++) {
+			serverPosts = si.posts(i).getFeedServer(userId);
+			if (serverPosts.isOK()) {
+				foundUser = true;
+				res.addAll(serverPosts.value());
+			}
+		}
+		
+		if (!foundUser)
+			return error(NOT_FOUND);
+		return ok (new ArrayList<>(res));
+	}
+	
+	@Override
+	public Result<List<String>> getFeedServer (String userId) {
 		Result<Set<String>> reply;
 		Set<String> following;
 		List<String> result = new LinkedList<>();
 
-		reply = this.si.profiles()[0].getFollowing(userId);
+		reply = this.si.profiles(0).getFollowing(userId);
 
 		if(!reply.isOK())
 			return  error(NOT_FOUND);
@@ -195,7 +278,22 @@ public class JavaPosts implements Posts {
 	}
 
     public Result<Void> removeAllPostsFromUser(String userId){
-		Set<String> userSetPosts = userPosts.get(userId);
+		int numPostServers = si.getNumPostsServers();
+		boolean foundUser = false;
+		Result<List<String>> serverPosts;
+		for (int i = 0; i < numPostServers; i++) {
+			serverPosts = si.posts(i).getFeedServer(userId);
+			if (serverPosts.isOK()) 
+				foundUser = true;
+		}
+		
+		if (!foundUser)
+			return error(NOT_FOUND);
+		return ok ();
+    }
+    
+    public Result<Void> removeAllPostsFromUserServer (String userId) {
+    	Set<String> userSetPosts = userPosts.get(userId);
 
 		if(userSetPosts == null)
 			return error(NOT_FOUND);
@@ -206,7 +304,4 @@ public class JavaPosts implements Posts {
 	    return ok();
     }
 
-	public URI getServiceURI() {
-		return this.uri;
-	}
 }
