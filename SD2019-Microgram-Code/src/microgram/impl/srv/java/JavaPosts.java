@@ -135,18 +135,8 @@ public class JavaPosts implements Posts {
 		publisher.publish(JAVA_POST_EVENTS,PostsEventKeys.CREATE_FAIL.name(),message);
 		System.out.println("CREATE_NOTIFICATION_POST_CONFLICT");
 	}
-
-	@Override
-	public Result<String> createPost(Post post) {
-		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
-		int numPostServers = this.si.getNumPostsServers();
-		int postLocation = postId.hashCode() % numPostServers;
-		if (postLocation == this.serverId % numPostServers)
-			return createPostAux(post);
-		return si.posts(postLocation).createPost(post);
-	}
 	
-	private Result<String> createPostAux (Post post) {
+	public Result<String> createPost(Post post) {
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
 		if (posts.putIfAbsent(postId, post) == null) {
 
@@ -166,17 +156,8 @@ public class JavaPosts implements Posts {
 			return error(CONFLICT);
 		}
 	}
-
-	@Override
-	public Result<Void> like(String postId, String userId, boolean isLiked) {
-		int numPostServers = this.si.getNumPostsServers();
-		int postLocation = postId.hashCode() % numPostServers;
-		if (postLocation == this.serverId % numPostServers)
-			return likeAux(postId, userId, isLiked);
-		return si.posts(postLocation).like(postId, userId, isLiked);
-	}
 	
-	private Result<Void> likeAux (String postId, String userId, boolean isLiked) {
+	public Result<Void> like (String postId, String userId, boolean isLiked) {
 		Set<String> res = likes.get(postId);
 		if (res == null)
 			return error( NOT_FOUND );
@@ -193,16 +174,8 @@ public class JavaPosts implements Posts {
 		return ok();
 	}
 
-	@Override
-	public Result<Boolean> isLiked(String postId, String userId) {
-		int numPostServers = this.si.getNumPostsServers();
-		int postLocation = postId.hashCode() % numPostServers;
-		if (postLocation == this.serverId % numPostServers)
-			return isLikedAux(postId, userId);
-		return si.posts(postLocation).isLiked(postId, userId);
-	}
 	
-	private Result<Boolean> isLikedAux (String postId, String userId) {
+	public Result<Boolean> isLiked(String postId, String userId) {
 		Set<String> res = likes.get(postId);
 		
 		if (res != null)
@@ -212,26 +185,7 @@ public class JavaPosts implements Posts {
 	}
 	
 	@Override
-	public Result<List<String>> getPosts(String userId) {
-		Set<String> res = new TreeSet<String>();
-		int numPostServers = si.getNumPostsServers();
-		boolean foundUser = false;
-		Result<List<String>> serverPosts;
-		for (int i = 0; i < numPostServers; i++) {
-			serverPosts = si.posts(i).getPostsServer(userId);
-			if (serverPosts.isOK()) {
-				foundUser = true;
-				res.addAll(serverPosts.value());
-			}
-		}
-		
-		if (!foundUser)
-			return error(NOT_FOUND);
-		return ok (new ArrayList<>(res));
-	}
-	
-	@Override
-	public Result<List<String>> getPostsServer (String userId) {
+	public Result<List<String>> getPosts (String userId) {
 		Set<String> res = userPosts.get(userId);
 		if (res != null)
 			return ok(new ArrayList<>(res));
@@ -239,31 +193,9 @@ public class JavaPosts implements Posts {
 		
 			return error( NOT_FOUND );
 	}
-
-	@Override
-	public Result<List<String>> getFeed(String userId) {
-		Set<String> res = new TreeSet<String>();
-		int numPostServers = si.getNumPostsServers();
-		boolean foundUser = false;
-		Result<List<String>> serverPosts;
-		for (int i = 0; i < numPostServers; i++) {
-			serverPosts = si.posts(i).getFeedServer(userId);
-			if (serverPosts.isOK()) {
-				foundUser = true;
-				res.addAll(serverPosts.value());
-			}
-		}
-		
-		if (!foundUser)
-			return error(NOT_FOUND);
-		return ok (new ArrayList<>(res));
-	}
-
-	/*Se isto ficar
-	* acrescentar na interface do Rest e do Soap e implementar os Serves e Clientes (o Retry too)*/
 	
 	@Override
-	public Result<List<String>> getFeedServer (String userId) {
+	public Result<List<String>> getFeed(String userId) {
 		Result<Set<String>> reply;
 		Set<String> following;
 		List<String> result = new LinkedList<>();
@@ -280,23 +212,8 @@ public class JavaPosts implements Posts {
 		
 		return ok(result);
 	}
-
-    public Result<Void> removeAllPostsFromUser(String userId){
-		int numPostServers = si.getNumPostsServers();
-		boolean foundUser = false;
-		Result<List<String>> serverPosts;
-		for (int i = 0; i < numPostServers; i++) {
-			serverPosts = si.posts(i).getFeedServer(userId);
-			if (serverPosts.isOK()) 
-				foundUser = true;
-		}
-		
-		if (!foundUser)
-			return error(NOT_FOUND);
-		return ok ();
-    }
     
-    public Result<Void> removeAllPostsFromUserServer (String userId) {
+    public Result<Void> removeAllPostsFromUser(String userId) {
     	Set<String> userSetPosts = userPosts.get(userId);
 
 		if(userSetPosts == null)
@@ -307,5 +224,4 @@ public class JavaPosts implements Posts {
 
 	    return ok();
     }
-
 }
