@@ -17,64 +17,29 @@ public class JavaPostsParticionated implements Posts{
     private String selfKey;
 
     private final ServerInstantiator si = new ServerInstantiator();
+    private Posts[] posts;
 
-    private SortedSet<Node<Posts>> servers;
-    private Map<String,Node<Posts>> mapper;
-    private Map<String,String> postsLocation;
-
-    private KafkaSubscriber subscriber;
-
-    public JavaPostsParticionated(Posts imp){
+    public JavaPostsParticionated(Posts imp,int numberOfServers){
         this.imp = imp;
-        servers = null;
-        initKafkaSubscriber();
-    }
-
-    private String parseKey(String uri){
-        throw new NotImplementedException();
-    }
-
-    //TODO test
-    private void initKafkaSubscriber() {
-        subscriber = new KafkaSubscriber(Arrays.asList(JavaPosts.JAVA_POST_EVENTS));
-        new Thread( () -> {
-            subscriber.consume(((topic, key, value) ->  {
-                String[] result = value.split(" ");
-
-            }));
-        }).start();
+        posts = null;
     }
 
     private void serverFinder() {
-        if(servers != null)
+        if(posts != null)
             return;
 
-        servers = new TreeSet<>();
-        mapper = new HashMap<>();
-        postsLocation = new HashMap<>();
-        selfKey = parseKey(imp.getServiceURI().toString());
-
-        for(Posts p  : si.posts()){
-            Node<Posts> node = new Node<>(p.getServiceURI().toString(),0,p);
-            servers.add(node);
-            mapper.put(parseKey(p.getServiceURI().toString()),node);
-        }
+        this.posts = si.posts();
     }
 
     @Override
     public Result<Post> getPost(String postId) {
         serverFinder();
-        String key = postsLocation.get(postId);
-        if(key == null || key == selfKey)
-            return imp.getPost(postId);
-
-        return mapper.get(key).client.getPost(postId);
+        return null;
     }
 
     @Override
     public Result<String> createPost(Post post) {
         serverFinder();
-
         return null;
     }
 
@@ -126,8 +91,7 @@ public class JavaPostsParticionated implements Posts{
 
         return null;
     }
-
-
+    
     public URI getServiceURI() {
         return imp.getServiceURI();
     }
