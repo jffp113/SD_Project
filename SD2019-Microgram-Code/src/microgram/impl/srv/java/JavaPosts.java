@@ -64,7 +64,6 @@ public class JavaPosts implements Posts {
 	private final ServerInstantiator si = new ServerInstantiator();
 
 	public JavaPosts(URI uri) {
-		this.serverId = uri.hashCode();
 		initializeKafka();
 	}
 

@@ -5,6 +5,8 @@ import microgram.api.java.Posts;
 import microgram.api.java.Result;
 import microgram.impl.srv.java.ServerInstantiator;
 import utils.Hash;
+
+import java.net.URI;
 import java.util.*;
 
 import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
@@ -18,8 +20,8 @@ public class JavaPostsParticionated implements Posts{
     private final ServerInstantiator si = new ServerInstantiator();
     private int serverId;
 
-    public JavaPostsParticionated(Posts imp){
-        //this.serverId = uri.hashCode();
+    public JavaPostsParticionated(Posts imp, URI uri){
+        this.serverId = uri.hashCode();
         this.imp = imp;
 
     }
