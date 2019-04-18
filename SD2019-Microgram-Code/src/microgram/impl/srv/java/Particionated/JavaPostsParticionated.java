@@ -8,12 +8,18 @@ import utils.Hash;
 
 import java.net.URI;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
 
 public class JavaPostsParticionated implements Posts{
+
+    private static final String USER_REPETED_REGEX = "^\\?(.*)\\?$";
+    private static final Pattern r = Pattern.compile(USER_REPETED_REGEX);
+    private static final String USERID_PATTNER = "?%s?";
 
     private Posts imp;
 
@@ -77,8 +83,21 @@ public class JavaPostsParticionated implements Posts{
         return si.posts(postLocation).isLiked(postId, userId);
     }
 
+
+
+    private String addServerPattner(String userId) {
+        return String.format(USERID_PATTNER,userId);
+    }
+
     @Override
     public Result<List<String>> getPosts(String userId) {
+        Matcher m = r.matcher(userId);
+
+        if(!m.matches())
+            return imp.getPosts(userId);
+        else
+            userId = m.group(0);
+
         Set<String> res = new TreeSet<>();
         int numPostServers = si.getNumPostsServers();
         boolean foundUser = false;
@@ -89,7 +108,7 @@ public class JavaPostsParticionated implements Posts{
             if(serverId == i)
                 serverPosts = imp.getPosts(userId);
             else
-                serverPosts = si.posts(i).getPosts(userId);
+                serverPosts = si.posts(i).getPosts(addServerPattner(userId));
 
             if (serverPosts.isOK()) {
                 foundUser = true;
@@ -104,6 +123,13 @@ public class JavaPostsParticionated implements Posts{
 
     @Override
     public Result<List<String>> getFeed(String userId) {
+        Matcher m = r.matcher(userId);
+
+        if(!m.matches())
+            return imp.getFeed(userId);
+        else
+            userId = m.group(0);
+
         Set<String> res = new TreeSet<>();
         int numPostServers = si.getNumPostsServers();
         boolean foundUser = false;
@@ -112,7 +138,7 @@ public class JavaPostsParticionated implements Posts{
             if(serverId == i)
                 serverPosts = imp.getFeed(userId);
             else
-                serverPosts = si.posts(i).getFeed(userId);
+                serverPosts = si.posts(i).getFeed(addServerPattner(userId));
 
             if (serverPosts.isOK()) {
                 foundUser = true;
@@ -127,12 +153,23 @@ public class JavaPostsParticionated implements Posts{
 
     @Override
     public Result<Void> removeAllPostsFromUser(String userId) {
+        Matcher m = r.matcher(userId);
+
+        if(!m.matches())
+            return imp.removeAllPostsFromUser(userId);
+        else
+            userId = m.group(0);
+
         int numPostServers = si.getNumPostsServers();
         boolean foundDeletes = false;
         Result<Void> reply;
 
         for (int i = 0; i < numPostServers; i++) {
-            reply = si.posts(i).removeAllPostsFromUser(userId);
+            if(serverId == i)
+                reply = imp.removeAllPostsFromUser(userId);
+            else
+                reply = si.posts(i).removeAllPostsFromUser(addServerPattner(userId));
+
             if (reply.isOK())
                 foundDeletes = true;
         }
