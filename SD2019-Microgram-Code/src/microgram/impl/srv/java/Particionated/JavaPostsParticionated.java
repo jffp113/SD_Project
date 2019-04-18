@@ -17,9 +17,9 @@ import static microgram.api.java.Result.ok;
 
 public class JavaPostsParticionated implements Posts{
 
-    private static final String USER_REPETED_REGEX = "^\\?(.*)\\?$";
-    private static final Pattern r = Pattern.compile(USER_REPETED_REGEX);
-    private static final String USERID_PATTNER = "?%s?";
+    private static final String USER_REPEATED_REGEX = "^\\?(.*)\\?$";
+    private static final Pattern r = Pattern.compile(USER_REPEATED_REGEX);
+    private static final String USER_ID_MARSHALLER = "?%s?";
 
     private Posts imp;
 
@@ -83,10 +83,8 @@ public class JavaPostsParticionated implements Posts{
         return si.posts(postLocation).isLiked(postId, userId);
     }
 
-
-
     private String addServerPattner(String userId) {
-        return String.format(USERID_PATTNER,userId);
+        return String.format(USER_ID_MARSHALLER,userId);
     }
 
     @Override
