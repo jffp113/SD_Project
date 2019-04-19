@@ -27,7 +27,9 @@ class SoapServiceExecuter {
         server.start();
 
         String ip = IP.hostAddress();
+        String serverURI = String.format(SERVER_BASE_URI, ip, PORT);
+
         logger.info(String.format("%s Soap Server ready @ %s\n", service, ip + ":" + PORT));
-        Discovery.announce(service, SERVER_BASE_URI);
+        Discovery.announce(service, serverURI);
     }
 }

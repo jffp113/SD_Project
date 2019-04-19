@@ -83,7 +83,7 @@ public class JavaPostsParticionated implements Posts{
         return si.posts(postLocation).isLiked(postId, userId);
     }
 
-    private String addServerPattner(String userId) {
+    private String addServerPattern(String userId) {
         return String.format(USER_ID_MARSHALLER,userId);
     }
 
@@ -106,7 +106,7 @@ public class JavaPostsParticionated implements Posts{
             if(serverId == i)
                 serverPosts = imp.getPosts(userId);
             else
-                serverPosts = si.posts(i).getPosts(addServerPattner(userId));
+                serverPosts = si.posts(i).getPosts(addServerPattern(userId));
 
             if (serverPosts.isOK()) {
                 foundUser = true;
@@ -136,7 +136,7 @@ public class JavaPostsParticionated implements Posts{
             if(serverId == i)
                 serverPosts = imp.getFeed(userId);
             else
-                serverPosts = si.posts(i).getFeed(addServerPattner(userId));
+                serverPosts = si.posts(i).getFeed(addServerPattern(userId));
 
             if (serverPosts.isOK()) {
                 foundUser = true;
@@ -166,7 +166,7 @@ public class JavaPostsParticionated implements Posts{
             if(serverId == i)
                 reply = imp.removeAllPostsFromUser(userId);
             else
-                reply = si.posts(i).removeAllPostsFromUser(addServerPattner(userId));
+                reply = si.posts(i).removeAllPostsFromUser(addServerPattern(userId));
 
             if (reply.isOK())
                 foundDeletes = true;

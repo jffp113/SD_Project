@@ -217,7 +217,7 @@ public class Discovery {
 				}
 			} catch (Exception e) {
 				System.err.printf(N_SERVER_FOUND,uniqueURI.size());
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			
 			return this.uniqueURI;

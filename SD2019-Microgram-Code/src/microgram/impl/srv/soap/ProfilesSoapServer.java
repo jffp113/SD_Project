@@ -10,6 +10,6 @@ public class ProfilesSoapServer {
 
 	public static void main(String[] args) throws Exception {
 		SoapServiceExecuter exec = new SoapServiceExecuter();
-		exec.execute(SERVICE,new PostsWebService(),Log);
+		exec.execute(SERVICE,new ProfilesWebService(),Log);
 	}
 }

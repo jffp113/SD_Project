@@ -20,7 +20,7 @@ public class MediaRestServer {
 	}
 	
 	public static final int PORT = 9999;
-	public static final String SERVICE = "Microgram-Media";
+	public static final String SERVICE = "Microgram-MediaStorage";
 	public static String SERVER_BASE_URI = "http://%s:%s/rest";
 	
 	public static void main(String[] args) throws Exception {

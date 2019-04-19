@@ -8,7 +8,6 @@ import java.net.URI;
 import java.util.*;
 
 import kakfa.KafkaPublisher;
-import kakfa.KafkaSubscriber;
 import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.java.Result;
@@ -52,13 +51,6 @@ public class JavaPosts implements Posts {
 	private KafkaPublisher publisher;
 	
 	/**
-	 * Subscribes to the content published by other servers.
-	 */
-	private KafkaSubscriber subscriber;
-	
-	private int serverId;
-	
-	/**
 	 * Allows this server to contact others.
 	 */
 	private final ServerInstantiator si = new ServerInstantiator();
@@ -69,20 +61,9 @@ public class JavaPosts implements Posts {
 
 	private void initializeKafka(){
 		publisher = new KafkaPublisher();
-		//KafkaUtils.createTopic(JAVA_POST_EVENTS);
 	}
 
-	@Override
-	public Result<Post> getPost(String postId) {
-		int numPostServers = this.si.getNumPostsServers();
-		int postLocation = postId.hashCode() % numPostServers;
-		if (postLocation == this.serverId % numPostServers)
-			return getPostAux(postId);
-		
-		return si.posts(postLocation).getPost(postId);
-	}
-	
-	private Result<Post> getPostAux (String postId) {
+	public Result<Post> getPost (String postId) {
 		Post res = posts.get(postId);
 		if (res != null)
 			return ok(res);
@@ -95,16 +76,7 @@ public class JavaPosts implements Posts {
 		System.out.println("DELETE_NOTIFICATION");
 	}
 
-	@Override
-	public Result<Void> deletePost(String postId) {
-		int numPostServers = this.si.getNumPostsServers();
-		int postLocation = postId.hashCode() % numPostServers;
-		if (postLocation == this.serverId % numPostServers)
-			return deletePostAux(postId);
-		return si.posts(postLocation).deletePost(postId);
-	}
-	
-	private Result<Void> deletePostAux (String postId) {
+	public Result<Void> deletePost (String postId) {
 		Post postRemoved = posts.remove(postId);
 
 		if(postRemoved == null)
@@ -138,7 +110,7 @@ public class JavaPosts implements Posts {
 	public Result<String> createPost(Post post) {
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
 		if (posts.putIfAbsent(postId, post) == null) {
-
+			System.out.println( System.currentTimeMillis() + " Creating Post from user: " + post.getOwnerId());
 			post.setPostId(postId);
 			likes.put(postId, new HashSet<>());
 			
@@ -173,7 +145,6 @@ public class JavaPosts implements Posts {
 		return ok();
 	}
 
-	
 	public Result<Boolean> isLiked(String postId, String userId) {
 		Set<String> res = likes.get(postId);
 		
@@ -185,6 +156,7 @@ public class JavaPosts implements Posts {
 	
 	@Override
 	public Result<List<String>> getPosts (String userId) {
+		System.out.println("Getting post From: " + userId);
 		Set<String> res = userPosts.get(userId);
 		if (res != null)
 			return ok(new ArrayList<>(res));
@@ -195,24 +167,34 @@ public class JavaPosts implements Posts {
 	
 	@Override
 	public Result<List<String>> getFeed(String userId) {
-		Result<Set<String>> reply;
-		Set<String> following;
-		List<String> result = new LinkedList<>();
+			Result<Set<String>> reply;
+			Set<String> following;
+			List<String> result = new LinkedList<>();
 
-		reply = this.si.profiles(0).getFollowing(userId);
+			System.out.println("Getting feed for user " + userId);
+			reply = this.si.profiles(0).getFollowing(userId);
 
-		if(!reply.isOK())
-			return  error(NOT_FOUND);
-		
-		following = reply.value();
-		
-		following
-			.forEach(f -> result.addAll(userPosts.get(f)));
-		
-		return ok(result);
+			System.out.println(reply.error());
+
+			if (!reply.isOK())
+				return error(NOT_FOUND);
+
+			following = reply.value();
+
+			System.out.println(following);
+			following
+					.forEach(f ->{
+									Set<String> p = userPosts.get(f);
+									if(p != null)
+									result.addAll(p);
+					});
+
+			return ok(result);
+
 	}
     
     public Result<Void> removeAllPostsFromUser(String userId) {
+		System.out.println("Start Removing all Posts from " + userId);
     	Set<String> userSetPosts = userPosts.get(userId);
 
 		if(userSetPosts == null)

@@ -26,17 +26,17 @@ class ClientFactory {
 	/**
 	 * Default max number of Profiles servers.
 	 */
-	public static final int N_PROFILES = 10;
+	public static final int N_PROFILES = 5;
 	
 	/**
 	 * Default max number of Media servers.
 	 */
-	public static final int N_MEDIA = 10;
+	public static final int N_MEDIA = 5;
 	
 	/**
 	 * Default max number of Posts servers.
 	 */
-	public static final int N_POSTS = 10;
+	public static final int N_POSTS = 5;
 	
 	/**
 	 * Represents that no errors in the discovered servers happened.

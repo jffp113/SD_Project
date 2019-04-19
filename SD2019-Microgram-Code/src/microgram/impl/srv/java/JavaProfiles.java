@@ -41,20 +41,24 @@ public class JavaProfiles implements Profiles {
 		new Thread( () -> {
 			subscriber.consume(((topic, key, value) ->  {
 				String[] result = value.split(" ");
-
+				System.out.println(System.currentTimeMillis()+ " " + topic + " " + key + " " + value);
 				if(key.equals(JavaPosts.PostsEventKeys.DELETE.name())) {
 					changeUserPostsValue(DECREASE,result[result.length - 2]);
 				}
 				else if(key.equals(JavaPosts.PostsEventKeys.CREATE.name())) {
-					changeUserPostsValue(INCREASE,result[result.length - 2]);
+					changeUserPostsValue(INCREASE,result[result.length - 1]);
 				}
 			}));
 		}).start();
 	}
 
 	private void changeUserPostsValue(int change,String user){
+		System.out.println(user);
 		Profile profile = users.get(user);
-		profile.changeNumberOfPosts(change);
+		if(profile != null) {
+			profile.changeNumberOfPosts(change);
+			System.out.println(profile.getUserId() + " posts" + profile.getPosts());
+		}
 	}
 
 	@Override
@@ -65,6 +69,8 @@ public class JavaProfiles implements Profiles {
 
 		res.setFollowers( followers.get(userId).size() );
 		res.setFollowing( following.get(userId).size() );
+
+		System.out.println(followers.get(userId).size() + " " +  following.get(userId).size() + " " + userId);
 		return ok(res);
 	}
 
@@ -73,6 +79,8 @@ public class JavaProfiles implements Profiles {
 		Profile res = users.putIfAbsent( profile.getUserId(), profile );
 		if( res != null ) 
 			return error(CONFLICT);
+
+		System.out.println(System.currentTimeMillis()+ " Creating " + profile.getUserId());
 
 		followers.put( profile.getUserId(), Collections.synchronizedSet(new HashSet<>()));
 		following.put( profile.getUserId(), Collections.synchronizedSet(new HashSet<>()));
@@ -83,17 +91,19 @@ public class JavaProfiles implements Profiles {
 	public Result<Void> deleteProfile(String userId) {
 		if (this.users.remove(userId) == null)
 			return error(NOT_FOUND);
-				
+
+		System.out.println("Removing " + userId);
 		this.followers.remove(userId);
 		
-		this.following.forEach((k, v) ->{ 
-			if (v.remove(userId)) {
-				final Profile p = this.users.get(k);
-				p.changeFollowing(DECREASE);
-			}
+		this.following.forEach((k, v) -> {
+
+			v.remove(userId);
 		});
-		
-		this.si.posts(0).removeAllPostsFromUser(userId);
+
+		//Ver isto TODO KAFKA
+		new Thread(
+				()-> this.si.posts(0).removeAllPostsFromUser(userId)
+		).start();
 
 		return ok();
 	}
@@ -111,22 +121,21 @@ public class JavaProfiles implements Profiles {
 		Set<String> s2 = followers.get( userId2 );
 		Profile p1 = users.get(userId1);
 		Profile p2 = users.get(userId2);
-		
+
+		System.out.println("Trying follow = " + isFollowing + " Users " + userId1 + " " + userId2);
 		if( s1 == null || s2 == null)
 			return error(NOT_FOUND);
-		
+
+		System.out.println("DONE");
+
 		if( isFollowing ) {
 			boolean added1 = s1.add(userId2 ), added2 = s2.add( userId1 );
 			if( ! added1 || ! added2 )
-				return error(CONFLICT);	
-			p1.changeFollowing(INCREASE);
-			p2.changeFollowers(INCREASE);
+				return error(CONFLICT);
 		} else {
 			boolean removed1 = s1.remove(userId2), removed2 = s2.remove( userId1);
 			if( ! removed1 || ! removed2 )
 				return error(NOT_FOUND);
-			p1.changeFollowing(DECREASE);
-			p2.changeFollowers(DECREASE);
 		}
 		return ok();
 	}
@@ -148,6 +157,11 @@ public class JavaProfiles implements Profiles {
 
 		if (followUser == null)
 			return error(NOT_FOUND);
+
+		System.out.println("Following for user " + userId);
+
+		for(String c : followUser)
+			System.out.println(c);
 
 		return ok(followUser);
 	}
