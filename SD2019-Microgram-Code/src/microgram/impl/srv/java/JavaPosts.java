@@ -162,7 +162,7 @@ public class JavaPosts implements Posts {
 			return ok(new ArrayList<>(res));
 		else
 		
-			return error( NOT_FOUND );
+			return ok( new LinkedList<>() ); // See if the TEST Change TODO
 	}
 	
 	@Override
