@@ -93,12 +93,25 @@ public class JavaProfiles implements Profiles {
 			return error(NOT_FOUND);
 
 		System.out.println("Removing " + userId);
-		this.followers.remove(userId);
-		
-		this.following.forEach((k, v) -> {
+		Set<String> followers = this.followers.remove(userId);
+		Set<String> following = this.following.remove(userId);
 
+
+		for(String f : followers){
+			boolean a = this.following.get(f).remove(userId);
+			System.out.println(f + " " + a);
+		}
+		for(String f : following){
+			boolean a = this.followers.get(f).remove(userId);
+			System.out.println(f + " " + a);
+		}
+
+		/*this.following.forEach((k, v) -> {
 			v.remove(userId);
 		});
+		this.followers.forEach((k,v) -> {
+			v.remove(userId);
+		});*/
 
 		//Ver isto TODO KAFKA
 		new Thread(
@@ -119,8 +132,6 @@ public class JavaProfiles implements Profiles {
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {		
 		Set<String> s1 = following.get( userId1 );
 		Set<String> s2 = followers.get( userId2 );
-		Profile p1 = users.get(userId1);
-		Profile p2 = users.get(userId2);
 
 		System.out.println("Trying follow = " + isFollowing + " Users " + userId1 + " " + userId2);
 		if( s1 == null || s2 == null)
