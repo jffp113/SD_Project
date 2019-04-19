@@ -22,8 +22,16 @@ public class JavaProfiles implements Profiles {
 
 	private Map<String, Profile> users =
 			new ConcurrentHashMap<>(new HashMap<>());
+	
+	/**
+	 * User key is being followed by
+	 */
 	private Map<String, Set<String>> followers = 
 			new ConcurrentHashMap<>(new HashMap<>());
+	
+	/**
+	 * User key is following
+	 */
 	private Map<String, Set<String>> following = 
 			new ConcurrentHashMap<>(new HashMap<>());
 
@@ -105,13 +113,6 @@ public class JavaProfiles implements Profiles {
 			boolean a = this.followers.get(f).remove(userId);
 			System.out.println(f + " " + a);
 		}
-
-		/*this.following.forEach((k, v) -> {
-			v.remove(userId);
-		});
-		this.followers.forEach((k,v) -> {
-			v.remove(userId);
-		});*/
 
 		//Ver isto TODO KAFKA
 		new Thread(
