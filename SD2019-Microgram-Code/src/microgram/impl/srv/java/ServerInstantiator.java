@@ -104,7 +104,8 @@ public class ServerInstantiator {
 	
 	public int getNumPostsServers() {
 		if (this.postClients == null)
-			this.findServersProfiles();
+			this.findServersPosts();
+
 		return this.postClients.length;
 	}
 	

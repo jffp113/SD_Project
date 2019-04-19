@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static microgram.api.java.Result.ErrorCode.INTERNAL_ERROR;
 import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
@@ -23,7 +24,7 @@ public class JavaPostsParticionated implements Posts{
 
     private Posts imp;
 
-    private final ServerInstantiator si = new ServerInstantiator();
+    private ServerInstantiator si = new ServerInstantiator();
     private int serverId;
 
     public JavaPostsParticionated(Posts imp, URI uri){
@@ -44,10 +45,15 @@ public class JavaPostsParticionated implements Posts{
 
     @Override
     public Result<String> createPost(Post post) {
+        System.out.println("Start creating post");
+
         String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
         int numPostServers = this.si.getNumPostsServers();
         int postLocation = postId.hashCode() % numPostServers;
-        if (postLocation == this.serverId % numPostServers)
+
+        System.out.println("Post Location " + postLocation + " Server Location " + (this.serverId % numPostServers));
+
+        if (postLocation == (this.serverId % numPostServers))
             return imp.createPost(post);
 
         return si.posts(postLocation).createPost(post);
