@@ -2,18 +2,10 @@ package microgram.impl.srv.rest;
 
 import java.net.URI;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import discovery.Discovery;
 import microgram.api.Post;
-import microgram.api.java.Media;
 import microgram.api.java.Posts;
-import microgram.api.java.Profiles;
 import microgram.api.rest.RestPosts;
-import microgram.impl.clt.rest.RestMediaClient;
-import microgram.impl.clt.rest.RestProfilesClient;
-import microgram.impl.srv.java.JavaPosts;
 import microgram.impl.srv.java.Particionated.JavaPostsParticionated;
 
 // Make this class concrete.
@@ -21,14 +13,8 @@ import microgram.impl.srv.java.Particionated.JavaPostsParticionated;
 public class RestPostsResources extends RestResource implements RestPosts {
 
 	final Posts impl;
-	private static Logger Log = Logger.getLogger(RestPostsResources.class.getName());
 	public RestPostsResources(URI uri) {
 		this.impl = new JavaPostsParticionated(uri);
-	}
-
-	static{
-		Log.setLevel( Level.FINER );
-		Log.info("Initiated RestPostsResource class\n");
 	}
 	
 	@Override
