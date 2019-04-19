@@ -3,6 +3,7 @@ package microgram.impl.srv.java.Particionated;
 import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.java.Result;
+import microgram.impl.srv.java.JavaPosts;
 import microgram.impl.srv.java.ServerInstantiator;
 import utils.Hash;
 
@@ -27,9 +28,9 @@ public class JavaPostsParticionated implements Posts{
     private ServerInstantiator si = new ServerInstantiator();
     private int serverId;
 
-    public JavaPostsParticionated(Posts imp, URI uri){
+    public JavaPostsParticionated(URI uri){
         this.serverId = uri.hashCode();
-        this.imp = imp;
+        this.imp = new JavaPosts(uri);
 
     }
 
@@ -49,6 +50,7 @@ public class JavaPostsParticionated implements Posts{
 
         String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
         int numPostServers = this.si.getNumPostsServers();
+        System.out.println("Number of post servers: " + numPostServers);
         int postLocation = postId.hashCode() % numPostServers;
 
         System.out.println("Post Location " + postLocation + " Server Location " + (this.serverId % numPostServers));

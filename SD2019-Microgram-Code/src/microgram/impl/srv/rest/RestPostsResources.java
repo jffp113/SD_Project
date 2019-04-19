@@ -14,6 +14,7 @@ import microgram.api.rest.RestPosts;
 import microgram.impl.clt.rest.RestMediaClient;
 import microgram.impl.clt.rest.RestProfilesClient;
 import microgram.impl.srv.java.JavaPosts;
+import microgram.impl.srv.java.Particionated.JavaPostsParticionated;
 
 // Make this class concrete.
 ////TODO We IMplemented
@@ -22,7 +23,7 @@ public class RestPostsResources extends RestResource implements RestPosts {
 	final Posts impl;
 	private static Logger Log = Logger.getLogger(RestPostsResources.class.getName());
 	public RestPostsResources(URI uri) {
-		this.impl = new JavaPosts(uri);
+		this.impl = new JavaPostsParticionated(uri);
 	}
 
 	static{
