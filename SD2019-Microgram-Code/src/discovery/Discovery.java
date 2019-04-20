@@ -99,8 +99,10 @@ public class Discovery {
 		
 		URI[] uris = new URI[uniqueURI.size()];
 		int i = 0;
-		for (Map.Entry<Integer, URI> entry : uniqueURI.entrySet())
-		     uris[i++] = entry.getValue();
+		for (Map.Entry<Integer, URI> entry : uniqueURI.entrySet()) {
+			uris[i++] = entry.getValue();
+			System.out.println(entry.getValue());
+		}
 		return uris;
 	}
 	
