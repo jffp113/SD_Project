@@ -41,7 +41,7 @@ public class JavaPostsParticionated implements Posts{
 
     private int calculateServerLocation(){
         int numPostServers = this.si.getNumPostsServers();
-        return this.serverId % numPostServers;
+        return ((this.serverId % numPostServers) + 2)% numPostServers;
     }
 
     @Override
@@ -59,13 +59,14 @@ public class JavaPostsParticionated implements Posts{
         System.out.println("Start creating post with id=" + postId);
         int postLocation = calculatePostLocation(postId);
 
-        System.out.println("Post Location " + postLocation + " Server Location " + calculatePostLocation(postId));
+        System.out.println("Post Location " + postLocation + " Server Location " + calculateServerLocation());
 
         if (postLocation == calculateServerLocation()) {
             System.out.println("Request For current Server");
             return imp.createPost(post);
         }
         System.out.println("Request for other Server");
+        //throw new RuntimeException();
         return si.posts(postLocation).createPost(post);
     }
 
