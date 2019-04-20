@@ -36,7 +36,7 @@ public class JavaPostsParticionated implements Posts{
 
     private int calculatePostLocation(String postId){
         int numPostServers = this.si.getNumPostsServers();
-        return postId.hashCode() % numPostServers;
+        return Math.abs(postId.hashCode()) % numPostServers;
     }
 
     private int calculateServerLocation(){
