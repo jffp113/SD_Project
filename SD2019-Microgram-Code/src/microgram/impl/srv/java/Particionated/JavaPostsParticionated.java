@@ -41,7 +41,7 @@ public class JavaPostsParticionated implements Posts{
 
     private int calculateServerLocation(){
         int numPostServers = this.si.getNumPostsServers();
-        return ((this.serverId % numPostServers) + 2)% numPostServers;
+        return ((this.serverId % numPostServers) + (numPostServers - 1))% numPostServers;
     }
 
     @Override
@@ -136,40 +136,51 @@ public class JavaPostsParticionated implements Posts{
 
     @Override
     public Result<List<String>> getFeed(String userId) {
-        Matcher m = r.matcher(userId);
+        try {
+            Matcher m = r.matcher(userId);
 
-        if(!m.matches())
-            return imp.getFeed(userId);
-        else
-            userId = m.group(1);
-
-        Set<String> res = new TreeSet<>();
-        int numPostServers = si.getNumPostsServers();
-        boolean foundUser = false;
-        Result<List<String>> serverPosts;
-        for (int i = 0; i < numPostServers; i++) {
-            if(serverId == i)
-                serverPosts = imp.getFeed(userId);
-            else
-                serverPosts = si.posts(i).getFeed(addServerPattern(userId));
-
-            if (serverPosts.isOK()) {
-                foundUser = true;
-                res.addAll(serverPosts.value());
+            if (m.matches()) {
+                System.out.println("--------------------" + "REQUEST FROM OTHER" + "--------------------" + userId);
+                userId = m.group(1);
+                return imp.getFeed(userId);
             }
-        }
 
-        if (!foundUser)
-            return error(NOT_FOUND);
-        return ok (new ArrayList<>(res));
+
+
+            System.out.println("--------------------" + userId + "--------------------");
+            Set<String> res = new TreeSet<>();
+            int numPostServers = si.getNumPostsServers();
+            boolean foundUser = false;
+            Result<List<String>> serverPosts;
+            for (int i = 0; i < numPostServers; i++) {
+                if (serverId == i)
+                    serverPosts = imp.getFeed(userId);
+                else
+                    serverPosts = si.posts(i).getFeed(addServerPattern(userId));
+
+                if (serverPosts.isOK()) {
+                    foundUser = true;
+                    res.addAll(serverPosts.value());
+                }
+            }
+
+            if (!foundUser)
+                return error(NOT_FOUND);
+            return ok(new ArrayList<>(res));
+        }catch (Exception e){
+            e.printStackTrace();
+            return error(INTERNAL_ERROR);
+        }
     }
 
     @Override
     public Result<Void> removeAllPostsFromUser(String userId) {
         Matcher m = r.matcher(userId);
 
-        if(!m.matches())
+        if(!m.matches()) {
+            System.out.println("--------------------" + "REQUEST FROM OTHER" + "--------------------");
             return imp.removeAllPostsFromUser(userId);
+        }
         else
             userId = m.group(1);
 
