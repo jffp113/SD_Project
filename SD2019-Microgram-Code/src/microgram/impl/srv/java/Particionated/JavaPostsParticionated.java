@@ -102,7 +102,7 @@ public class JavaPostsParticionated implements Posts{
         if(!m.matches())
             return imp.getPosts(userId);
         else
-            userId = m.group(0);
+            userId = m.group(1);
 
         Set<String> res = new TreeSet<>();
         int numPostServers = si.getNumPostsServers();
@@ -134,7 +134,7 @@ public class JavaPostsParticionated implements Posts{
         if(!m.matches())
             return imp.getFeed(userId);
         else
-            userId = m.group(0);
+            userId = m.group(1);
 
         Set<String> res = new TreeSet<>();
         int numPostServers = si.getNumPostsServers();
@@ -164,7 +164,7 @@ public class JavaPostsParticionated implements Posts{
         if(!m.matches())
             return imp.removeAllPostsFromUser(userId);
         else
-            userId = m.group(0);
+            userId = m.group(1);
 
         int numPostServers = si.getNumPostsServers();
         boolean foundDeletes = false;
