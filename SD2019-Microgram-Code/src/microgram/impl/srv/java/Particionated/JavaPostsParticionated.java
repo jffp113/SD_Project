@@ -4,7 +4,6 @@ import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.java.Result;
 import microgram.impl.srv.java.JavaPosts;
-import microgram.impl.srv.java.ServerInstantiator;
 import utils.Hash;
 
 import java.net.URI;
@@ -17,7 +16,7 @@ import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
 
-public class JavaPostsParticionated implements Posts{
+public class JavaPostsParticionated extends JavaParticionated implements Posts{
 
     private static final String USER_REPEATED_REGEX = "^\\?(.*)\\?$";
     private static final Pattern r = Pattern.compile(USER_REPEATED_REGEX);
@@ -25,28 +24,15 @@ public class JavaPostsParticionated implements Posts{
 
     private Posts imp;
 
-    private ServerInstantiator si = new ServerInstantiator();
-    private int serverId;
-
     public JavaPostsParticionated(URI uri){
-        this.serverId = Math.abs(uri.hashCode());
-        this.imp = new JavaPosts(uri);
+        super(Math.abs(uri.hashCode()));
+        this.imp = new JavaPosts();
         System.out.println(uri);
-    }
-
-    private int calculatePostLocation(String postId){
-        int numPostServers = this.si.getNumPostsServers();
-        return Math.abs(postId.hashCode()) % numPostServers;
-    }
-
-    private int calculateServerLocation(){
-        int numPostServers = this.si.getNumPostsServers();
-        return ((this.serverId % numPostServers) + (numPostServers - 1))% numPostServers;
     }
 
     @Override
     public Result<Post> getPost(String postId) {
-        int postLocation = calculatePostLocation(postId);
+        int postLocation = calculateResourceLocation(postId);
         if (postLocation == calculateServerLocation())
             return imp.getPost(postId);
 
@@ -57,7 +43,7 @@ public class JavaPostsParticionated implements Posts{
     public Result<String> createPost(Post post) {
         String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
         System.out.println("Start creating post with id=" + postId);
-        int postLocation = calculatePostLocation(postId);
+        int postLocation = calculateResourceLocation(postId);
 
         System.out.println("Post Location " + postLocation + " Server Location " + calculateServerLocation());
 
@@ -72,7 +58,7 @@ public class JavaPostsParticionated implements Posts{
 
     @Override
     public Result<Void> deletePost(String postId) {
-        int postLocation = calculatePostLocation(postId);
+        int postLocation = calculateResourceLocation(postId);
         if (postLocation == calculateServerLocation())
             return imp.deletePost(postId);
 
@@ -81,7 +67,7 @@ public class JavaPostsParticionated implements Posts{
 
     @Override
     public Result<Void> like(String postId, String userId, boolean isLiked) {
-        int postLocation = calculatePostLocation(postId);
+        int postLocation = calculateResourceLocation(postId);
         if (postLocation == calculateServerLocation())
             return imp.like(postId, userId, isLiked);
 
@@ -90,7 +76,7 @@ public class JavaPostsParticionated implements Posts{
 
     @Override
     public Result<Boolean> isLiked(String postId, String userId) {
-        int postLocation = calculatePostLocation(postId);
+        int postLocation = calculateResourceLocation(postId);
 
         if (postLocation == calculateServerLocation())
             return imp.isLiked(postId, userId);
@@ -106,10 +92,10 @@ public class JavaPostsParticionated implements Posts{
     public Result<List<String>> getPosts(String userId) {
         Matcher m = r.matcher(userId);
 
-        if(!m.matches())
-            return imp.getPosts(userId);
-        else
+        if (!m.matches()){
             userId = m.group(1);
+            return imp.getPosts(userId);
+        }
 
         Set<String> res = new TreeSet<>();
         int numPostServers = si.getNumPostsServers();
@@ -136,18 +122,13 @@ public class JavaPostsParticionated implements Posts{
 
     @Override
     public Result<List<String>> getFeed(String userId) {
-        try {
             Matcher m = r.matcher(userId);
 
             if (m.matches()) {
-                System.out.println("--------------------" + "REQUEST FROM OTHER" + "--------------------" + userId);
                 userId = m.group(1);
                 return imp.getFeed(userId);
             }
 
-
-
-            System.out.println("--------------------" + userId + "--------------------");
             Set<String> res = new TreeSet<>();
             int numPostServers = si.getNumPostsServers();
             boolean foundUser = false;
@@ -167,10 +148,6 @@ public class JavaPostsParticionated implements Posts{
             if (!foundUser)
                 return error(NOT_FOUND);
             return ok(new ArrayList<>(res));
-        }catch (Exception e){
-            e.printStackTrace();
-            return error(INTERNAL_ERROR);
-        }
     }
 
     @Override
@@ -178,11 +155,9 @@ public class JavaPostsParticionated implements Posts{
         Matcher m = r.matcher(userId);
 
         if(!m.matches()) {
-            System.out.println("--------------------" + "REQUEST FROM OTHER" + "--------------------");
+            userId = m.group(1);
             return imp.removeAllPostsFromUser(userId);
         }
-        else
-            userId = m.group(1);
 
         int numPostServers = si.getNumPostsServers();
         boolean foundDeletes = false;

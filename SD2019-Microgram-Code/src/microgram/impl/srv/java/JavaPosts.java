@@ -55,7 +55,7 @@ public class JavaPosts implements Posts {
 	 */
 	private final ServerInstantiator si = new ServerInstantiator();
 
-	public JavaPosts(URI uri) {
+	public JavaPosts() {
 		initializeKafka();
 	}
 
