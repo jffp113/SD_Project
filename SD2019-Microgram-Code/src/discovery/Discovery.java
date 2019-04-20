@@ -207,7 +207,7 @@ public class Discovery {
 			try {
 				while (this.minRepliesNeeded > this.uniqueURI.size()) {
 						uri = getAnUri();
-						uriHash = uri.hashCode();
+						uriHash = Math.abs(uri.hashCode());
 						
 					if (!this.uniqueURI.containsKey(uriHash)) {
                         Log.info(uri.toString() + "\n");

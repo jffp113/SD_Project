@@ -29,7 +29,7 @@ public class JavaPostsParticionated implements Posts{
     private int serverId;
 
     public JavaPostsParticionated(URI uri){
-        this.serverId = uri.hashCode();
+        this.serverId = Math.abs(uri.hashCode());
         this.imp = new JavaPosts(uri);
 
     }
@@ -37,7 +37,7 @@ public class JavaPostsParticionated implements Posts{
     @Override
     public Result<Post> getPost(String postId) {
         int numPostServers = this.si.getNumPostsServers();
-        int postLocation = Math.abs(postId.hashCode() % numPostServers);
+        int postLocation = postId.hashCode() % numPostServers;
         if (postLocation == this.serverId % numPostServers)
             return imp.getPost(postId);
 
@@ -51,7 +51,7 @@ public class JavaPostsParticionated implements Posts{
         System.out.println("Start creating post with id=" + postId);
         int numPostServers = this.si.getNumPostsServers();
         System.out.println("Number of post servers: " + numPostServers);
-        int postLocation = Math.abs(postId.hashCode() % numPostServers);
+        int postLocation = postId.hashCode() % numPostServers;
 
         System.out.println("Post Location " + postLocation + " Server Location " + (this.serverId % numPostServers));
 
@@ -67,7 +67,7 @@ public class JavaPostsParticionated implements Posts{
     @Override
     public Result<Void> deletePost(String postId) {
         int numPostServers = this.si.getNumPostsServers();
-        int postLocation = Math.abs(postId.hashCode() % numPostServers);
+        int postLocation = postId.hashCode() % numPostServers;
         if (postLocation == this.serverId % numPostServers)
             return imp.deletePost(postId);
 
@@ -77,7 +77,7 @@ public class JavaPostsParticionated implements Posts{
     @Override
     public Result<Void> like(String postId, String userId, boolean isLiked) {
         int numPostServers = this.si.getNumPostsServers();
-        int postLocation = Math.abs(postId.hashCode() % numPostServers);
+        int postLocation = postId.hashCode() % numPostServers;
         if (postLocation == this.serverId % numPostServers)
             return imp.like(postId, userId, isLiked);
 
@@ -87,7 +87,7 @@ public class JavaPostsParticionated implements Posts{
     @Override
     public Result<Boolean> isLiked(String postId, String userId) {
         int numPostServers = this.si.getNumPostsServers();
-        int postLocation = Math.abs(postId.hashCode() % numPostServers);
+        int postLocation = postId.hashCode() % numPostServers;
         if (postLocation == this.serverId % numPostServers)
             return imp.isLiked(postId, userId);
 
