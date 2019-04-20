@@ -7,6 +7,8 @@ import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import kakfa.KafkaSubscriber;
@@ -17,8 +19,11 @@ import microgram.api.java.Result;
 public class JavaProfiles implements Profiles {
 	
 	private static final int INCREASE = 1;
-	
 	private static final int DECREASE = -1;
+
+	private static final String POST_REPEATED_REGEX = "^\\?(.*)\\?$";
+	private static final Pattern r = Pattern.compile(POST_REPEATED_REGEX);
+	private static final String POST_ID_MARSHALLER = "?%s?";
 
 	private Map<String, Profile> users =
 			new ConcurrentHashMap<>(new HashMap<>());
@@ -49,11 +54,12 @@ public class JavaProfiles implements Profiles {
 		new Thread( () -> {
 			subscriber.consume(((topic, key, value) ->  {
 				String[] result = value.split(" ");
-				System.out.println(System.currentTimeMillis()+ " " + topic + " " + key + " " + value);
 				if(key.equals(JavaPosts.PostsEventKeys.DELETE.name())) {
+					//System.out.println(System.currentTimeMillis()+ " " + topic + " " + key + " " + value);
 					changeUserPostsValue(DECREASE,result[result.length - 2]);
 				}
 				else if(key.equals(JavaPosts.PostsEventKeys.CREATE.name())) {
+					//System.out.println(System.currentTimeMillis()+ " " + topic + " " + key + " " + value);
 					changeUserPostsValue(INCREASE,result[result.length - 1]);
 				}
 			}));
@@ -61,11 +67,9 @@ public class JavaProfiles implements Profiles {
 	}
 
 	private void changeUserPostsValue(int change,String user){
-		System.out.println(user);
 		Profile profile = users.get(user);
 		if(profile != null) {
 			profile.changeNumberOfPosts(change);
-			System.out.println(profile.getUserId() + " posts" + profile.getPosts());
 		}
 	}
 
@@ -133,6 +137,25 @@ public class JavaProfiles implements Profiles {
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {		
 		Set<String> s1 = following.get( userId1 );
 		Set<String> s2 = followers.get( userId2 );
+
+		Matcher m1 = r.matcher(userId2);
+		if (m1.matches()){
+			userId2 = m1.group(1);
+			if(s2 == null) {
+				s2 = Collections.synchronizedSet(new HashSet<>());
+				//followers.put(userId2, s2);
+			}
+			if(!isFollowing) s2.add(userId1);
+		}
+		Matcher m2 = r.matcher(userId1);
+		if(m2.matches()){
+			userId1 = m2.group(1);
+			if(s1 == null) {
+				s1 = Collections.synchronizedSet(new HashSet<>());
+				//followers.put(userId1, s1);
+			}
+			if(!isFollowing) s1.add(userId2);
+		}
 
 		System.out.println("Trying follow = " + isFollowing + " Users " + userId1 + " " + userId2);
 		if( s1 == null || s2 == null)

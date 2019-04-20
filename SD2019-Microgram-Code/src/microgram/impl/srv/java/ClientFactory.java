@@ -117,6 +117,25 @@ class ClientFactory {
 		return errorsFound == NO_ERRORS ?
 				profiles : Arrays.copyOf(profiles, profiles.length - errorsFound);
 	}
+
+
+	static Posts[] buildPosts() throws NoServersAvailableException {
+		System.out.println("Starting finding Posts Servers");
+		URI[] postsUris = discoverURI(PostsRestServer.SERVICE, DiscoveryConfiguration.numberOfPostsServers);
+		System.out.println("Found " + postsUris.length + "servers \n");
+		Posts[] posts = new Posts[postsUris.length];
+
+		int errorsFound = NO_ERRORS;
+		for (int i = 0; i < posts.length; i++)
+			try {
+				posts[i - errorsFound] = buildAPost(postsUris[i]);
+			} catch (NotAWebserviceException e) {
+				errorsFound++;
+			}
+
+		return errorsFound == NO_ERRORS ?
+				posts : Arrays.copyOf(posts, posts.length - errorsFound);
+	}
 		
 	static Media[] buildMedia() throws NoServersAvailableException {
 		URI[] storageUris = discoverURI(MediaRestServer.SERVICE, DiscoveryConfiguration.numberOfMediaServes);
@@ -133,23 +152,6 @@ class ClientFactory {
 		return errorsFound == NO_ERRORS ?
 				medias : Arrays.copyOf(medias, medias.length - errorsFound);
 	}
-	
-	static Posts[] buildPosts() throws NoServersAvailableException {
-		System.out.println("Starting finding Posts Servers");
-		URI[] postsUris = discoverURI(PostsRestServer.SERVICE, DiscoveryConfiguration.numberOfPostsServers);
-		System.out.println("Found " + postsUris.length + "servers \n");
-		Posts[] posts = new Posts[postsUris.length];
-		
-		int errorsFound = NO_ERRORS;
-		for (int i = 0; i < posts.length; i++)
-			try {
-				posts[i - errorsFound] = buildAPost(postsUris[i]);
-			} catch (NotAWebserviceException e) {
-				errorsFound++;
-			}
 
-		return errorsFound == NO_ERRORS ?
-				posts : Arrays.copyOf(posts, posts.length - errorsFound);
-	}
 	
 }

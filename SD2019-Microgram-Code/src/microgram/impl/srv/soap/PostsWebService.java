@@ -18,12 +18,9 @@ public class PostsWebService extends SoapService implements SoapPosts {
 	final Posts impl;
 
 	public PostsWebService() {
-		this.impl = new JavaPosts(null);
+		this.impl = new JavaPosts();
 	}
 
-	public PostsWebService(URI uri) {
-		this.impl = new JavaPosts(uri);
-	}
 	@Override
 	public Post getPost( String postId ) throws MicrogramException {
 		return super.resultOrThrow( impl.getPost(postId));

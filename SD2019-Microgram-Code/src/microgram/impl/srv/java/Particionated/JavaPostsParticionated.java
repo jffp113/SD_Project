@@ -92,7 +92,7 @@ public class JavaPostsParticionated extends JavaParticionated implements Posts{
     public Result<List<String>> getPosts(String userId) {
         Matcher m = r.matcher(userId);
 
-        if (!m.matches()){
+        if (m.matches()){
             userId = m.group(1);
             return imp.getPosts(userId);
         }
@@ -104,7 +104,7 @@ public class JavaPostsParticionated extends JavaParticionated implements Posts{
 
         for (int i = 0; i < numPostServers; i++) {
 
-            if(serverId == i)
+            if(super.calculateServerLocation() == i)
                 serverPosts = imp.getPosts(userId);
             else
                 serverPosts = si.posts(i).getPosts(addServerPattern(userId));
@@ -134,7 +134,7 @@ public class JavaPostsParticionated extends JavaParticionated implements Posts{
             boolean foundUser = false;
             Result<List<String>> serverPosts;
             for (int i = 0; i < numPostServers; i++) {
-                if (serverId == i)
+                if (super.calculateServerLocation() == i)
                     serverPosts = imp.getFeed(userId);
                 else
                     serverPosts = si.posts(i).getFeed(addServerPattern(userId));

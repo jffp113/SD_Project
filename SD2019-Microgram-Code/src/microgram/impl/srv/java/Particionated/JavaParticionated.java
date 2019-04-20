@@ -4,7 +4,6 @@ import microgram.impl.srv.java.ServerInstantiator;
 
 public abstract class JavaParticionated {
 
-
     protected int serverId;
     protected ServerInstantiator si = new ServerInstantiator();
 
@@ -13,12 +12,22 @@ public abstract class JavaParticionated {
     }
 
     protected int calculateResourceLocation(String postId){
-        int numPostServers = this.si.getNumPostsServers();
+        int numPostServers;
+        if(this instanceof JavaProfilesParticionated)
+            numPostServers = this.si.getNumProfilesServers();
+        else
+            numPostServers = this.si.getNumPostsServers();
+
         return Math.abs(postId.hashCode()) % numPostServers;
     }
 
     protected int calculateServerLocation(){
-        int numPostServers = this.si.getNumPostsServers();
+        int numPostServers;
+        if(this instanceof JavaProfilesParticionated)
+            numPostServers = this.si.getNumProfilesServers();
+        else
+            numPostServers = this.si.getNumPostsServers();
+
         return ((this.serverId % numPostServers) + (numPostServers - 1))% numPostServers;
     }
 

@@ -3,27 +3,18 @@ package microgram.impl.srv.rest;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import microgram.api.Profile;
 import microgram.api.java.Profiles;
 import microgram.api.rest.RestProfiles;
-import microgram.impl.srv.java.JavaProfiles;
+import microgram.impl.srv.java.Particionated.JavaProfilesParticionated;
 
 public class RestProfilesResources extends RestResource implements RestProfiles {
 
 	final Profiles impl;
 
-	private static Logger Log = Logger.getLogger(JavaProfiles.class.getName());
-
-	static{
-		Log.setLevel( Level.FINER );
-		Log.info("Initiated RestProfilesResources class\n");
-	}
-
 	public RestProfilesResources(URI uri) {
-		this.impl = new JavaProfiles();
+		//this.impl = new JavaProfiles();
+		this.impl = new JavaProfilesParticionated(uri);
 	}
 	
 	@Override
@@ -50,7 +41,6 @@ public class RestProfilesResources extends RestResource implements RestProfiles 
 	@Override
 	public void follow(String userId1, String userId2, boolean isFollowing) {
 		super.resultOrThrow(this.impl.follow(userId1, userId2, isFollowing));
-		
 	}
 
 	@Override
@@ -60,9 +50,6 @@ public class RestProfilesResources extends RestResource implements RestProfiles 
 
 	@Override
 	public Set<String> getFollowing(String userId) {
-		Log.info("RestProfilesResources: getFollowing=" + userId + "\n");
-		Set<String> r = super.resultOrThrow(this.impl.getFollowing(userId));
-		Log.info(r.size() + "\n");
-		return r;
+		return super.resultOrThrow(this.impl.getFollowing(userId));
 	}
 }
