@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import discovery.Discovery;
+import discovery.DiscoveryConfiguration;
 import microgram.api.java.Media;
 import microgram.api.java.Posts;
 import microgram.api.java.Profiles;
@@ -97,7 +98,7 @@ class ClientFactory {
 	
 	static Profiles[] buildProfile() throws NoServersAvailableException {
 		System.out.println("Starting finding Posts Servers");
-		URI[] profileUris = discoverURI(ProfilesRestServer.SERVICE, N_PROFILES);
+		URI[] profileUris = discoverURI(ProfilesRestServer.SERVICE, DiscoveryConfiguration.numberOfProfilesServers);
 		System.out.println("Found " + profileUris.length + "servers \n");
 		Profiles[] profiles = new Profiles[profileUris.length];
 		
@@ -118,7 +119,7 @@ class ClientFactory {
 	}
 		
 	static Media[] buildMedia() throws NoServersAvailableException {
-		URI[] storageUris = discoverURI(MediaRestServer.SERVICE, N_MEDIA);		
+		URI[] storageUris = discoverURI(MediaRestServer.SERVICE, DiscoveryConfiguration.numberOfMediaServes);
 		Media[] medias = new Media[storageUris.length];
 		
 		int errorsFound = NO_ERRORS;
@@ -135,7 +136,7 @@ class ClientFactory {
 	
 	static Posts[] buildPosts() throws NoServersAvailableException {
 		System.out.println("Starting finding Posts Servers");
-		URI[] postsUris = discoverURI(PostsRestServer.SERVICE, N_POSTS);
+		URI[] postsUris = discoverURI(PostsRestServer.SERVICE, DiscoveryConfiguration.numberOfPostsServers);
 		System.out.println("Found " + postsUris.length + "servers \n");
 		Posts[] posts = new Posts[postsUris.length];
 		

@@ -46,18 +46,21 @@ public class JavaPostsParticionated implements Posts{
 
     @Override
     public Result<String> createPost(Post post) {
-        System.out.println("Start creating post");
 
         String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
+        System.out.println("Start creating post with id=" + postId);
         int numPostServers = this.si.getNumPostsServers();
         System.out.println("Number of post servers: " + numPostServers);
         int postLocation = postId.hashCode() % numPostServers;
 
         System.out.println("Post Location " + postLocation + " Server Location " + (this.serverId % numPostServers));
 
-        if (postLocation == (this.serverId % numPostServers))
-            return imp.createPost(post);
 
+        if (postLocation == (this.serverId % numPostServers)) {
+            System.out.println("Request For current Server");
+            return imp.createPost(post);
+        }
+        System.out.println("Request for other Server");
         return si.posts(postLocation).createPost(post);
     }
 

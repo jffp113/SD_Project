@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import discovery.DiscoveryConfiguration;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -26,6 +27,18 @@ public class PostsRestServer {
 	public static String SERVER_BASE_URI = "http://%s:%s/rest";
 
 	public static void main(String[] args) throws URISyntaxException {
+
+		for(int i = 0; i < args.length; i +=2){
+			if(args[i].equals("-profiles")){
+				System.out.println("profiles=" + args[i+1]);
+				DiscoveryConfiguration.numberOfProfilesServers = Integer.parseInt(args[i+1]);
+			}
+			else if(args[i].equals("-posts")){
+				System.out.println("psots=" + args[i+1]);
+				DiscoveryConfiguration.numberOfPostsServers = Integer.parseInt(args[i+1]);
+			}
+		}
+
 		System.out.println(IP.hostAddress());
 		String ip = IP.hostAddress();
 		String serverURI = String.format(SERVER_BASE_URI, ip, PORT);
