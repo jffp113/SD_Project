@@ -6,15 +6,14 @@ import java.util.Set;
 import microgram.api.Profile;
 import microgram.api.java.Profiles;
 import microgram.api.rest.RestProfiles;
-import microgram.impl.srv.java.Particionated.JavaProfilesParticionated;
+import microgram.impl.srv.java.JavaProfiles;
 
 public class RestProfilesResources extends RestResource implements RestProfiles {
 
 	final Profiles impl;
 
 	public RestProfilesResources(URI uri) {
-		//this.impl = new JavaProfiles();
-		this.impl = new JavaProfilesParticionated(uri);
+		this.impl = new JavaProfiles();
 	}
 	
 	@Override

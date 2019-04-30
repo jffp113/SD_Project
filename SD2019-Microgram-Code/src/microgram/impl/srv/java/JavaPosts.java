@@ -3,11 +3,10 @@ package microgram.impl.srv.java;
 import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
 import static microgram.api.java.Result.ErrorCode.*;
-
-import java.net.URI;
 import java.util.*;
 
 import kakfa.KafkaPublisher;
+import kakfa.KafkaSubscriber;
 import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.java.Result;
@@ -49,7 +48,8 @@ public class JavaPosts implements Posts {
 	 * Publishes messages.
 	 */
 	private KafkaPublisher publisher;
-	
+	private KafkaSubscriber subscriber;
+
 	/**
 	 * Allows this server to contact others.
 	 */
@@ -60,20 +60,35 @@ public class JavaPosts implements Posts {
 	}
 
 	private void initializeKafka(){
+		initKafkaSubscriber();
+	}
+
+	private void initKafkaSubscriber() {
 		publisher = new KafkaPublisher();
+		subscriber = new KafkaSubscriber(Arrays.asList(JavaProfiles.JAVA_PROFILES_EVENTS));
+		new Thread( () -> {
+			subscriber.consume(((topic, key, value) ->  {
+				String[] result = value.split(" ");
+				if(key.equals(JavaProfiles.ProfilesEventKeys.DELETE.name())) {
+					removeAllPostsFromUser(result[1]);
+				}
+			}));
+		}).start();
 	}
 
 	public Result<Post> getPost (String postId) {
 		Post res = posts.get(postId);
-		if (res != null)
-			return ok(res);
-		return error(NOT_FOUND);
+
+		if (res == null)
+			return error(NOT_FOUND);
+
+		res.setLikes(likes.get(postId).size());
+		return ok(res);
 	}
 
 	private void deleteImageNotification(Post post) {
 		String message = String.format("%s %s %s %s", IP.hostAddress(),post.getPostId(),post.getOwnerId(),post.getMediaUrl());
 		publisher.publish(JAVA_POST_EVENTS,PostsEventKeys.DELETE.name(),message);
-		System.out.println("DELETE_NOTIFICATION");
 	}
 
 	public Result<Void> deletePost (String postId) {
@@ -98,19 +113,16 @@ public class JavaPosts implements Posts {
 	private void postCreatedNotification(Post post) {
 		String message = String.format("OK %s %s %s", IP.hostAddress(),post.getPostId(),post.getOwnerId());
 		publisher.publish(JAVA_POST_EVENTS,PostsEventKeys.CREATE.name(),message);
-		System.out.println("CREATE_NOTIFICATION_POST_OK");
 	}
 
 	private void postNotCreatedNotification(Post post){
 		String message = String.format("%s %s %s",IP.hostAddress(),post.getPostId(),post.getMediaUrl());
 		publisher.publish(JAVA_POST_EVENTS,PostsEventKeys.CREATE_FAIL.name(),message);
-		System.out.println("CREATE_NOTIFICATION_POST_CONFLICT");
 	}
 	
 	public Result<String> createPost(Post post) {
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
 		if (posts.putIfAbsent(postId, post) == null) {
-			System.out.println( System.currentTimeMillis() + " Creating Post from user: " + post.getOwnerId());
 			post.setPostId(postId);
 			likes.put(postId, new HashSet<>());
 			
@@ -156,7 +168,6 @@ public class JavaPosts implements Posts {
 	
 	@Override
 	public Result<List<String>> getPosts (String userId) {
-		System.out.println("Getting post From: " + userId);
 		Set<String> res = userPosts.get(userId);
 		if (res != null)
 			return ok(new ArrayList<>(res));
@@ -170,23 +181,17 @@ public class JavaPosts implements Posts {
 			Result<Set<String>> reply;
 			Set<String> following;
 			List<String> result = new LinkedList<>();
-
-			System.out.println("Getting feed for user " + userId);
 			reply = this.si.profiles(0).getFollowing(userId);
-
-			System.out.println(reply.error());
 
 			if (!reply.isOK())
 				return error(NOT_FOUND);
 
 			following = reply.value();
-
-			System.out.println(following);
 			following
 					.forEach(f ->{
 									Set<String> p = userPosts.get(f);
 									if(p != null)
-									result.addAll(p);
+										result.addAll(p);
 					});
 
 			return ok(result);
@@ -194,7 +199,6 @@ public class JavaPosts implements Posts {
 	}
     
     public Result<Void> removeAllPostsFromUser(String userId) {
-		System.out.println("Start Removing all Posts from " + userId);
     	Set<String> userSetPosts = userPosts.get(userId);
 
 		if(userSetPosts == null)
@@ -202,6 +206,8 @@ public class JavaPosts implements Posts {
 
 		for(String postId :userSetPosts)
 			this.deletePost(postId);
+
+		likes.forEach((k,v) -> v.remove(userId));
 
 	    return ok();
     }

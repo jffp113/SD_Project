@@ -1,13 +1,11 @@
 package microgram.impl.clt.java;
 
-import java.net.URI;
 import java.util.List;
 
 import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.java.Result;
 
-//We implemented TODO
 public class RetryPostsClient extends RetryClient implements Posts {
 
 	private final Posts impl;

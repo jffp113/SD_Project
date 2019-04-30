@@ -11,7 +11,6 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static microgram.api.java.Result.ErrorCode.INTERNAL_ERROR;
 import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
@@ -27,7 +26,6 @@ public class JavaPostsParticionated extends JavaParticionated implements Posts{
     public JavaPostsParticionated(URI uri){
         super(Math.abs(uri.hashCode()));
         this.imp = new JavaPosts();
-        System.out.println(uri);
     }
 
     @Override
@@ -42,17 +40,11 @@ public class JavaPostsParticionated extends JavaParticionated implements Posts{
     @Override
     public Result<String> createPost(Post post) {
         String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
-        System.out.println("Start creating post with id=" + postId);
         int postLocation = calculateResourceLocation(postId);
 
-        System.out.println("Post Location " + postLocation + " Server Location " + calculateServerLocation());
-
         if (postLocation == calculateServerLocation()) {
-            System.out.println("Request For current Server");
             return imp.createPost(post);
         }
-        System.out.println("Request for other Server");
-        //throw new RuntimeException();
         return si.posts(postLocation).createPost(post);
     }
 

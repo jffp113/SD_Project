@@ -2,8 +2,6 @@ package microgram.impl.srv.java;
 
 import java.net.URI;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import discovery.Discovery;
 import discovery.DiscoveryConfiguration;
@@ -77,7 +75,7 @@ class ClientFactory {
 	
 	private static Profiles buildAProfile(URI uri) throws NotAWebserviceException {
 		String uriStr = uri.toString();
-		Profiles result = null;
+		Profiles result;
 		
 		if(uriStr.endsWith(REST))
 			result = new RestProfilesClient(uri);
@@ -97,9 +95,7 @@ class ClientFactory {
 	}
 	
 	static Profiles[] buildProfile() throws NoServersAvailableException {
-		System.out.println("Starting finding Posts Servers");
 		URI[] profileUris = discoverURI(ProfilesRestServer.SERVICE, DiscoveryConfiguration.numberOfProfilesServers);
-		System.out.println("Found " + profileUris.length + "servers \n");
 		Profiles[] profiles = new Profiles[profileUris.length];
 		
 		/*
@@ -120,9 +116,7 @@ class ClientFactory {
 
 
 	static Posts[] buildPosts() throws NoServersAvailableException {
-		System.out.println("Starting finding Posts Servers");
 		URI[] postsUris = discoverURI(PostsRestServer.SERVICE, DiscoveryConfiguration.numberOfPostsServers);
-		System.out.println("Found " + postsUris.length + "servers \n");
 		Posts[] posts = new Posts[postsUris.length];
 
 		int errorsFound = NO_ERRORS;

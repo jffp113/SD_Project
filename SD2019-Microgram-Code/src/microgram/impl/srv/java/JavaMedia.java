@@ -18,10 +18,7 @@ public class JavaMedia implements Media {
 
 	private static final String MEDIA_EXTENSION = ".jpg";
 	private static final String ROOT_DIR = "/tmp/microgram/";
-	
-	/*enum MediaEventKeys {
-		UPLOAD, DOWNLOAD, DELETE
-	};*/
+
 
 	final String baseUri;
 	private KafkaSubscriber subscriber;
@@ -53,7 +50,7 @@ public class JavaMedia implements Media {
 			File filename = new File(ROOT_DIR + id + MEDIA_EXTENSION);
 			Files.write(filename.toPath(), bytes);
 			return ok(baseUri + "/" + id);
-		} catch( Exception x  ) { 
+		} catch( Exception x  ) {
 			x.printStackTrace();
 			return error(INTERNAL_ERROR);
 		}
