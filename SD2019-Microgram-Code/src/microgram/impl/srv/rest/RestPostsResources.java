@@ -8,8 +8,6 @@ import microgram.api.java.Posts;
 import microgram.api.rest.RestPosts;
 import microgram.impl.srv.java.Particionated.JavaPostsParticionated;
 
-// Make this class concrete.
-////TODO We IMplemented
 public class RestPostsResources extends RestResource implements RestPosts {
 
 	final Posts impl;

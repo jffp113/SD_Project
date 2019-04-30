@@ -1,9 +1,4 @@
-/**
- * 
- */
 package microgram.impl.srv.java;
-
-//import java.util.function.Supplier;
 
 import microgram.api.java.Media;
 import microgram.api.java.Posts;
@@ -28,18 +23,6 @@ public class ServerInstantiator {
 	 * Array containing the active Posts servers, ordered by their URI hash.
 	 */
 	private Posts[] postClients;
-	
-	/*private void findServers (E[] servers, Supplier<T> func) {
-		synchronized (this) {
-			if (servers == null) {
-				try {
-					servers = func();
-				} catch (NoServersAvailableException e){
-					servers = null;
-				}
-			}
-		}
-	}*/
 	
 	private void findServersMedia () {
 		synchronized (this) {

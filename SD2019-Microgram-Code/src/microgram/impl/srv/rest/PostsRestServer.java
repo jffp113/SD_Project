@@ -26,13 +26,9 @@ public class PostsRestServer {
 	public static String SERVER_BASE_URI = "http://%s:%s/rest";
 
 	public static void main(String[] args) throws URISyntaxException {
-
 		DiscoveryConfiguration.setArgs(args);
-
-		System.out.println(IP.hostAddress());
 		String ip = IP.hostAddress();
 		String serverURI = String.format(SERVER_BASE_URI, ip, PORT);
-		System.out.println(DiscoveryConfiguration.numberOfProfilesServers);
 		(new RestServiceExecuter()).execute(SERVICE,Log,new RestPostsResources(new URI(serverURI)),serverURI);
 	}
 }

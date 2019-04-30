@@ -29,7 +29,6 @@ public class JavaMedia implements Media {
 		initKafkaSubscriber();
 	}
 
-	//TODO test
 	private void initKafkaSubscriber() {
 		subscriber = new KafkaSubscriber(Arrays.asList(JavaPosts.JAVA_POST_EVENTS));
 		new Thread( () -> {

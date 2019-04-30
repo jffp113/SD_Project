@@ -173,7 +173,7 @@ public class JavaPosts implements Posts {
 			return ok(new ArrayList<>(res));
 		else
 		
-			return ok( new LinkedList<>() ); // See if the TEST Change TODO
+			return ok( new LinkedList<>() );
 	}
 	
 	@Override

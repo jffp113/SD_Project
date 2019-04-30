@@ -7,7 +7,7 @@ public class SoapService {
 
 	/**
 	 * Given a Result<T>, either returns the value, or throws the Jersey Exception matching the error code...
-	 * @param r
+	 * @param result
 	 * @return
 	 */
 	protected <T> T resultOrThrow( Result<T> result ) throws MicrogramException {
