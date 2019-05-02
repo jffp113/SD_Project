@@ -24,7 +24,6 @@ public class JavaProfiles implements Profiles {
 
 	private static final String POST_REPEATED_REGEX = "^\\?(.*)\\?$";
 	private static final Pattern r = Pattern.compile(POST_REPEATED_REGEX);
-	private static final String POST_ID_MARSHALLER = "?%s?";
 
 	public static final String JAVA_PROFILES_EVENTS = "Microgram-JavaProfiles";
 
@@ -33,19 +32,19 @@ public class JavaProfiles implements Profiles {
 	};
 
 	private Map<String, Profile> users =
-			new ConcurrentHashMap<>(new HashMap<>());
+			new ConcurrentHashMap<>();
 	
 	/**
 	 * User key is being followed by
 	 */
 	private Map<String, Set<String>> followers = 
-			new ConcurrentHashMap<>(new HashMap<>());
+			new ConcurrentHashMap<>();
 	
 	/**
 	 * User key is following
 	 */
 	private Map<String, Set<String>> following = 
-			new ConcurrentHashMap<>(new HashMap<>());
+			new ConcurrentHashMap<>();
 
 	private final ServerInstantiator si = new ServerInstantiator();
 
