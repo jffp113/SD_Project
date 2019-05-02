@@ -11,6 +11,7 @@ import java.net.URL;
 import javax.xml.ws.BindingProvider;
 
 
+import com.sun.xml.ws.client.BindingProviderProperties;
 import microgram.api.java.Result;
 import microgram.api.java.Result.ErrorCode;
 import microgram.api.soap.MicrogramException;
@@ -66,8 +67,8 @@ abstract class SoapClient {
 	}
 	
 	protected void setTimeout(BindingProvider b) {
-//		b.getRequestContext().put(BindingProviderProperties.REQUEST_TIMEOUT, SOAP_RECV_TIMEOUT);
-//		b.getRequestContext().put(BindingProviderProperties.CONNECT_TIMEOUT, SOAP_CONN_TIMEOUT);
+ 			b.getRequestContext().put(BindingProviderProperties.REQUEST_TIMEOUT, SOAP_RECV_TIMEOUT);
+ 			b.getRequestContext().put(BindingProviderProperties.CONNECT_TIMEOUT, SOAP_CONN_TIMEOUT);
 		
 	}
 	
