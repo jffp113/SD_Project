@@ -122,6 +122,7 @@ public class JavaPosts implements Posts {
 	
 	public Result<String> createPost(Post post) {
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
+		System.out.println("(line 125) Creating post " + postId);
 		if (posts.putIfAbsent(postId, post) == null) {
 			post.setPostId(postId);
 			likes.put(postId, Collections.synchronizedSet(new LinkedHashSet<>()));
@@ -142,6 +143,7 @@ public class JavaPosts implements Posts {
 	
 	public Result<Void> like (String postId, String userId, boolean isLiked) {
 		Set<String> res = likes.get(postId);
+		
 		if (res == null)
 			return error( NOT_FOUND );
 
@@ -168,6 +170,7 @@ public class JavaPosts implements Posts {
 	
 	@Override
 	public Result<List<String>> getPosts (String userId) {
+		System.out.println("(line 171) Getting posts from user " + userId);
 		Set<String> res = userPosts.get(userId);
 		if (res != null)
 			return ok(new ArrayList<>(res));
@@ -179,20 +182,20 @@ public class JavaPosts implements Posts {
 	@Override
 	public Result<List<String>> getFeed(String userId) {
 			Result<Set<String>> reply;
-			Set<String> following;
 			List<String> result = new LinkedList<>();
+			
+			System.out.println("(line 185) Getting feed from user " + userId);
 			reply = this.si.profiles(0).getFollowing(userId);
 
 			if (!reply.isOK())
 				return error(NOT_FOUND);
 
-			following = reply.value();
-			following
-					.forEach(f ->{
-									Set<String> p = userPosts.get(f);
-									if(p != null)
-										result.addAll(p);
-					});
+			Set<String> following = reply.value();
+			following.forEach(f ->{
+								Set<String> p = userPosts.get(f);
+								if(p != null)
+									result.addAll(p);
+								});
 
 			return ok(result);
 
