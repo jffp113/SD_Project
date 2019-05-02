@@ -32,17 +32,17 @@ public class JavaPosts implements Posts {
 	/**
 	 * Maps posts to by their id. Supports concurrency. 
 	 */
-	protected Map<String, Post> posts = new ConcurrentHashMap<>();
+	protected Map<String, Post> posts = new ConcurrentHashMap<>(new HashMap<>());
 	
 	/**
 	 * Maps a userId to the ids of the posts he/she likes. Supports concurrency.
 	 */
-	protected Map<String, Set<String>> likes = new ConcurrentHashMap<>();
+	protected Map<String, Set<String>> likes = new ConcurrentHashMap<>(new HashMap<>());
 	
 	/**
 	 * Maps a userId to his/her posts' ids. Supports concurrenncy. 
 	 */
-	protected Map<String, Set<String>> userPosts = new ConcurrentHashMap<>();
+	protected Map<String, Set<String>> userPosts = new ConcurrentHashMap<>(new HashMap<>());
 
 	/**
 	 * Publishes messages.
