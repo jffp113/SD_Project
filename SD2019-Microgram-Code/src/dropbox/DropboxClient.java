@@ -9,12 +9,15 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 import dropbox.msgs.*;
 import microgram.api.java.Result;
 import org.pac4j.scribe.builder.api.DropboxApi20;
+import sun.net.www.http.HttpClient;
 import utils.JSON;
 
-import java.io.File;
+import java.io.*;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static microgram.api.java.Result.ErrorCode.CONFLICT;
@@ -49,8 +52,9 @@ public class DropboxClient
 	private static final String LIST_FOLDER_V2_URL = "https://api.dropboxapi.com/2/files/list_folder";
 	private static final String LIST_FOLDER_CONTINUE_V2_URL = "https://api.dropboxapi.com/2/files/list_folder/continue";
 	private static final String CREATE_FILE_V2_URL = "https://content.dropboxapi.com/2/files/upload";
-	private static final String DELETE_FILE_V2_URL = "https://api.dropboxapi.com/2/files/delete_v2";
+	private static final String DELETE_FILE_V2_URL = "https://api.dropboxapi.com/2/files/delete";
 	private static final String DOWNLOAD_FILE_V2_URL = "https://content.dropboxapi.com/2/files/download";
+	private static final String GET_TEMPORARY_LINK_FILE_V2_URL = "https://api.dropboxapi.com/2/files/get_temporary_link";
 
 	private static final String DROPBOX_API_ARG = "Dropbox-API-Arg";
 
@@ -207,7 +211,7 @@ public class DropboxClient
 		}
 		try {
 			OAuthRequest upload = new OAuthRequest(Verb.POST, CREATE_FILE_V2_URL);
-			upload.addHeader(DROPBOX_API_ARG, JSON.encode(new CreateFileV2Args("/" + filename)));
+			upload.addHeader(DROPBOX_API_ARG, JSON.encode(new CreateFileV2Args(filename)));
 			upload.addHeader("Content-Type", OCTETSTREAM_CONTENT_TYPE);
 
 			upload.setPayload(bytes);
@@ -231,13 +235,13 @@ public class DropboxClient
 	 */
 	public Result<byte[]> download(String filename) {
 		try {
-			OAuthRequest download = new OAuthRequest(Verb.GET, DOWNLOAD_FILE_V2_URL);
-			download.addHeader(DROPBOX_API_ARG, JSON.encode(new AccessFileV2Args("/" + filename)));
+			OAuthRequest download = new OAuthRequest(Verb.POST, GET_TEMPORARY_LINK_FILE_V2_URL);
+			download.setPayload(JSON.encode(new AccessFileV2Args( filename)));
+			download.addHeader("Content-Type", JSON_CONTENT_TYPE);
+
 			service.signRequest(accessToken, download);
 			Response r = service.execute(download);
-
 			switch (r.getCode()){
-
 				case 409:
 				case 404:
 					System.err.println("NOT_FOUND");
@@ -247,7 +251,8 @@ public class DropboxClient
                         System.err.println(r.getCode());
 			}
 
-			return ok(r.getBody().getBytes());
+			return ok(Files.readAllBytes(getImageFromLink(JSON.decode(r.getBody()
+					,AccessFileV2Return.class).getLink()).toPath()));
 
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -256,7 +261,24 @@ public class DropboxClient
 
 
 	}
-	
+
+	private File getImageFromLink(String url) throws IOException {
+		File f = File.createTempFile("DropBox","image");
+		f.deleteOnExit();
+		InputStream in = new URL(url).openStream();
+		OutputStream out = new FileOutputStream(f);
+
+		dumpStream(in,out);
+		return f;
+	}
+
+	private void dumpStream(InputStream in, OutputStream out) throws IOException {
+		int b;
+		while((b = in.read()) != -1){
+			out.write(b);
+		}
+	}
+
 	/**
 	 * Deletes the file name.
 	 * https://www.dropbox.com/developers/documentation/http/documentation#files-delete
@@ -267,7 +289,7 @@ public class DropboxClient
 		OAuthRequest delete = new OAuthRequest(Verb.POST, DELETE_FILE_V2_URL);
 		delete.addHeader("Content-Type", JSON_CONTENT_TYPE);
 		service.signRequest(accessToken,delete);
-		delete.setPayload(JSON.encode(new DeleteFileV2Args("/" + id)));
+		delete.setPayload(JSON.encode(new DeleteFileV2Args(id)));
 
 		try {
 			Response r = service.execute(delete);

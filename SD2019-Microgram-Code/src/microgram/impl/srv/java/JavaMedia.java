@@ -8,7 +8,11 @@ import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
+import dropbox.DropboxClient;
 import kakfa.KafkaSubscriber;
 import microgram.api.java.Media;
 import microgram.api.java.Result;
@@ -22,11 +26,24 @@ public class JavaMedia implements Media {
 
 	final String baseUri;
 	private KafkaSubscriber subscriber;
+	private DropboxClient client;
+	ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(20);
 
 	public JavaMedia(String baseUri ) {
 		this.baseUri = baseUri;
-		new File( ROOT_DIR ).mkdirs();
+		//new File( ROOT_DIR ).mkdirs();
+		initializeDropBox();
 		initKafkaSubscriber();
+	}
+
+	private void initializeDropBox() {
+		try {
+			client = DropboxClient.createClientWithAccessToken();
+			client.createDirectory(ROOT_DIR);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+
 	}
 
 	private void initKafkaSubscriber() {
@@ -44,41 +61,24 @@ public class JavaMedia implements Media {
 	
 	@Override
 	public Result<String> upload(byte[] bytes) {
-		try {
 			String id = Hash.of(bytes);
-			File filename = new File(ROOT_DIR + id + MEDIA_EXTENSION);
-			Files.write(filename.toPath(), bytes);
+			//client.upload(ROOT_DIR + id + MEDIA_EXTENSION,bytes);
+			executor.execute(() -> client.upload(ROOT_DIR + id + MEDIA_EXTENSION,bytes));
 			return ok(baseUri + "/" + id);
-		} catch( Exception x  ) {
-			x.printStackTrace();
-			return error(INTERNAL_ERROR);
-		}
+
 	}
 
 	@Override
 	public Result<byte[]> download(String id) {
-		try {
-			File filename = new File(ROOT_DIR + id + MEDIA_EXTENSION);
-			if( filename.exists())
-				return ok(Files.readAllBytes( filename.toPath() ));
-			else
-				return error(NOT_FOUND);
-		} catch( Exception x ) {
-			x.printStackTrace();
-			return error(INTERNAL_ERROR);
-		}
+			System.out.println(id);
+			System.out.println( client.download(ROOT_DIR + id + MEDIA_EXTENSION).value().length);
+			System.out.println(id);
+		return client.download(ROOT_DIR + id + MEDIA_EXTENSION);
  	}
 
 	@Override
-	public Result<Void> delete(String id) {
-		File file = new File(ROOT_DIR + id + MEDIA_EXTENSION);
-
-		if(!file.exists())
-			return error(NOT_FOUND);
-		if(!file.delete())
-			return error(INTERNAL_ERROR);
-		
-		return ok();
+	public  Result<Void> delete(String id) {
+		return client.delete(ROOT_DIR + id + MEDIA_EXTENSION);
 	}
 	
 }
