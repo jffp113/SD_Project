@@ -20,11 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static microgram.api.java.Result.ErrorCode.CONFLICT;
-import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
+import static microgram.api.java.Result.ErrorCode.*;
 import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
-
 
 /**
  * Client for DropBox, using REST API. 
@@ -66,18 +64,7 @@ public class DropboxClient
 	 * @throws Exception Throws exception if something failed.
 	 */
 	public static DropboxClient createClientWithAccessToken() throws Exception {
-		try {
-			OAuth20Service service = new ServiceBuilder(apiKey).apiSecret(apiSecret).build(DropboxApi20.INSTANCE);
-			OAuth2AccessToken accessToken = new OAuth2AccessToken(accessTokenStr);
-
-			System.err.println(accessToken.getAccessToken());
-			System.err.println(accessToken.toString());
-			return new DropboxClient( service, accessToken);
-
-		} catch (Exception x) {
-			x.printStackTrace();
-			throw new Exception(x);
-		}
+		return createClientWithAccessToken(accessTokenStr);
 	}
 
 	/**
@@ -209,22 +196,29 @@ public class DropboxClient
 		if(result.isOK()) {
 			return Result.error(CONFLICT);
 		}
-		try {
-			OAuthRequest upload = new OAuthRequest(Verb.POST, CREATE_FILE_V2_URL);
-			upload.addHeader(DROPBOX_API_ARG, JSON.encode(new CreateFileV2Args(filename)));
-			upload.addHeader("Content-Type", OCTETSTREAM_CONTENT_TYPE);
 
-			upload.setPayload(bytes);
-			service.signRequest(accessToken,upload);
-			Response r = service.execute(upload);
+		OAuthRequest upload = new OAuthRequest(Verb.POST, CREATE_FILE_V2_URL);
+		upload.addHeader(DROPBOX_API_ARG, JSON.encode(new CreateFileV2Args(filename)));
+		upload.addHeader("Content-Type", OCTETSTREAM_CONTENT_TYPE);
+		upload.setPayload(bytes);
 
-			return ok(JSON.decode(r.getBody(),CreateFileV2Return.class).getId());
+		service.signRequest(accessToken,upload);
+		Response r = execute(upload);
 
-		}catch (Exception e) {
-			e.printStackTrace();
-			return Result.error(Result.ErrorCode.INTERNAL_ERROR);
-		}
+		if(!r.isSuccessful())
+		    return getError(r);
+
+		return getUploadIdOrFail(r);
 	}
+
+	private Result<String> getUploadIdOrFail(Response r){
+        try {
+            return ok(JSON.decode(r.getBody(),CreateFileV2Return.class).getId());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return  error(INTERNAL_ERROR);
+        }
+    }
 
 	/**
 	 * Reads the contents of file name.
@@ -234,42 +228,44 @@ public class DropboxClient
 	 * @return Returns the file contents.
 	 */
 	public Result<byte[]> download(String filename) {
-		try {
-			OAuthRequest download = new OAuthRequest(Verb.POST, GET_TEMPORARY_LINK_FILE_V2_URL);
-			download.setPayload(JSON.encode(new AccessFileV2Args( filename)));
-			download.addHeader("Content-Type", JSON_CONTENT_TYPE);
+	    OAuthRequest download = new OAuthRequest(Verb.POST, GET_TEMPORARY_LINK_FILE_V2_URL);
+	    download.setPayload(JSON.encode(new AccessFileV2Args( filename)));
+	    download.addHeader("Content-Type", JSON_CONTENT_TYPE);
 
-			service.signRequest(accessToken, download);
-			Response r = service.execute(download);
-			switch (r.getCode()){
-				case 409:
-				case 404:
-					System.err.println("NOT_FOUND");
-					return error(NOT_FOUND);
+	    service.signRequest(accessToken, download);
+	    Response r = execute(download);
 
-					default:
-                        System.err.println(r.getCode());
-			}
+	    if(!r.isSuccessful())
+	        return getError(r);
 
-			return ok(Files.readAllBytes(getImageFromLink(JSON.decode(r.getBody()
-					,AccessFileV2Return.class).getLink()).toPath()));
+	    System.out.println("Start getting bytes");
 
-		}catch (Exception e) {
-			e.printStackTrace();
-			return error(Result.ErrorCode.INTERNAL_ERROR);
-		}
-
-
+	    return getBytesAsReponse(r);
 	}
 
-	private File getImageFromLink(String url) throws IOException {
-		File f = File.createTempFile("DropBox","image");
-		f.deleteOnExit();
-		InputStream in = new URL(url).openStream();
-		OutputStream out = new FileOutputStream(f);
+	private Result<byte[]> getBytesAsReponse(Response r){
+        try {
+            return ok(Files.readAllBytes(getImageFromLink(JSON.decode(r.getBody()
+                    ,AccessFileV2Return.class).getLink()).toPath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return error(INTERNAL_ERROR);
+        }
+    }
 
-		dumpStream(in,out);
-		return f;
+	private File getImageFromLink(String url) {
+		try {
+            File f = File.createTempFile("DropBox", "image");
+            f.deleteOnExit();
+            InputStream in = new URL(url).openStream();
+            OutputStream out = new FileOutputStream(f);
+
+            dumpStream(in, out);
+
+            return f;
+        }catch (IOException e){
+		    return null;
+        }
 	}
 
 	private void dumpStream(InputStream in, OutputStream out) throws IOException {
@@ -289,22 +285,38 @@ public class DropboxClient
 		OAuthRequest delete = new OAuthRequest(Verb.POST, DELETE_FILE_V2_URL);
 		delete.addHeader("Content-Type", JSON_CONTENT_TYPE);
 		service.signRequest(accessToken,delete);
+
 		delete.setPayload(JSON.encode(new DeleteFileV2Args(id)));
 
-		try {
-			Response r = service.execute(delete);
+		Response r = execute(delete);
+		if(!r.isSuccessful())
+		    return getError(r);
 
-				switch (r.getCode()){
-					case 409 :
-					case 404 : return Result.error(NOT_FOUND);
-				}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return Result.error(Result.ErrorCode.INTERNAL_ERROR);
-		}
 
 		return ok();
 	}
+
+	private Response execute(OAuthRequest request){
+        try {
+            return service.execute(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Response(500,"Service could not execute",null,"");
+        }
+    }
+
+	private <T> Result<T> getError(Response r) {
+	    System.out.println(r.getCode());
+        switch (r.getCode()){
+            case 409 :
+            case 404 : return error(NOT_FOUND);
+            case 500: return error(INTERNAL_ERROR);
+        }
+        return Result.error(INTERNAL_ERROR);
+    }
+
+	public static void main(String[] args) throws Exception {
+	    DropboxClient.createClientWithAccessToken().delete("/text.docx");
+    }
 
 }
