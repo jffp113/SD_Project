@@ -1,17 +1,13 @@
 package microgram.impl.srv.rest;
 
 import java.net.URI;
-
-import javax.net.ssl.SSLContext;
-
-import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
-
-import discovery.Discovery;
+import java.util.logging.Logger;
+import discovery.DiscoveryConfiguration;
 import utils.IP;
 
 
 public class MediaRestServer {
+	private static Logger Log = Logger.getLogger(PostsRestServer.class.getName());
 
 	static {
 		System.setProperty("java.net.preferIPv4Stack", "true");
@@ -23,16 +19,10 @@ public class MediaRestServer {
 	public static String SERVER_BASE_URI = "https://%s:%s/rest";
 	
 	public static void main(String[] args) throws Exception {
-
+		DiscoveryConfiguration.setArgs(args);
 		String ip = IP.hostAddress();
 		String serverURI = String.format(SERVER_BASE_URI, ip, PORT);
-		
-		ResourceConfig config = new ResourceConfig();
-
-		config.register(new RestMediaResources(new URI(serverURI).toString()));
-		
-		JdkHttpServerFactory.createHttpServer( URI.create(serverURI.replace(ip, "0.0.0.0")), config, SSLContext.getDefault());
-		
-		Discovery.announce(SERVICE, serverURI);
+		(new RestServiceExecuter()).execute(SERVICE,Log,new RestPostsResources(new URI(serverURI)),serverURI);
 	}
+
 }
