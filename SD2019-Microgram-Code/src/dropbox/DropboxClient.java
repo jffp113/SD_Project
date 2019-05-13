@@ -9,15 +9,14 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 import dropbox.msgs.*;
 import microgram.api.java.Result;
 import org.pac4j.scribe.builder.api.DropboxApi20;
-import sun.net.www.http.HttpClient;
 import utils.JSON;
+import utils.Streams;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static microgram.api.java.Result.ErrorCode.*;
@@ -53,7 +52,6 @@ public class DropboxClient
 	private static final String DELETE_FILE_V2_URL = "https://api.dropboxapi.com/2/files/delete";
 	private static final String DOWNLOAD_FILE_V2_URL = "https://content.dropboxapi.com/2/files/download";
 	private static final String GET_TEMPORARY_LINK_FILE_V2_URL = "https://api.dropboxapi.com/2/files/get_temporary_link";
-
 	private static final String DROPBOX_API_ARG = "Dropbox-API-Arg";
 
 	protected OAuth20Service service;
@@ -238,42 +236,26 @@ public class DropboxClient
 	    if(!r.isSuccessful())
 	        return getError(r);
 
-	    System.out.println("Start getting bytes");
-
-	    return getBytesAsReponse(r);
+	    return getBytesAsResponse(r);
 	}
 
-	private Result<byte[]> getBytesAsReponse(Response r){
+	private Result<byte[]> getBytesAsResponse(Response r){
         try {
-            return ok(Files.readAllBytes(getImageFromLink(JSON.decode(r.getBody()
-                    ,AccessFileV2Return.class).getLink()).toPath()));
+            return ok(getImageFromLink(JSON.decode(r.getBody(),AccessFileV2Return.class).getLink()));
         } catch (IOException e) {
             e.printStackTrace();
             return error(INTERNAL_ERROR);
         }
     }
 
-	private File getImageFromLink(String url) {
+	private byte[] getImageFromLink(String url) {
 		try {
-            File f = File.createTempFile("DropBox", "image");
-            f.deleteOnExit();
-            InputStream in = new URL(url).openStream();
-            OutputStream out = new FileOutputStream(f);
-
-            dumpStream(in, out);
-
-            return f;
+            return Streams.getBytesFromInpuStream(new URL(url).openStream());
         }catch (IOException e){
 		    return null;
         }
 	}
 
-	private void dumpStream(InputStream in, OutputStream out) throws IOException {
-		int b;
-		while((b = in.read()) != -1){
-			out.write(b);
-		}
-	}
 
 	/**
 	 * Deletes the file name.
@@ -291,7 +273,6 @@ public class DropboxClient
 		Response r = execute(delete);
 		if(!r.isSuccessful())
 		    return getError(r);
-
 
 		return ok();
 	}
@@ -313,10 +294,6 @@ public class DropboxClient
             case 500: return error(INTERNAL_ERROR);
         }
         return Result.error(INTERNAL_ERROR);
-    }
-
-	public static void main(String[] args) throws Exception {
-	    DropboxClient.createClientWithAccessToken().delete("/text.docx");
     }
 
 }
