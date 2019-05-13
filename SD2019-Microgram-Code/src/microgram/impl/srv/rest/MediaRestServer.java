@@ -1,8 +1,8 @@
 package microgram.impl.srv.rest;
 
 import java.net.URI;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import javax.net.ssl.SSLContext;
 
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -12,20 +12,17 @@ import utils.IP;
 
 
 public class MediaRestServer {
-	private static Logger Log = Logger.getLogger(PostsRestServer.class.getName());
 
 	static {
 		System.setProperty("java.net.preferIPv4Stack", "true");
-		System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s: %5$s");
+		System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s: %5$s\n");
 	}
 	
 	public static final int PORT = 9999;
 	public static final String SERVICE = "Microgram-MediaStorage";
-	public static String SERVER_BASE_URI = "http://%s:%s/rest";
+	public static String SERVER_BASE_URI = "https://%s:%s/rest";
 	
 	public static void main(String[] args) throws Exception {
-
-		Log.setLevel( Level.FINER );
 
 		String ip = IP.hostAddress();
 		String serverURI = String.format(SERVER_BASE_URI, ip, PORT);
@@ -34,9 +31,7 @@ public class MediaRestServer {
 
 		config.register(new RestMediaResources(new URI(serverURI).toString()));
 		
-		JdkHttpServerFactory.createHttpServer( URI.create(serverURI.replace(ip, "0.0.0.0")), config);
-
-		Log.info(String.format("%s Server ready @ %s\n",  SERVICE, serverURI));
+		JdkHttpServerFactory.createHttpServer( URI.create(serverURI.replace(ip, "0.0.0.0")), config, SSLContext.getDefault());
 		
 		Discovery.announce(SERVICE, serverURI);
 	}
