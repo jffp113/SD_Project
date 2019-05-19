@@ -1,4 +1,4 @@
-package dropbox.msgs;
+package microgram.impl.srv.dropbox.msgs;
 
 public class CreateFileV2Args {
 	final String path;

@@ -1,4 +1,4 @@
-package microgram.impl.srv.rest;
+package microgram.impl.srv.rest.profiles;
 
 import java.net.URI;
 import java.util.List;
@@ -7,6 +7,7 @@ import microgram.api.Profile;
 import microgram.api.java.Profiles;
 import microgram.api.rest.RestProfiles;
 import microgram.impl.srv.java.JavaProfiles;
+import microgram.impl.srv.rest.RestResource;
 
 public class RestProfilesResources extends RestResource implements RestProfiles {
 

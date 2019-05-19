@@ -1,10 +1,11 @@
-package microgram.impl.srv.rest;
+package microgram.impl.srv.rest.profiles;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Logger;
 
 import discovery.DiscoveryConfiguration;
+import microgram.impl.srv.rest.RestServiceExecuter;
 import utils.IP;
 
 

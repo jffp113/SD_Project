@@ -1,15 +1,12 @@
-package microgram.impl.srv.rest;
+package microgram.impl.srv.rest.posts;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import discovery.DiscoveryConfiguration;
-import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
+import microgram.impl.srv.rest.RestServiceExecuter;
 
-import discovery.Discovery;
 import utils.IP;
 
 

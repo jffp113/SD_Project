@@ -1,4 +1,4 @@
-package microgram.impl.srv.rest;
+package microgram.impl.srv.rest.posts;
 
 import java.net.URI;
 import java.util.List;
@@ -7,6 +7,7 @@ import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.rest.RestPosts;
 import microgram.impl.srv.java.Particionated.JavaPostsParticionated;
+import microgram.impl.srv.rest.RestResource;
 
 public class RestPostsResources extends RestResource implements RestPosts {
 

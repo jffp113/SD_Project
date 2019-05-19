@@ -16,9 +16,9 @@ import microgram.impl.clt.rest.RestPostsClient;
 import microgram.impl.clt.rest.RestProfilesClient;
 import microgram.impl.clt.soap.SoapPostsClient;
 import microgram.impl.clt.soap.SoapProfilesClient;
-import microgram.impl.srv.rest.MediaRestServer;
-import microgram.impl.srv.rest.PostsRestServer;
-import microgram.impl.srv.rest.ProfilesRestServer;
+import microgram.impl.srv.rest.media.MediaRestServer;
+import microgram.impl.srv.rest.posts.PostsRestServer;
+import microgram.impl.srv.rest.profiles.ProfilesRestServer;
 
 class ClientFactory {
 	

@@ -1,4 +1,4 @@
-package dropbox.msgs;
+package microgram.impl.srv.dropbox.msgs;
 
 import java.util.HashMap;
 import java.util.List;

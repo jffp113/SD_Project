@@ -1,8 +1,11 @@
-package microgram.impl.srv.rest;
+package microgram.impl.srv.rest.media;
 
 import java.net.URI;
 import java.util.logging.Logger;
 import discovery.DiscoveryConfiguration;
+import microgram.impl.srv.rest.posts.PostsRestServer;
+import microgram.impl.srv.rest.posts.RestPostsResources;
+import microgram.impl.srv.rest.RestServiceExecuter;
 import utils.IP;
 
 

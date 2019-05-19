@@ -1,4 +1,4 @@
-package dropbox;
+package microgram.impl.srv.dropbox;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
@@ -6,7 +6,7 @@ import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
-import dropbox.msgs.*;
+import microgram.impl.srv.dropbox.msgs.*;
 import microgram.api.java.Result;
 import org.pac4j.scribe.builder.api.DropboxApi20;
 import utils.JSON;
@@ -58,7 +58,7 @@ public class DropboxClient
 	protected OAuth2AccessToken accessToken;
 	
 	/**
-	 * Creates a dropbox client, given the access token.
+	 * Creates a microgram.impl.srv.dropbox client, given the access token.
 	 * @throws Exception Throws exception if something failed.
 	 */
 	public static DropboxClient createClientWithAccessToken() throws Exception {
@@ -66,7 +66,7 @@ public class DropboxClient
 	}
 
 	/**
-	 * Creates a dropbox client, given the access token.
+	 * Creates a microgram.impl.srv.dropbox client, given the access token.
 	 * @param accessTokenStr String with the previously obtained access token.
 	 * @throws Exception Throws exception if something failed.
 	 */
@@ -86,7 +86,7 @@ public class DropboxClient
 	}
 
 	/**
-	 * Creates a dropbox client, given a file containing an access token.
+	 * Creates a microgram.impl.srv.dropbox client, given a file containing an access token.
 	 * @param accessTokenFile File containing the previously obtained access token.
 	 * @throws Exception Throws exception if something failed.
 	 */
@@ -106,7 +106,7 @@ public class DropboxClient
 	}
 
 	/**
-	 * Create a directory in dropbox.
+	 * Create a directory in microgram.impl.srv.dropbox.
 	 * 
 	 * @param path
 	 *            Path for the directory to create.

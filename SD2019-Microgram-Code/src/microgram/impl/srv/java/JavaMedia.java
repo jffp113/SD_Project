@@ -1,18 +1,12 @@
 package microgram.impl.srv.java;
 
-import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
-import static microgram.api.java.Result.ErrorCode.INTERNAL_ERROR;
-import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 
-import java.io.File;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
-import dropbox.DropboxClient;
+import microgram.impl.srv.dropbox.DropboxClient;
 import kakfa.KafkaSubscriber;
 import microgram.api.java.Media;
 import microgram.api.java.Result;

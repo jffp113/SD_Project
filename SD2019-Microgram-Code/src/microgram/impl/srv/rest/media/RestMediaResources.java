@@ -1,8 +1,9 @@
-package microgram.impl.srv.rest;
+package microgram.impl.srv.rest.media;
 
 import microgram.api.java.Media;
 import microgram.api.rest.RestMediaStorage;
 import microgram.impl.srv.java.JavaMedia;
+import microgram.impl.srv.rest.RestResource;
 
 public class RestMediaResources extends RestResource implements RestMediaStorage {
 
