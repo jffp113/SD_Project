@@ -1,12 +1,13 @@
 package microgram.impl.srv.rest.profiles.replicated;
 
 import java.util.List;
+import java.util.Set;
 
 import microgram.api.Profile;
 import microgram.api.java.Profiles;
 import microgram.api.rest.RestProfiles;
-import microgram.impl.java.JavaProfiles;
-import microgram.impl.rest.RestResource;
+import microgram.impl.srv.java.JavaProfiles;
+import microgram.impl.srv.rest.RestResource;
 
 public class ReplicatedProfilesResources extends RestResource implements RestProfiles {
 	final Profiles localDB;
@@ -35,6 +36,11 @@ public class ReplicatedProfilesResources extends RestResource implements RestPro
 	@Override
 	public boolean isFollowing(String userId1, String userId2) {
 		return super.resultOrThrow( replicator.isFollowing(userId1, userId2));
+	}
+
+	@Override
+	public Set<String> getFollowing(String userId) {
+		return super.resultOrThrow(replicator.getFollowing(userId));
 	}
 
 	@Override

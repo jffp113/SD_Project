@@ -2,14 +2,14 @@ package microgram.impl.srv.rest.profiles.replicated;
 
 import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ErrorCode.NOT_IMPLEMENTED;
-import static microgram.impl.rest.replication.MicrogramOperation.Operation.GetProfile;
+import static microgram.impl.srv.rest.replication.MicrogramOperation.Operation.GetProfile;
 
 import microgram.api.Profile;
 import microgram.api.java.Profiles;
 import microgram.api.java.Result;
-import microgram.impl.rest.replication.MicrogramOperation;
-import microgram.impl.rest.replication.MicrogramOperationExecutor;
-import microgram.impl.rest.replication.OrderedExecutor;
+import microgram.impl.srv.rest.replication.MicrogramOperation;
+import microgram.impl.srv.rest.replication.MicrogramOperationExecutor;
+import microgram.impl.srv.rest.replication.OrderedExecutor;
 
 public abstract class _TODO_ProfilesReplicator implements MicrogramOperationExecutor, Profiles {
 

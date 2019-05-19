@@ -1,7 +1,7 @@
 package microgram.impl.srv.rest.posts.replicated;
 import microgram.api.java.Posts;
-import microgram.impl.rest.replication.MicrogramOperationExecutor;
-import microgram.impl.rest.replication.OrderedExecutor;
+import microgram.impl.srv.rest.replication.MicrogramOperationExecutor;
+import microgram.impl.srv.rest.replication.OrderedExecutor;
 
 public abstract class _TODO_PostsReplicator implements MicrogramOperationExecutor, Posts {
 

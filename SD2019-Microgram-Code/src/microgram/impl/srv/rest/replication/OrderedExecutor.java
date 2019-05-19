@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.SynchronousQueue;
 
 import microgram.api.java.Result;
-import microgram.impl.rest.replication.kafka.KafkaClient;
+import microgram.impl.srv.rest.replication.kafka.KafkaClient;
 import utils.Queues;
 
 public class OrderedExecutor {

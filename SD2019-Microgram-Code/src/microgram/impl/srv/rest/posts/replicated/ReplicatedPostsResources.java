@@ -5,12 +5,12 @@ import java.util.List;
 import microgram.api.Post;
 import microgram.api.java.Posts;
 import microgram.api.rest.RestPosts;
-import microgram.impl.java.JavaPosts;
-import microgram.impl.rest.RestResource;
-import microgram.impl.rest.replication.MicrogramTopic;
-import microgram.impl.rest.replication.TotalOrderExecutor;
+import microgram.impl.srv.java.JavaPosts;
+import microgram.impl.srv.rest.RestResource;
+import microgram.impl.srv.rest.replication.MicrogramTopic;
+import microgram.impl.srv.rest.replication.TotalOrderExecutor;
 
-public class ReplicatedPostsResources extends RestResource implements RestPosts {
+public class ReplicatedPostsResources extends RestResource implements RestPosts  {
 	final Posts localDB;
 	final _TODO_PostsReplicator replicator;
 	
@@ -52,5 +52,10 @@ public class ReplicatedPostsResources extends RestResource implements RestPosts 
 	@Override
 	public List<String> getFeed(String userId) {
 		return super.resultOrThrow( replicator.getFeed(userId));
-	}	
+	}
+
+	@Override
+	public void removeAllPostsFromUser(String userId) {
+		super.resultOrThrow(replicator.removeAllPostsFromUser(userId));
+	}
 }
