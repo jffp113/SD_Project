@@ -33,7 +33,7 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 public class MongoPosts implements Posts {
 
     private static final String POST_COLLECTION = "posts";
-    private static final String LIKES_COLLECTION = "posts";
+    private static final String LIKES_COLLECTION = "likes";
     private static final String USER_POSTS_COLLECTIONS = "userPosts";
 
 
@@ -42,12 +42,12 @@ public class MongoPosts implements Posts {
     private final MongoCollection<UserPostsPOJO> userPosts;
 
     public MongoPosts() {
-        MongoClient mongo = new MongoClient(MongoProps.DEFAULT_MONGO_HOSTNAME);
+        @SuppressWarnings("resource")
+		MongoClient mongo = new MongoClient(MongoProps.DEFAULT_MONGO_HOSTNAME);
         CodecRegistry pojoCodecRegistry =
                 fromRegistries(MongoClient.getDefaultCodecRegistry(),
                         fromProviders(PojoCodecProvider.builder().automatic(true).build()));
         MongoDatabase dbName = mongo.getDatabase(MongoProps.DB_NAME).withCodecRegistry(pojoCodecRegistry);
-
 
         posts = dbName.getCollection(POST_COLLECTION, Post.class);
         likes = dbName.getCollection(LIKES_COLLECTION, LikePOJO.class);
@@ -77,7 +77,6 @@ public class MongoPosts implements Posts {
             return error(NOT_FOUND);
 
         return  ok(post);
-
     }
 
 
@@ -172,7 +171,7 @@ public class MongoPosts implements Posts {
 
     @Override
     public Result<List<String>> getFeed(String userId) {
-        //TODO waiting for Camponês
+        //TODO waiting for Campones
         return null;
     }
 
