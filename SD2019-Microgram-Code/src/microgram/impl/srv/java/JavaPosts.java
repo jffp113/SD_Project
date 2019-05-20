@@ -35,7 +35,7 @@ public class JavaPosts implements Posts {
 	protected Map<String, Post> posts = new ConcurrentHashMap<>();
 	
 	/**
-	 * Maps a userId to the ids of the posts he/she likes. Supports concurrency.
+	 * Maps a userId to the ids of the posts he/she posts. Supports concurrency.
 	 */
 	protected Map<String, Set<String>> likes = new ConcurrentHashMap<>();
 	
@@ -122,7 +122,6 @@ public class JavaPosts implements Posts {
 	
 	public Result<String> createPost(Post post) {
 		String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
-		System.out.println("(line 125) Creating post " + postId);
 		if (posts.putIfAbsent(postId, post) == null) {
 			post.setPostId(postId);
 			likes.put(postId, Collections.synchronizedSet(new LinkedHashSet<>()));
