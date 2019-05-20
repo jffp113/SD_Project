@@ -1,0 +1,15 @@
+mediastorage-rest-service-mainclass=microgram.impl.rest.media.MediaRestServer
+mediastorage-rest-service-port=12222
+
+shared-process-backend-services-bool=true
+shared-process-backend-services-mainclass=microgram.impl.rest.MicrogramRestServer
+shared-process-backend-services-port=18888
+
+uses-kafka-bool=true
+uses-external-mongo-bool=false
+
+posts-rest-service-mainclass=
+posts-rest-service-port=
+
+profiles-rest-service-mainclass=
+profiles-rest-service-port=
