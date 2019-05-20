@@ -12,7 +12,7 @@ public class RestMediaResources extends RestResource implements RestMedia {
 
 	public RestMediaResources(String baseUri) {
 		this.baseUri = baseUri;
-		this.impl = new JavaMedia();
+		this.impl = new JavaMedia(baseUri);
 	}
 
 	@Override

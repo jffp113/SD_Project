@@ -48,6 +48,6 @@ public class MicrogramRestServer {
 		JdkHttpServerFactory.createHttpServer(URI.create(serverURI.replace(ip, "0.0.0.0")), config);
 
 		Log.fine(String.format("Posts+Profiles Combined Rest Server ready @ %s\n", serverURI));
-	}
 
+	}
 }
