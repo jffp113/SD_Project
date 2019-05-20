@@ -1,9 +1,12 @@
 package microgram.impl.mongo;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.Block;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoWriteException;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.IndexOptions;
@@ -17,9 +20,10 @@ import org.bson.codecs.pojo.PojoCodecProvider;
 
 import java.util.LinkedList;
 import java.util.List;
+
 import  microgram.api.java.Result;
 import org.bson.conversions.Bson;
-import utils.Hash;
+
 
 import static microgram.api.java.Result.ErrorCode.CONFLICT;
 import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
@@ -56,12 +60,11 @@ public class MongoPosts implements Posts {
     private void setIndex() {
         final IndexOptions option = new IndexOptions().unique(true);
         final Bson postsIndex = Indexes.ascending("postId");
-        final  BasicDBObject index = new BasicDBObject();
-                            index.put("userId",1);
-                            index.put("postId",1);
+        final Bson index = Indexes.compoundIndex(Indexes.ascending("userId","postId"));
+
         posts.createIndex(postsIndex, option);
         likes.createIndex(index,option);
-        userPosts.createIndex(index,option);
+        userPosts.createIndex(index);
     }
 
     @Override
@@ -80,9 +83,9 @@ public class MongoPosts implements Posts {
 
     @Override
     public Result<String> createPost(Post post) {
-        final String postId = Hash.of(post.getOwnerId(), post.getMediaUrl());
+        final String postId = post.getPostId();
         final String userId = post.getOwnerId();
-        post.setPostId(postId);
+
         try {
             posts.insertOne(post);
             userPosts.insertOne(new UserPostsPOJO(userId,postId));
@@ -96,7 +99,7 @@ public class MongoPosts implements Posts {
     @Override
     public Result<Void> deletePost(String postId) {
         final Bson filter = Filters.eq("postId",postId);
-        final DeleteResult result = posts.deleteOne(Filters.eq("postId",postId));
+        final DeleteResult result = posts.deleteOne(filter);
 
         if(result.getDeletedCount() == 0)
             return error(NOT_FOUND);
@@ -104,7 +107,7 @@ public class MongoPosts implements Posts {
         likes.deleteMany(filter);
         userPosts.deleteMany(filter);
 
-        //remove image
+        //TODO remove image
 
         return ok();
     }
@@ -161,7 +164,7 @@ public class MongoPosts implements Posts {
         final List<String> result = new LinkedList<>();
 
         for(UserPostsPOJO next: userPosts.find(Filters.eq("userId",userId))){
-            result.add(next.userId);
+            result.add(next.postId);
         }
 
         return ok(result);
@@ -172,17 +175,4 @@ public class MongoPosts implements Posts {
         //TODO waiting for Campones
         return null;
     }
-
-    public static void main(String[] args){
-        MongoPosts post = new MongoPosts();
-        //C25A95A79A2382D4C31EDB37833B7C7FD63859C7
-//        Result<String> r = post.createPost(new Post("","jff.pereira","http","portugal",123123));
-//        System.out.println(r.value());
-//      Result<Post> pp =  post.getPost("A25A95A79A2382D4C31EDB37833B7C7FD63859C7");
-//      System.out.println(pp.value().getOwnerId());
-        Result<Void> r = post.like("C25A95A79A2382D4C31EDB37833B7C7FD63859C7","jff.pereira",true);
-        System.out.println(r.error());
-
-    }
-
 }

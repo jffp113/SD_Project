@@ -1,5 +1,7 @@
 package microgram.api;
 
+import org.bson.codecs.pojo.annotations.BsonCreator;
+import org.bson.codecs.pojo.annotations.BsonProperty;
 import utils.Hash;
 import utils.JSON;
 
@@ -22,9 +24,10 @@ public class Post {
 	
 	int likes;
 
-	public Post() {}
-
-	public Post(String postId, String ownerId, String mediaUrl, String location, long timestamp) {
+	@BsonCreator
+	public Post(@BsonProperty("postId") String postId, @BsonProperty("ownerId") String ownerId,
+				@BsonProperty("mediaUrl") String mediaUrl, @BsonProperty("location") String location,
+				@BsonProperty("timestamp") long timestamp) {
 		this.postId = postId;
 		this.ownerId = ownerId;
 		this.mediaUrl = mediaUrl;
@@ -35,6 +38,7 @@ public class Post {
 	public String getMediaUrl() {
 		return mediaUrl;
 	}
+
 	public String getLocation() {
 		return location;
 	}
