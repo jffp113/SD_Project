@@ -7,7 +7,10 @@ import microgram.api.java.Posts;
 import microgram.api.rest.RestPosts;
 import microgram.impl.mongo.MongoPosts;
 import microgram.impl.rest.RestResource;
+import microgram.impl.rest.replication.MicrogramTopic;
+import microgram.impl.rest.replication.TotalOrderExecutor;
 
+// v1 all writes + reads
 public class ReplicatedPostsResources extends RestResource implements RestPosts {
 	final Posts localDB;
 	final PostsReplicator replicator;
@@ -15,7 +18,7 @@ public class ReplicatedPostsResources extends RestResource implements RestPosts 
 	public ReplicatedPostsResources() {
 		this.localDB = new MongoPosts();
 		//this.localDB = new JavaPosts();
-		this.replicator = null; //new PostsReplicator(localDB, new TotalOrderExecutor(MicrogramTopic.MicrogramEvents));
+		this.replicator = new PostsReplicator(localDB, new TotalOrderExecutor(MicrogramTopic.MicrogramEvents));
 	}
 
 	@Override
