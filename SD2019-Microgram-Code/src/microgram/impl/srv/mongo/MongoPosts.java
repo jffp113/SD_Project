@@ -56,9 +56,9 @@ public class MongoPosts implements Posts {
     }
 
     private void setIndex() {
-        final IndexOptions option = new IndexOptions().unique(true);
-        final Bson postsIndex = Indexes.hashed("postId");
-        final  BasicDBObject index = new BasicDBObject();
+        IndexOptions option = new IndexOptions().unique(true);
+        Bson postsIndex = Indexes.hashed("postId");
+        BasicDBObject index = new BasicDBObject();
         index.put("userId",1);
         index.put("postId",1);
         posts.createIndex(postsIndex, option);

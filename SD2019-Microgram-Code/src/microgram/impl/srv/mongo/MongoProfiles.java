@@ -17,6 +17,8 @@ import com.mongodb.MongoWriteException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
 
 import microgram.api.Profile;
 import microgram.api.java.Profiles;
@@ -47,15 +49,26 @@ public class MongoProfiles implements Profiles {
 	private final MongoCollection<UserPostsPOJO> userPosts;
 	
 	public MongoProfiles () {
+        final MongoDatabase dbName = this.getDatabase();
+        this.profiles  = dbName.getCollection(PROFILES_COLLECTION, Profile.class);
+        this.following = dbName.getCollection(FOLLOWING_COLLECTION, FollowingPOJO.class);
+        this.userPosts = dbName.getCollection(UserPostsPOJO.USER_ID_FIELD, UserPostsPOJO.class);
+        this.setIndexes();
+	}
+	
+	private MongoDatabase getDatabase() {
 		@SuppressWarnings("resource")
 		final MongoClient mongo = new MongoClient(MongoProps.DEFAULT_MONGO_HOSTNAME);
 		final CodecRegistry pojoCodecRegistry =
                 fromRegistries(MongoClient.getDefaultCodecRegistry(),
                         fromProviders(PojoCodecProvider.builder().automatic(true).build()));
-        final MongoDatabase dbName = mongo.getDatabase(MongoProps.DB_NAME).withCodecRegistry(pojoCodecRegistry);
-        this.profiles = dbName.getCollection(PROFILES_COLLECTION, Profile.class);
-        this.following = dbName.getCollection(FOLLOWING_COLLECTION, FollowingPOJO.class);
-        this.userPosts = dbName.getCollection(UserPostsPOJO.USER_ID_FIELD, UserPostsPOJO.class);
+        return mongo.getDatabase(MongoProps.DB_NAME).withCodecRegistry(pojoCodecRegistry);
+	}
+	
+	private void setIndexes() {
+		final IndexOptions option = new IndexOptions().unique(true);
+		this.profiles.createIndex(Indexes.ascending(USER_ID_FIELD), option);
+		this.following.createIndex(Indexes.ascending(FOLLOWING_FIELD, FOLLOWED_FIELD), option);
 	}
 
 	@Override
