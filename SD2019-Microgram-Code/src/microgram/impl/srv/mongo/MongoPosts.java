@@ -59,8 +59,8 @@ public class MongoPosts implements Posts {
         final IndexOptions option = new IndexOptions().unique(true);
         final Bson postsIndex = Indexes.hashed("postId");
         final  BasicDBObject index = new BasicDBObject();
-                            index.put("userId",1);
-                            index.put("postId",1);
+        index.put("userId",1);
+        index.put("postId",1);
         posts.createIndex(postsIndex, option);
         likes.createIndex(index,option);
         userPosts.createIndex(index,option);
@@ -175,7 +175,8 @@ public class MongoPosts implements Posts {
         return null;
     }
 
-    @Override
+    @SuppressWarnings("restriction")
+	@Override
     public Result<Void> removeAllPostsFromUser(String userId) {
         throw new NotImplementedException();
         //Not needed with mongoDb
