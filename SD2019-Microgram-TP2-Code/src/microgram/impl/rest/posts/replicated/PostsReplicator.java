@@ -9,7 +9,6 @@ import microgram.impl.rest.replication.OrderedExecutor;
 
 import java.util.List;
 
-import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 import static microgram.api.java.Result.ErrorCode.NOT_IMPLEMENTED;
 import static microgram.api.java.Result.error;
 import static microgram.impl.rest.replication.MicrogramOperation.Operation.*;
@@ -44,7 +43,8 @@ public class PostsReplicator implements MicrogramOperationExecutor, Posts {
 	@Override
 	public Result<Void> like(String postId, String userId, boolean isLiked) {
 		MicrogramOperation.Operation op = isLiked ? LikePost : UnLikePost;
-		return executor.replicate(new MicrogramOperation(op,new LikeArgs(postId,userId)));
+		String[] args = new String[]{postId,userId};
+		return executor.replicate(new MicrogramOperation(op,args));
 	}
 
 	@Override
@@ -64,21 +64,37 @@ public class PostsReplicator implements MicrogramOperationExecutor, Posts {
 
 	@Override
 	public Result<?> execute(MicrogramOperation op) {
-		LikeArgs likeArg;
+		String[] likeArg;
 		switch (op.type){
-			case GetPost: return localReplicaDB.getPost(op.arg(String.class));
-			case CreatePost: return localReplicaDB.createPost(op.arg(Post.class));
-			case DeletePost: return localReplicaDB.deletePost(op.arg(String.class));
-			case LikePost:  likeArg = op.arg(LikeArgs.class);
-							return localReplicaDB.like(likeArg.postId,likeArg.userId,true);
-			case UnLikePost:  likeArg = op.arg(LikeArgs.class);
-							return localReplicaDB.like(likeArg.postId,likeArg.userId,false);
-			case IsLiked:  likeArg = op.arg(LikeArgs.class);
-							return localReplicaDB.isLiked(likeArg.postId,likeArg.userId);
-			case GetPosts:  return localReplicaDB.getPosts(op.arg(String.class));
-			case GetFeed: return localReplicaDB.getFeed(op.arg(String.class));
-
-			default: return error(NOT_IMPLEMENTED);
+			case GetPost: {
+				return localReplicaDB.getPost(op.arg(String.class));
+			}
+			case CreatePost:{
+				return localReplicaDB.createPost(op.arg(Post.class));
+			}
+			case DeletePost:{
+				return localReplicaDB.deletePost(op.arg(String.class));
+			}
+			case LikePost: {
+				likeArg = op.args(String[].class);
+				return localReplicaDB.like(likeArg[PostID], likeArg[UserID], true);
+			}
+			case UnLikePost:{
+				likeArg = op.args(String[].class);
+				return localReplicaDB.like(likeArg[PostID],likeArg[UserID],false);
+			}
+			case IsLiked:{
+				likeArg = op.args(String[].class);
+				return localReplicaDB.isLiked(likeArg[PostID],likeArg[UserID]);
+			}
+			case GetPosts: {
+				return localReplicaDB.getPosts(op.arg(String.class));
+			}
+			case GetFeed: {
+				return localReplicaDB.getFeed(op.arg(String.class));
+			}
+			default:
+				return error(NOT_IMPLEMENTED);
 		}
 
 
