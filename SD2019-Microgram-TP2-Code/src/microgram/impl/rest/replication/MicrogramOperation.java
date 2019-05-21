@@ -3,6 +3,8 @@ package microgram.impl.rest.replication;
 import utils.JSON;
 import utils.Random;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public class MicrogramOperation {
 	
 	public static enum Operation {

@@ -1,12 +1,18 @@
 package microgram.impl.rest.replication;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import microgram.api.java.Result;
 import microgram.impl.rest.replication.kafka.KafkaClient;
+import microgram.impl.rest.replication.kafka.KafkaOrder;
 import utils.Queues;
 
 public class OrderedExecutor {
@@ -17,15 +23,22 @@ public class OrderedExecutor {
 	final MicrogramTopic topic;
 	final Map<Object, BlockingQueue<Result<?>>> queues;
 
+	Long currentOffset; //Implemented By me
+	final List<ReadMicrogramOperation> readWaitingList;
+	MicrogramOperationExecutor executor;
+
 	public OrderedExecutor(MicrogramTopic topic, int partitions) {
 		this.topic = topic;
 		this.kafka = new KafkaClient();
-
 		kafka.createTopic(topic, partitions);
 		this.queues = new ConcurrentHashMap<>();
+
+		this.currentOffset = 0L;
+		this.readWaitingList = new LinkedList<>();
 	}
 
 	public OrderedExecutor init(MicrogramOperationExecutor executor) {
+		this.executor = executor;
 		kafka.subscribe((t, k, v, ko) -> {
 			System.err.printf("%s %s %s - %d\n", k, v, ko, System.currentTimeMillis());
 			
@@ -37,21 +50,64 @@ public class OrderedExecutor {
 			if (q != null)
 				Queues.putInto(q, result);
 
+			decreaseOffset();
 		}, topic);
 		return this;
 	}
 
+	private void decreaseOffset() {
+		synchronized (readWaitingList) {
+			for (ReadMicrogramOperation op : readWaitingList) {
+				if(op.offSet.decrementAndGet() == 0)
+					processReadOperation(op);
+			}
+		}
+	}
+
+	private void processReadOperation(ReadMicrogramOperation op){
+
+	}
+
 	@SuppressWarnings("unchecked")
 	public <T> Result<T> replicate(MicrogramOperation op) {
+		KafkaOrder order;
 		try {
 			BlockingQueue<Result<?>> q;
-
 			queues.put(op.id, q = new SynchronousQueue<>());
 
-			kafka.publish(topic, DEFAULT_KEY, op.encode());
+			synchronized (currentOffset) {
+				order = kafka.publish(topic, DEFAULT_KEY, op.encode());
+				currentOffset = order.offset;
+			}
 
 			return (Result<T>) Queues.takeFrom(q);
 		} finally {
+
 		}
 	}
+
+	@SuppressWarnings("unchecked")
+	public <T> Result<T> queueForRead(ReadMicrogramOperation op) {
+
+		BlockingQueue<Result<?>> q;
+		queues.put(op.id, q = new SynchronousQueue<>());
+
+		synchronized (currentOffset) {
+			op.offSet.set(this.currentOffset);
+		}
+
+		if(op.offSet.get() == 0)
+			Queues.putInto(q, executor.execute(op));
+		else
+			addToReadWaitingList(op);
+
+		return (Result<T>) Queues.takeFrom(q);
+	}
+
+	private void addToReadWaitingList(ReadMicrogramOperation op){
+		synchronized (readWaitingList) {
+			readWaitingList.add(op);
+		}
+	}
+
 }
