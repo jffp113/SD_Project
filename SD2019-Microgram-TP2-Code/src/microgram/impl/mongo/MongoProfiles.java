@@ -3,12 +3,10 @@ package microgram.impl.mongo;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
+import com.mongodb.client.result.DeleteResult;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
@@ -112,13 +110,14 @@ public class MongoProfiles implements Profiles {
 
 	@Override
 	public Result<Void> deleteProfile(String userId) {
-		try {
-			this.profiles.deleteOne(Filters.eq(USER_ID_FIELD, userId));
-			this.following.deleteMany(Filters.or(Filters.eq(FOLLOWING_FIELD, userId),
-					Filters.eq(FOLLOWED_FIELD, userId)));
-		} catch (MongoWriteException e) {
+		DeleteResult result = this.profiles.deleteOne(Filters.eq(USER_ID_FIELD, userId));
+
+		if(result.getDeletedCount() == 0)
 			return error(NOT_FOUND);
-		}
+
+		this.following.deleteMany(Filters.or(Filters.eq(FOLLOWING_FIELD, userId),
+				Filters.eq(FOLLOWED_FIELD, userId)));
+
 		return ok();
 	}
 

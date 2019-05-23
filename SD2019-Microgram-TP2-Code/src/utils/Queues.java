@@ -18,6 +18,7 @@ final public class Queues {
 			try {
 				return queue.take();
 			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 	}
 
@@ -27,6 +28,7 @@ final public class Queues {
 				queue.put(val);
 				return;
 			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 	}
 }

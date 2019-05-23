@@ -23,7 +23,9 @@ public class OrderedExecutor {
 	final MicrogramTopic topic;
 	final Map<Object, BlockingQueue<Result<?>>> queues;
 
-	Long currentOffset; //Implemented By me
+	AtomicLong currentOffset; //Implemented By me
+	AtomicLong currentPointer;
+
 	final List<ReadMicrogramOperation> readWaitingList;
 	MicrogramOperationExecutor executor;
 
@@ -33,7 +35,8 @@ public class OrderedExecutor {
 		kafka.createTopic(topic, partitions);
 		this.queues = new ConcurrentHashMap<>();
 
-		this.currentOffset = 0L;
+		this.currentOffset = new AtomicLong(0L);
+		this.currentPointer = new AtomicLong(0L);
 		this.readWaitingList = new LinkedList<>();
 	}
 
@@ -52,14 +55,18 @@ public class OrderedExecutor {
 
 			decreaseOffset();
 		}, topic);
+
 		return this;
 	}
 
 	private void decreaseOffset() {
+		currentPointer.incrementAndGet();
 		synchronized (readWaitingList) {
 			for (ReadMicrogramOperation op : readWaitingList) {
-				if(op.offSet.decrementAndGet() == 0)
+				if(op.offSet.decrementAndGet() == 0){
 					processReadOperation(op);
+					readWaitingList.remove(op); //Remove is not syncronous
+				}
 			}
 		}
 	}
@@ -75,10 +82,9 @@ public class OrderedExecutor {
 			BlockingQueue<Result<?>> q;
 			queues.put(op.id, q = new SynchronousQueue<>());
 
-			synchronized (currentOffset) {
 				order = kafka.publish(topic, DEFAULT_KEY, op.encode());
-				currentOffset = order.offset;
-			}
+				currentOffset.set(order.offset);
+
 
 			return (Result<T>) Queues.takeFrom(q);
 		} finally {
@@ -92,9 +98,7 @@ public class OrderedExecutor {
 		BlockingQueue<Result<?>> q;
 		queues.put(op.id, q = new SynchronousQueue<>());
 
-		synchronized (currentOffset) {
-			op.offSet.set(this.currentOffset);
-		}
+		op.offSet.set(this.currentOffset.get() - this.currentPointer.get());
 
 		if(op.offSet.get() == 0)
 			Queues.putInto(q, executor.execute(op));
