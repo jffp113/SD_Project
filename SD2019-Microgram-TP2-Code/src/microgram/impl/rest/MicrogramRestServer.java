@@ -18,6 +18,8 @@ import microgram.impl.rest.profiles.replicated.ReplicatedProfilesResources;
 import utils.Args;
 import utils.IP;
 
+import javax.net.ssl.SSLContext;
+
 public class MicrogramRestServer {
 	public static final int PORT = 18888;
 	private static final String POSTS_SERVICE = "Microgram-Posts";
@@ -47,7 +49,7 @@ public class MicrogramRestServer {
 		config.register(new PrematchingRequestFilter());
 		config.register(new GenericExceptionMapper());
 
-		JdkHttpServerFactory.createHttpServer(URI.create(serverURI.replace(ip, "0.0.0.0")), config);
+		JdkHttpServerFactory.createHttpServer(URI.create(serverURI.replace(ip, "0.0.0.0")), config, SSLContext.getDefault());
 
 		Log.fine(String.format("Posts+Profiles Combined Rest Server ready @ %s\n", serverURI));
 

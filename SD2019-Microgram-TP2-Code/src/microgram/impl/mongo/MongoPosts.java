@@ -13,8 +13,10 @@ import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.result.DeleteResult;
 import microgram.api.Post;
+import microgram.api.Profile;
 import microgram.api.java.Posts;
 import microgram.impl.mongo.postsPOJOS.*;
+import microgram.impl.mongo.profilesPOJOS.FollowingPOJO;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 
@@ -29,6 +31,9 @@ import static microgram.api.java.Result.ErrorCode.CONFLICT;
 import static microgram.api.java.Result.ErrorCode.NOT_FOUND;
 import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
+import static microgram.impl.mongo.MongoProfiles.FOLLOWING_COLLECTION;
+import static microgram.impl.mongo.MongoProfiles.PROFILES_COLLECTION;
+import static microgram.impl.mongo.profilesPOJOS.FollowingPOJO.FOLLOWING_FIELD;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
@@ -42,14 +47,16 @@ public class MongoPosts implements Posts {
     private final MongoCollection<Post> posts;
     private final MongoCollection<LikePOJO> likes;
     private final MongoCollection<UserPostsPOJO> userPosts;
+    private final MongoDatabase dbName;
 
+    @SuppressWarnings("resource")
     public MongoPosts() {
-        @SuppressWarnings("resource")
+
 		MongoClient mongo = new MongoClient(MongoProps.DEFAULT_MONGO_HOSTNAME);
         CodecRegistry pojoCodecRegistry =
                 fromRegistries(MongoClient.getDefaultCodecRegistry(),
                         fromProviders(PojoCodecProvider.builder().automatic(true).build()));
-        MongoDatabase dbName = mongo.getDatabase(MongoProps.DB_NAME).withCodecRegistry(pojoCodecRegistry);
+         dbName = mongo.getDatabase(MongoProps.DB_NAME).withCodecRegistry(pojoCodecRegistry);
 
         posts = dbName.getCollection(POST_COLLECTION, Post.class);
         likes = dbName.getCollection(LIKES_COLLECTION, LikePOJO.class);
@@ -172,7 +179,32 @@ public class MongoPosts implements Posts {
 
     @Override
     public Result<List<String>> getFeed(String userId) {
-        //TODO waiting for Campones
-        return null;
+        MongoCollection profilesCollection  =
+                dbName.getCollection(PROFILES_COLLECTION, Profile.class);
+        MongoCollection<FollowingPOJO> followingCollection =
+                dbName.getCollection(FOLLOWING_COLLECTION, FollowingPOJO.class);
+
+        List<String> result = new LinkedList<>();
+
+        long count = profilesCollection.countDocuments(Filters.eq("userId",userId));
+
+        if(count == 0)
+            return error(NOT_FOUND);
+
+        for(FollowingPOJO current : followingCollection.find(Filters.eq(FOLLOWING_FIELD))){
+            result.addAll(getUserPosts(current.following));
+        }
+
+        return ok(result);
+    }
+
+    private List<String> getUserPosts(String userId) {
+        List<String> result = new LinkedList<>();
+
+        for(UserPostsPOJO current : userPosts.find(Filters.eq("userId",userId))){
+            result.add(current.postId);
+        }
+
+        return result;
     }
 }
