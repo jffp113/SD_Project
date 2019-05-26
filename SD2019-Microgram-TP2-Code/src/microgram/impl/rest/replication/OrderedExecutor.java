@@ -23,8 +23,12 @@ public class OrderedExecutor {
 	final MicrogramTopic topic;
 	final Map<Object, BlockingQueue<Result<?>>> queues;
 
-	AtomicLong currentOffset; //Implemented By me
-	AtomicLong currentPointer;
+
+	/**
+	 * Offset of the last operation executed
+	 */
+	private KafkaOrder readOrder;
+	private KafkaOrder publishOrder;
 
 	final List<ReadMicrogramOperation> readWaitingList;
 	MicrogramOperationExecutor executor;
@@ -35,9 +39,8 @@ public class OrderedExecutor {
 		kafka.createTopic(topic, partitions);
 		this.queues = new ConcurrentHashMap<>();
 
-		this.currentOffset = new AtomicLong(0L);
-		this.currentPointer = new AtomicLong(0L);
 		this.readWaitingList = new LinkedList<>();
+
 	}
 
 	public OrderedExecutor init(MicrogramOperationExecutor executor) {
@@ -47,11 +50,8 @@ public class OrderedExecutor {
 			
 			MicrogramOperation op = new MicrogramOperation(v);
 
-			Result<?> result = executor.execute(op);
-
-			BlockingQueue<Result<?>> q = queues.remove(op.id);
-			if (q != null)
-				Queues.putInto(q, result);
+			processOperation(op);
+			this.readOrder = ko;
 
 			decreaseOffset();
 		}, topic);
@@ -59,34 +59,37 @@ public class OrderedExecutor {
 		return this;
 	}
 
+	private void processOperation(MicrogramOperation op){
+		Result<?> result = executor.execute(op);
+
+		BlockingQueue<Result<?>> q = queues.remove(op.id);
+		if (q != null)
+			Queues.putInto(q, result);
+
+	}
+
 	private void decreaseOffset() {
-		currentPointer.incrementAndGet();
-		synchronized (readWaitingList) {
-			for (ReadMicrogramOperation op : readWaitingList) {
-				if(op.offSet.decrementAndGet() == 0){
-					processReadOperation(op);
-					readWaitingList.remove(op); //Remove is not syncronous
-				}
+		for (ReadMicrogramOperation op : readWaitingList) {
+			op.setCurrentOrder(readOrder);
+			if(op.isReady()){
+				processOperation(op);
+				readWaitingList.remove(op); //Bad for Complexity
 			}
 		}
 	}
 
-	private void processReadOperation(ReadMicrogramOperation op){
 
-	}
 
 	@SuppressWarnings("unchecked")
 	public <T> Result<T> replicate(MicrogramOperation op) {
-		KafkaOrder order;
 		try {
 			BlockingQueue<Result<?>> q;
 			queues.put(op.id, q = new SynchronousQueue<>());
 
-				order = kafka.publish(topic, DEFAULT_KEY, op.encode());
-				currentOffset.set(order.offset);
-
+				publishOrder = kafka.publish(topic, DEFAULT_KEY, op.encode());
 
 			return (Result<T>) Queues.takeFrom(q);
+
 		} finally {
 
 		}
@@ -94,13 +97,12 @@ public class OrderedExecutor {
 
 	@SuppressWarnings("unchecked")
 	public <T> Result<T> queueForRead(ReadMicrogramOperation op) {
-
 		BlockingQueue<Result<?>> q;
 		queues.put(op.id, q = new SynchronousQueue<>());
 
-		op.offSet.set(this.currentOffset.get() - this.currentPointer.get());
-
-		if(op.offSet.get() == 0)
+		op.setInvocation(publishOrder);
+		op.setCurrentOrder(readOrder);
+		if(op.isReady())
 			Queues.putInto(q, executor.execute(op));
 		else
 			addToReadWaitingList(op);
