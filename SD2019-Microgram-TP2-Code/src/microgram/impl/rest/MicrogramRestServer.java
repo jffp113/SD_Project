@@ -5,6 +5,7 @@ import static utils.Log.Log;
 import java.net.URI;
 import java.util.logging.Level;
 
+import microgram.impl.rest.replication.ClientVersionAppender;
 import microgram.impl.rest.utils.GenericExceptionMapper;
 import microgram.impl.rest.utils.PrematchingRequestFilter;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
@@ -45,7 +46,8 @@ public class MicrogramRestServer {
 
 		config.register(new ReplicatedPostsResources());
 		config.register(new ReplicatedProfilesResources());
-		
+
+		config.register(new ClientVersionAppender());
 		//config.register(new PrematchingRequestFilter());
 		//config.register(new GenericExceptionMapper());
 

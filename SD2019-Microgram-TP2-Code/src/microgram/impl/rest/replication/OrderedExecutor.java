@@ -70,7 +70,7 @@ public class OrderedExecutor {
 
 	private void decreaseOffset() {
 		for (ReadMicrogramOperation op : readWaitingList) {
-			op.setCurrentOrder(readOrder);
+			op.setCurrentOrder(readOrder.offset);
 			if(op.isReady()){
 				processOperation(op);
 				readWaitingList.remove(op); //Bad for Complexity
@@ -100,8 +100,9 @@ public class OrderedExecutor {
 		BlockingQueue<Result<?>> q;
 		queues.put(op.id, q = new SynchronousQueue<>());
 
-		op.setInvocation(publishOrder);
-		op.setCurrentOrder(readOrder);
+		op.setInvocation(Long.parseLong(Version.jsonVersionIn.get()));
+		op.setCurrentOrder(readOrder.offset);
+
 		if(op.isReady())
 			Queues.putInto(q, executor.execute(op));
 		else

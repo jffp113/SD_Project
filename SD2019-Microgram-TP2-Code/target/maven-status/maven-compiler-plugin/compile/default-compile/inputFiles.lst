@@ -7,8 +7,8 @@ C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\java\JavaProfile
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\replication\kafka\KafkaClient.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\utils\Queues.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\api\java\Result.java
-C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\posts\replicated\_TODO_PostsReplicator.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\utils\IO.java
+C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\mongo\MongoProfiles.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\discovery\Discovery.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\dropbox\msgs\DeleteFileV2Args.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\profiles\RestProfilesResources.java
@@ -17,6 +17,7 @@ C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\replication
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\api\java\Profiles.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\replication\MicrogramTopic.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\utils\PrematchingRequestFilter.java
+C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\replication\ReadMicrogramOperation.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\replication\ClientVersionAppender.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\utils\Streams.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\RestResource.java
@@ -30,9 +31,9 @@ C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\mongo\postsPOJOS
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\utils\JSON.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\java\JavaPosts.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\dropbox\msgs\AccessFileV2Return.java
-C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\mongo\_TODO_MongoProfiles.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\api\java\Media.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\mongo\postsPOJOS\LikePOJO.java
+C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\posts\replicated\args\LikeArgs.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\utils\Sleep.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\replication\OrderedExecutor.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\posts\replicated\ReplicatedPostsResources.java
@@ -43,6 +44,7 @@ C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\utils\Gener
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\utils\Props.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\profiles\replicated\ReplicatedProfilesResources.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\dropbox\msgs\ListFolderV2Args.java
+C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\mongo\profilesPOJOS\FollowingPOJO.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\dropbox\msgs\AccessFileV2Args.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\dropbox\msgs\CreateFileV2Args.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\replication\MicrogramOperationExecutor.java
@@ -52,6 +54,7 @@ C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\utils\Log.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\api\rest\RestMedia.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\dropbox\DropboxClient.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\api\java\Posts.java
+C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\posts\replicated\PostsReplicator.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\impl\rest\replication\Version.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\microgram\api\Post.java
 C:\Users\jorge\git\SD2019-Microgram-TP2-Code\src\utils\Args.java

@@ -6,10 +6,33 @@ shared-process-backend-services-mainclass=microgram.impl.rest.MicrogramRestServe
 shared-process-backend-services-port=18888
 
 uses-kafka-bool=true
-uses-external-mongo-bool=false
+uses-external-mongo-bool=true
 
 posts-rest-service-mainclass=
 posts-rest-service-port=
 
 profiles-rest-service-mainclass=
 profiles-rest-service-port=
+
+microgram-keystore=postserver.ks
+profiles-keystore=profileserver.ks
+mediastorage-keystore=mediaserver.ks
+posts-keystore=postserver.ks
+
+microgram-keystore-password=password
+posts-keystore-password=password
+mediastorage-keystore-password=password
+
+mediastorage-truststore-password=password
+profiles-truststore-password=password
+profiles-keystore-password=password
+
+
+microgram-truststore=client-truststore.ks
+profiles-truststore=client-truststore.ks
+tester-truststore=client-truststore.ks
+posts-truststore=truststore.ks
+mediastorage-truststore=truststore.ks
+microgram-truststore-password=password
+tester-truststore-password=password
+posts-truststore-password=password

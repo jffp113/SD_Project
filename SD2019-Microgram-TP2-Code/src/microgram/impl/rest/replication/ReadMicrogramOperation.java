@@ -7,8 +7,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class ReadMicrogramOperation extends MicrogramOperation {
 
-    public KafkaOrder invocationOrder;
-    public KafkaOrder currentOrder;
+    public Long invocationOrder;
+    public Long currentOrder;
 
     public ReadMicrogramOperation(Operation type, Object args){
         super(type, args);
@@ -18,11 +18,11 @@ public class ReadMicrogramOperation extends MicrogramOperation {
         super(encoding);
     }
 
-    public void setInvocation(KafkaOrder order) {
+    public void setInvocation(Long order) {
         this.invocationOrder = order;
     }
 
-    public void setCurrentOrder(KafkaOrder order){
+    public void setCurrentOrder(Long order){
         this.currentOrder = order;
     }
 
@@ -30,7 +30,7 @@ public class ReadMicrogramOperation extends MicrogramOperation {
         if(invocationOrder == null || currentOrder == null)
             return false;
 
-        return (invocationOrder.offset - currentOrder.offset) <= 0;
+        return (invocationOrder - currentOrder) <= 0;
     }
 
 
