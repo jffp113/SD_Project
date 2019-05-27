@@ -8,11 +8,11 @@ shared-process-backend-services-port=18888
 uses-kafka-bool=true
 uses-external-mongo-bool=true
 
-posts-rest-service-mainclass=
-posts-rest-service-port=
+posts-rest-service-mainclass=microgram.impl.rest.MicrogramRestServer
+posts-rest-service-port=18888
 
-profiles-rest-service-mainclass=
-profiles-rest-service-port=
+profiles-rest-service-mainclass=microgram.impl.rest.MicrogramRestServer
+profiles-rest-service-port=18888
 
 microgram-keystore=/home/sd/mediaserver.ks
 profiles-keystore=/home/sd/profileserver.ks

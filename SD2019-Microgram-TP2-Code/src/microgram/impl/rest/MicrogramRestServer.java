@@ -48,8 +48,8 @@ public class MicrogramRestServer {
 		config.register(new ReplicatedProfilesResources());
 
 		config.register(new ClientVersionAppender());
-		//config.register(new PrematchingRequestFilter());
-		//config.register(new GenericExceptionMapper());
+		config.register(new PrematchingRequestFilter());
+		config.register(new GenericExceptionMapper());
 
 		JdkHttpServerFactory.createHttpServer(URI.create(serverURI.replace(ip, "0.0.0.0")), config, SSLContext.getDefault());
 
