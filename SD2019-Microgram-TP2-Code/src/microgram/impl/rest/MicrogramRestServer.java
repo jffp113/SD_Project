@@ -26,7 +26,7 @@ public class MicrogramRestServer {
 	private static final String POSTS_SERVICE = "Microgram-Posts";
 	private static final String PROFILES_SERVICE = "Microgram-Profiles";
 	
-	public static String SERVER_BASE_URI = "http://%s:%s/rest";
+	public static String SERVER_BASE_URI = "https://%s:%s/rest";
 
 	public static void main(String[] args) throws Exception {
 		Args.use(args);

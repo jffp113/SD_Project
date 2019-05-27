@@ -39,8 +39,8 @@ public class JavaMedia implements Media {
 	@Override
 	public Result<String> upload(byte[] bytes) {
 			String id = Hash.of(bytes);
+			client.upload(ROOT_DIR + id + MEDIA_EXTENSION,bytes);
 			//client.upload(ROOT_DIR + id + MEDIA_EXTENSION,bytes);
-			executor.execute(() -> client.upload(ROOT_DIR + id + MEDIA_EXTENSION,bytes));
 			return ok(baseUri + "/" + id);
 
 	}

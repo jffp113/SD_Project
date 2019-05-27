@@ -19,10 +19,15 @@ import javax.net.ssl.SSLContext;
 public class MediaRestServer {
 	public static final int PORT = 12222;
 	public static final String SERVICE = "Microgram-MediaStorage";
-	public static String SERVER_BASE_URI = "http://%s:%s/rest";
+	public static String SERVER_BASE_URI = "https://%s:%s/rest";
+
+
+	static {
+		System.setProperty("java.net.preferIPv4Stack", "true");
+		System.setProperty("java.util.logging.SimpleFormatter.format", "%4$s: %5$s\n");
+	}
 
 	public static void main(String[] args) throws Exception {
-		System.setProperty("java.net.preferIPv4Stack", "true");
 
 		Log.setLevel(Level.FINER);
 
@@ -36,8 +41,8 @@ public class MediaRestServer {
 		
 		config.register(new RestMediaResources(serviceURI));
 		
-		config.register(new GenericExceptionMapper());
-		config.register(new PrematchingRequestFilter());
+		//config.register(new GenericExceptionMapper());
+		//config.register(new PrematchingRequestFilter());
 
 		JdkHttpServerFactory.createHttpServer(URI.create(serverURI.replace(ip, "0.0.0.0")), config,
 				SSLContext.getDefault());

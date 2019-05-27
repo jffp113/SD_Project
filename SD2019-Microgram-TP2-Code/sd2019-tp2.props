@@ -14,10 +14,10 @@ posts-rest-service-port=
 profiles-rest-service-mainclass=
 profiles-rest-service-port=
 
-microgram-keystore=postserver.ks
-profiles-keystore=profileserver.ks
-mediastorage-keystore=mediaserver.ks
-posts-keystore=postserver.ks
+microgram-keystore=/home/sd/mediaserver.ks
+profiles-keystore=/home/sd/profileserver.ks
+mediastorage-keystore=/home/sd/mediaserver.ks
+posts-keystore=/home/sd/postserver.ks
 
 microgram-keystore-password=password
 posts-keystore-password=password
@@ -28,11 +28,12 @@ profiles-truststore-password=password
 profiles-keystore-password=password
 
 
-microgram-truststore=client-truststore.ks
-profiles-truststore=client-truststore.ks
-tester-truststore=client-truststore.ks
-posts-truststore=truststore.ks
-mediastorage-truststore=truststore.ks
+microgram-truststore=/home/sd/client-truststore.ks
+profiles-truststore=/home/sd/client-truststore.ks
+tester-truststore=/home/sd/client-truststore.ks
+posts-truststore=/home/sd/client-truststore.ks
+mediastorage-truststore=/home/sd/client-truststore.ks
+
 microgram-truststore-password=password
 tester-truststore-password=password
 posts-truststore-password=password
