@@ -11,7 +11,7 @@ public class RestResource {
 	 * Given a Result<T>, either returns the value, or throws the JAX-WS Exception
 	 * matching the error code...
 	 * 
-	 * @param r
+	 * @param
 	 * @return
 	 */
 	protected <T> T resultOrThrow(Result<T> result) {

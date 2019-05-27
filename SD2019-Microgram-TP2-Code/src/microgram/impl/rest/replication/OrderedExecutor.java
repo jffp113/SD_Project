@@ -82,6 +82,7 @@ public class OrderedExecutor {
 
 	@SuppressWarnings("unchecked")
 	public <T> Result<T> replicate(MicrogramOperation op) {
+		System.out.println("Replicating " + op.type);
 		try {
 			BlockingQueue<Result<?>> q;
 			queues.put(op.id, q = new SynchronousQueue<>());
@@ -90,7 +91,12 @@ public class OrderedExecutor {
 
 			return (Result<T>) Queues.takeFrom(q);
 
-		} finally {
+		}
+		catch(Exception e ){
+			e.printStackTrace();
+			return Result.error(Result.ErrorCode.INTERNAL_ERROR);
+		}
+		finally {
 
 		}
 	}

@@ -27,6 +27,7 @@ public class ProfilesReplicator implements MicrogramOperationExecutor, Profiles 
 	
 	@Override
 	public Result<?> execute( MicrogramOperation op ) {
+		System.out.println("Executer " + op.type);
 		switch( op.type ) {
 			case GetProfile:{
 				return localReplicaDB.getProfile(op.arg(String.class));
@@ -59,12 +60,16 @@ public class ProfilesReplicator implements MicrogramOperationExecutor, Profiles 
 
 	@Override
 	public Result<Profile> getProfile(String userId) {
-		return executor.replicate( new MicrogramOperation(GetProfile, userId));
+		 Result<Profile> p = executor.replicate( new MicrogramOperation(GetProfile, userId));
+		 System.out.println(p);
+		 return p;
 	}
 
 	@Override
 	public Result<Void> createProfile(Profile profile) {
-		return executor.replicate(new MicrogramOperation(CreateProfile,profile));
+		Result<Void> p = executor.replicate(new MicrogramOperation(CreateProfile,profile));
+		System.out.println(p);
+		return p;
 	}
 
 	@Override
