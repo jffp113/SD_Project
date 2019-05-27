@@ -4,6 +4,7 @@ import microgram.api.java.Media;
 import microgram.api.rest.RestMedia;
 import microgram.impl.java.JavaMedia;
 import microgram.impl.rest.RestResource;
+import utils.Log;
 
 public class RestMediaResources extends RestResource implements RestMedia {
 
@@ -22,6 +23,7 @@ public class RestMediaResources extends RestResource implements RestMedia {
 
 	@Override
 	public byte[] download(String id) {
+		Log.Log.info("Dowloading: " + id);
 		return super.resultOrThrow(impl.download(id));
 	}
 

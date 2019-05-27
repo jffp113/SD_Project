@@ -9,8 +9,8 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 import microgram.impl.dropbox.msgs.*;
 import microgram.api.java.Result;
 import org.pac4j.scribe.builder.api.DropboxApi20;
+import utils.IO;
 import utils.JSON;
-import utils.Streams;
 
 import java.io.*;
 import java.net.URL;
@@ -250,7 +250,7 @@ public class DropboxClient
 
 	private byte[] getImageFromLink(String url) {
 		try {
-            return Streams.getBytesFromInpuStream(new URL(url).openStream());
+            return IO.readBytes(new URL(url).openStream());
         }catch (IOException e){
 		    return null;
         }
