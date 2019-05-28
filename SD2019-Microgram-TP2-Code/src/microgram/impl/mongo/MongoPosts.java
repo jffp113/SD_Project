@@ -188,7 +188,7 @@ public class MongoPosts implements Posts {
         if(count == 0)
             return error(NOT_FOUND);
 
-        for(FollowingPOJO current : followingCollection.find(Filters.eq(FOLLOWED_FIELD))){
+        for(FollowingPOJO current : followingCollection.find(Filters.eq(FOLLOWING_FIELD,userId))){
             result.addAll(getUserPosts(current.followed));
         }
 
