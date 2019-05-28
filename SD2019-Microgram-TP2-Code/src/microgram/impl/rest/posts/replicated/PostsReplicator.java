@@ -49,7 +49,7 @@ public class PostsReplicator implements MicrogramOperationExecutor, Posts {
 
 	@Override
 	public Result<Boolean> isLiked(String postId, String userId) {
-		return executor.replicate(new MicrogramOperation(IsLiked,new LikeArgs(postId,userId)));
+		return executor.replicate(new MicrogramOperation(IsLiked,new String[]{postId,userId}));
 	}
 
 	@Override
@@ -64,7 +64,6 @@ public class PostsReplicator implements MicrogramOperationExecutor, Posts {
 
 	@Override
 	public Result<?> execute(MicrogramOperation op) {
-		String[] likeArg;
 		switch (op.type){
 			case GetPost: {
 				return localReplicaDB.getPost(op.arg(String.class));
@@ -76,15 +75,15 @@ public class PostsReplicator implements MicrogramOperationExecutor, Posts {
 				return localReplicaDB.deletePost(op.arg(String.class));
 			}
 			case LikePost: {
-				likeArg = op.args(String[].class);
+				String[] likeArg = op.args(String[].class);
 				return localReplicaDB.like(likeArg[PostID], likeArg[UserID], true);
 			}
 			case UnLikePost:{
-				likeArg = op.args(String[].class);
+				String[] likeArg = op.args(String[].class);
 				return localReplicaDB.like(likeArg[PostID],likeArg[UserID],false);
 			}
 			case IsLiked:{
-				likeArg = op.args(String[].class);
+				String[] likeArg = op.args(String[].class);
 				return localReplicaDB.isLiked(likeArg[PostID],likeArg[UserID]);
 			}
 			case GetPosts: {

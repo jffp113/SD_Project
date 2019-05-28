@@ -50,7 +50,7 @@ public class MongoProfiles implements Profiles {
         final MongoDatabase dbName = this.getDatabase();
         this.profiles  = dbName.getCollection(PROFILES_COLLECTION, Profile.class);
         this.following = dbName.getCollection(FOLLOWING_COLLECTION, FollowingPOJO.class);
-        this.userPosts = dbName.getCollection(USER_ID_FIELD, UserPostsPOJO.class);
+        this.userPosts = dbName.getCollection(MongoPosts.USER_POSTS_COLLECTIONS, UserPostsPOJO.class);
         this.setIndexes();
 	}
 	
@@ -132,15 +132,13 @@ public class MongoProfiles implements Profiles {
 
 	@Override
 	public Result<Void> follow(String userId1, String userId2, boolean isFollowing) {
+		System.out.println("Follow(" + userId1 + "," + userId2 + "," + isFollowing + ")");
 		final Result<Boolean> resultIsFollowing = this.isFollowing(userId1, userId2);
 		if (!resultIsFollowing.isOK())
 			return error(NOT_FOUND);
-		
+		System.out.println("Follow setup 2");
 		if (resultIsFollowing.value() == isFollowing)
-			if (isFollowing)
-				return error(CONFLICT);
-			else
-				return error(NOT_FOUND);
+			return ok();
 		
 		if (isFollowing)
 			this.following.insertOne(new FollowingPOJO(userId1, userId2));

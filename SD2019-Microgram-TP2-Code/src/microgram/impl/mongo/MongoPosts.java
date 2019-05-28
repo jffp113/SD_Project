@@ -33,15 +33,16 @@ import static microgram.api.java.Result.error;
 import static microgram.api.java.Result.ok;
 import static microgram.impl.mongo.MongoProfiles.FOLLOWING_COLLECTION;
 import static microgram.impl.mongo.MongoProfiles.PROFILES_COLLECTION;
+import static microgram.impl.mongo.profilesPOJOS.FollowingPOJO.FOLLOWED_FIELD;
 import static microgram.impl.mongo.profilesPOJOS.FollowingPOJO.FOLLOWING_FIELD;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 public class MongoPosts implements Posts {
 
-    private static final String POST_COLLECTION = "posts";
-    private static final String LIKES_COLLECTION = "likes";
-    private static final String USER_POSTS_COLLECTIONS = "userPosts";
+    public static final String POST_COLLECTION = "posts";
+    public static final String LIKES_COLLECTION = "likes";
+    public static final String USER_POSTS_COLLECTIONS = "userPosts";
 
 
     private final MongoCollection<Post> posts;
@@ -155,15 +156,11 @@ public class MongoPosts implements Posts {
 
     @Override
     public Result<Boolean> isLiked(String postId, String userId) {
-        final Post post = posts.find(Filters.eq("postId",postId)).first();
-
-        if(post == null)
+        if(!posts.find(Filters.eq("postId",postId)).iterator().hasNext())
             return error(NOT_FOUND);
 
-        final LikePOJO result = likes.find(Filters.and(Filters.eq("postId",postId),
-                Filters.eq("userId",userId))).first();
-
-        return ok(result != null) ;
+        return ok(likes.find(Filters.and(Filters.eq("postId",postId),
+                Filters.eq("userId",userId))).iterator().hasNext()) ;
     }
 
     @Override
@@ -191,8 +188,8 @@ public class MongoPosts implements Posts {
         if(count == 0)
             return error(NOT_FOUND);
 
-        for(FollowingPOJO current : followingCollection.find(Filters.eq(FOLLOWING_FIELD))){
-            result.addAll(getUserPosts(current.following));
+        for(FollowingPOJO current : followingCollection.find(Filters.eq(FOLLOWED_FIELD))){
+            result.addAll(getUserPosts(current.followed));
         }
 
         return ok(result);

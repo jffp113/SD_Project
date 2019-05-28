@@ -9,7 +9,7 @@ public class LikePOJO {
     public final String userId;
 
     @BsonCreator
-    public LikePOJO(@BsonProperty String postId,@BsonProperty String userId){
+    public LikePOJO(@BsonProperty("postId") String postId,@BsonProperty("userId") String userId){
         this.postId = postId;
         this.userId = userId;
     }
