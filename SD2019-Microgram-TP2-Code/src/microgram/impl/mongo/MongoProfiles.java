@@ -123,8 +123,9 @@ public class MongoProfiles implements Profiles {
 
 	@Override
 	public Result<List<Profile>> search(String prefix) {
+		System.out.println("Searching " + prefix);
 		List<Profile> result = new LinkedList<>();
-		for (Profile profile : this.profiles.find(Filters.regex(USER_ID_FIELD, prefix + ".*")))
+		for (Profile profile : this.profiles.find(Filters.regex(USER_ID_FIELD, "^" + prefix + ".*")))
 			result.add(profile);
 		return ok(result);
 	}

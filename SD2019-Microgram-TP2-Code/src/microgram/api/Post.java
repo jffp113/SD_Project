@@ -24,6 +24,8 @@ public class Post {
 	
 	int likes;
 
+	public Post() {}
+
 	@BsonCreator
 	public Post(@BsonProperty("postId") String postId, @BsonProperty("ownerId") String ownerId,
 				@BsonProperty("mediaUrl") String mediaUrl, @BsonProperty("location") String location,

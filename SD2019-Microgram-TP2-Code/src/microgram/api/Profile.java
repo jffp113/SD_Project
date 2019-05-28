@@ -34,6 +34,8 @@ public class Profile {
 	@BsonIgnore
 	int followers;
 
+	public Profile() {}
+
 	@BsonCreator
 	public Profile(@BsonProperty(USER_ID_FIELD) String userId, @BsonProperty(FULL_NAME_FIELD) String fullName,
 				   @BsonProperty(PHOTO_URL_FIELD) String photoUrl) {
