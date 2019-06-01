@@ -1,5 +1,6 @@
 package microgram.impl.rest.replication;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -66,11 +67,12 @@ public class OrderedExecutor {
 	}
 
 	private void decreaseOffset() {
-		for (ReadMicrogramOperation op : readWaitingList) {
+		for (Iterator<ReadMicrogramOperation> operations = readWaitingList.iterator(); operations.hasNext();) {
+			final ReadMicrogramOperation op = operations.next();
 			op.setCurrentOrder(Version.getOrElse(0L,Long.class));
 			if(op.isReady()){
 				processOperation(op);
-				readWaitingList.remove(op); //Bad for Complexity
+				operations.remove();
 			}
 		}
 	}
