@@ -25,6 +25,7 @@ public class ClientVersionAppender implements ContainerResponseFilter, Container
 	@Override
 	public void filter(ContainerRequestContext reqCtx) throws IOException {
 		String value = reqCtx.getHeaderString(X_VERSION_HDR);
+		System.out.println("Version Client = " + value);
 		if( value != null && ! value.isEmpty()) {
 			Version.jsonVersionIn.set( new String(Base64.getDecoder().decode(value)));
 		}
@@ -34,6 +35,7 @@ public class ClientVersionAppender implements ContainerResponseFilter, Container
 	@Override
 	public void filter(ContainerRequestContext reqCtx, ContainerResponseContext resCtx) throws IOException {
 		String version = Version.jsonVersionOut.get();
+		System.out.println("Version Server = " + version);
 		if( version != null ) {
 			String value = Base64.getEncoder().encodeToString(version.getBytes());
 			resCtx.getHeaders().add(X_VERSION_HDR, value);

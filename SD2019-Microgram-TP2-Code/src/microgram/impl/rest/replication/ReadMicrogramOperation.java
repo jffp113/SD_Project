@@ -30,6 +30,7 @@ public class ReadMicrogramOperation extends MicrogramOperation {
         if(invocationOrder == null || currentOrder == null)
             return false;
 
+        System.out.println("Invocation: " + (invocationOrder - currentOrder) );
         return (invocationOrder - currentOrder) <= 0;
     }
 

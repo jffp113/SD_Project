@@ -10,6 +10,7 @@ import microgram.api.java.Result;
 import microgram.impl.rest.replication.MicrogramOperation;
 import microgram.impl.rest.replication.MicrogramOperationExecutor;
 import microgram.impl.rest.replication.OrderedExecutor;
+import microgram.impl.rest.replication.ReadMicrogramOperation;
 
 import java.util.List;
 
@@ -60,9 +61,8 @@ public class ProfilesReplicator implements MicrogramOperationExecutor, Profiles 
 
 	@Override
 	public Result<Profile> getProfile(String userId) {
-		 Result<Profile> p = executor.replicate( new MicrogramOperation(GetProfile, userId));
-		 System.out.println(p);
-		 return p;
+//		 return  executor.replicate( new MicrogramOperation(GetProfile, userId));
+		 return  executor.queueForRead(new ReadMicrogramOperation(GetProfile, userId));
 	}
 
 	@Override
@@ -79,7 +79,8 @@ public class ProfilesReplicator implements MicrogramOperationExecutor, Profiles 
 
 	@Override
 	public Result<List<Profile>> search(String prefix) {
-		return executor.replicate(new MicrogramOperation(SearchProfile,prefix));
+//		return executor.replicate(new MicrogramOperation(SearchProfile,prefix));
+		return executor.queueForRead(new ReadMicrogramOperation(SearchProfile,prefix));
 	}
 
 	@Override
@@ -92,6 +93,7 @@ public class ProfilesReplicator implements MicrogramOperationExecutor, Profiles 
 
 	@Override
 	public Result<Boolean> isFollowing(String userId1, String userId2) {
-		return executor.replicate(new MicrogramOperation(IsFollowing,new String[]{userId1,userId2}));
+//		return executor.replicate(new MicrogramOperation(IsFollowing,new String[]{userId1,userId2}));
+		return executor.queueForRead(new ReadMicrogramOperation(IsFollowing,new String[]{userId1,userId2}));
 	}
 }

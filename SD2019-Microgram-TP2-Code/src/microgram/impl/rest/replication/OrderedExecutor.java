@@ -24,14 +24,9 @@ public class OrderedExecutor {
 	final Map<Object, BlockingQueue<Result<?>>> queues;
 
 
-	/**
-	 * Offset of the last operation executed
-	 */
-	private KafkaOrder readOrder;
-	private KafkaOrder publishOrder;
-
 	final List<ReadMicrogramOperation> readWaitingList;
 	MicrogramOperationExecutor executor;
+	Long version = 0L;
 
 	public OrderedExecutor(MicrogramTopic topic, int partitions) {
 		this.topic = topic;
@@ -44,6 +39,7 @@ public class OrderedExecutor {
 	}
 
 	public OrderedExecutor init(MicrogramOperationExecutor executor) {
+		Version.set(0L);
 		this.executor = executor;
 		kafka.subscribe((t, k, v, ko) -> {
 			System.err.printf("%s %s %s - %d\n", k, v, ko, System.currentTimeMillis());
@@ -51,7 +47,8 @@ public class OrderedExecutor {
 			MicrogramOperation op = new MicrogramOperation(v);
 
 			processOperation(op);
-			this.readOrder = ko;
+			System.out.println("Reading Order " + ko.offset);
+			version = ko.offset;
 
 			decreaseOffset();
 		}, topic);
@@ -70,7 +67,7 @@ public class OrderedExecutor {
 
 	private void decreaseOffset() {
 		for (ReadMicrogramOperation op : readWaitingList) {
-			op.setCurrentOrder(readOrder.offset);
+			op.setCurrentOrder(Version.getOrElse(0L,Long.class));
 			if(op.isReady()){
 				processOperation(op);
 				readWaitingList.remove(op); //Bad for Complexity
@@ -82,13 +79,15 @@ public class OrderedExecutor {
 
 	@SuppressWarnings("unchecked")
 	public <T> Result<T> replicate(MicrogramOperation op) {
+
 		System.out.println("Replicating " + op.type);
 		try {
 			BlockingQueue<Result<?>> q;
 			queues.put(op.id, q = new SynchronousQueue<>());
 
-				publishOrder = kafka.publish(topic, DEFAULT_KEY, op.encode());
+				kafka.publish(topic, DEFAULT_KEY, op.encode());
 
+			setVersion();
 			return (Result<T>) Queues.takeFrom(q);
 
 		}
@@ -103,17 +102,20 @@ public class OrderedExecutor {
 
 	@SuppressWarnings("unchecked")
 	public <T> Result<T> queueForRead(ReadMicrogramOperation op) {
+
 		BlockingQueue<Result<?>> q;
 		queues.put(op.id, q = new SynchronousQueue<>());
 
-		op.setInvocation(Long.parseLong(Version.jsonVersionIn.get()));
-		op.setCurrentOrder(readOrder.offset);
+		op.setInvocation(Version.getOrElse(0L,Long.class));
+		op.setCurrentOrder(version);
 
-		if(op.isReady())
-			Queues.putInto(q, executor.execute(op));
-		else
+		if(op.isReady()) {
+			System.out.println("READY");
+			return (Result<T>) executor.execute(op);
+		}else
 			addToReadWaitingList(op);
 
+		setVersion();
 		return (Result<T>) Queues.takeFrom(q);
 	}
 
@@ -121,6 +123,10 @@ public class OrderedExecutor {
 		synchronized (readWaitingList) {
 			readWaitingList.add(op);
 		}
+	}
+
+	private void setVersion(){
+		Version.set(version);
 	}
 
 }

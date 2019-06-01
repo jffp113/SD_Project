@@ -13,7 +13,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 	
 	@Override
 	public Response toResponse(Throwable ex) {
-		ex.printStackTrace();
+		
 		if (ex instanceof WebApplicationException) {
 			Response r = ((WebApplicationException) ex).getResponse();
 			

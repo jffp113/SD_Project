@@ -6,6 +6,7 @@ import microgram.impl.rest.posts.replicated.args.LikeArgs;
 import microgram.impl.rest.replication.MicrogramOperation;
 import microgram.impl.rest.replication.MicrogramOperationExecutor;
 import microgram.impl.rest.replication.OrderedExecutor;
+import microgram.impl.rest.replication.ReadMicrogramOperation;
 
 import java.util.List;
 
@@ -27,7 +28,8 @@ public class PostsReplicator implements MicrogramOperationExecutor, Posts {
 
 	@Override
 	public Result<Post> getPost(String postId) {
-		return executor.replicate(new MicrogramOperation(GetPost,postId));
+//		return executor.replicate(new MicrogramOperation(GetPost,postId));
+		return executor.queueForRead(new ReadMicrogramOperation(GetPost,postId));
 	}
 
 	@Override
@@ -49,17 +51,20 @@ public class PostsReplicator implements MicrogramOperationExecutor, Posts {
 
 	@Override
 	public Result<Boolean> isLiked(String postId, String userId) {
-		return executor.replicate(new MicrogramOperation(IsLiked,new String[]{postId,userId}));
+//		return executor.replicate(new MicrogramOperation(IsLiked,new String[]{postId,userId}));
+		return executor.replicate(new ReadMicrogramOperation(IsLiked,new String[]{postId,userId}));
 	}
 
 	@Override
 	public Result<List<String>> getPosts(String userId) {
-		return executor.replicate(new MicrogramOperation(GetPosts,userId));
+//		return executor.replicate(new MicrogramOperation(GetPosts,userId));
+		return executor.replicate(new ReadMicrogramOperation(GetPosts,userId));
 	}
 
 	@Override
 	public Result<List<String>> getFeed(String userId) {
-		return executor.replicate(new MicrogramOperation(GetFeed,userId));
+//		return executor.replicate(new MicrogramOperation(GetFeed,userId));
+		return executor.replicate(new ReadMicrogramOperation(GetFeed,userId));
 	}
 
 	@Override

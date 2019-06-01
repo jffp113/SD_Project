@@ -22,13 +22,11 @@ public class ReplicatedProfilesResources extends RestResource implements RestPro
 
 	@Override
 	public Profile getProfile(String userId) {
-		System.out.println("Get Profile " + userId);
 		return super.resultOrThrow( replicator.getProfile( userId ));
 	}
 
 	@Override
 	public void createProfile(Profile profile) {
-		System.out.println("Creating Profile " + profile.getUserId());
 		super.resultOrThrow( replicator.createProfile(profile));
 	}
 
