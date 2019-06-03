@@ -14,26 +14,26 @@ posts-rest-service-port=18888
 profiles-rest-service-mainclass=microgram.impl.rest.MicrogramRestServer
 profiles-rest-service-port=18888
 
-microgram-keystore=/home/sd/microgramserver.ks
-profiles-keystore=/home/sd/microgramserver.ks
+microgram-keystore=/home/sd/profilesPostsServer.ks
+profiles-keystore=/home/sd/profilesPostsServer.ks
 mediastorage-keystore=/home/sd/mediaserver.ks
-posts-keystore=/home/sd/microgramserver.ks
+posts-keystore=/home/sd/profilesPostsServer.ks
 
-microgram-keystore-password=changeit
-posts-keystore-password=changeit
-mediastorage-keystore-password=changeit
+microgram-keystore-password=password
+posts-keystore-password=password
+mediastorage-keystore-password=password
 
-mediastorage-truststore-password=changeit
-profiles-truststore-password=changeit
-profiles-keystore-password=changeit
+mediastorage-truststore-password=password
+profiles-truststore-password=password
+profiles-keystore-password=password
 
 
-microgram-truststore=/home/sd/clientmicrogram-truststore.ks
-profiles-truststore=/home/sd/clientmicrogram-truststore.ks
-tester-truststore=/home/sd/clienttester-truststore.ks
-posts-truststore=/home/sd/clientmicrogram-truststore.ks
-mediastorage-truststore=/home/sd/clientmedia-truststore.ks
+microgram-truststore=/home/sd/client-truststore.ks
+profiles-truststore=/home/sd/client-truststore.ks
+tester-truststore=/home/sd/client-truststore.ks
+posts-truststore=/home/sd/client-truststore.ks
+mediastorage-truststore=/home/sd/client-truststore.ks
 
-microgram-truststore-password=changeit
-tester-truststore-password=changeit
-posts-truststore-password=changeit
+microgram-truststore-password=password
+tester-truststore-password=password
+posts-truststore-password=password

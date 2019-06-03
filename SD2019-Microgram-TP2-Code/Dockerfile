@@ -8,7 +8,7 @@ COPY target/lib/*.jar /home/sd/
 
 COPY target/*.jar /home/sd/
 
-COPY *.ks /home/sd/
+COPY ./ssl/*.ks /home/sd/
 
 COPY sd2019-tp2.props /props/
 
