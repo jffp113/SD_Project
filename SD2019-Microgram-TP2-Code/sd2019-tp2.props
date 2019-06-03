@@ -22,9 +22,6 @@ posts-keystore=/home/sd/profilesPostsServer.ks
 microgram-keystore-password=password
 posts-keystore-password=password
 mediastorage-keystore-password=password
-
-mediastorage-truststore-password=password
-profiles-truststore-password=password
 profiles-keystore-password=password
 
 
@@ -34,6 +31,8 @@ tester-truststore=/home/sd/client-truststore.ks
 posts-truststore=/home/sd/client-truststore.ks
 mediastorage-truststore=/home/sd/client-truststore.ks
 
-microgram-truststore-password=password
-tester-truststore-password=password
-posts-truststore-password=password
+microgram-truststore-password=changeit
+tester-truststore-password=changeit
+posts-truststore-password=changeit
+profiles-truststore-password=changeit
+mediastorage-truststore-password=changeit
