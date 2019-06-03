@@ -17,7 +17,6 @@ public class ReplicatedPostsResources extends RestResource implements RestPosts 
 	
 	public ReplicatedPostsResources() {
 		this.localDB = new MongoPosts();
-		//this.localDB = new JavaPosts();
 		this.replicator = new PostsReplicator(localDB, new TotalOrderExecutor(MicrogramTopic.MicrogramEvents));
 	}
 

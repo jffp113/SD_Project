@@ -100,7 +100,5 @@ public class PostsReplicator implements MicrogramOperationExecutor, Posts {
 			default:
 				return error(NOT_IMPLEMENTED);
 		}
-
-
 	}
 }

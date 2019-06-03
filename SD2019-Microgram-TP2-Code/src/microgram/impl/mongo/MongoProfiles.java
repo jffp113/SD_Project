@@ -154,6 +154,7 @@ public class MongoProfiles implements Profiles {
 	public Result<Boolean> isFollowing(String userId1, String userId2) {
 		if(!this.profiles.find(Filters.eq(Profile.USER_ID_FIELD, userId1)).iterator().hasNext())
 			return error(NOT_FOUND);
+		
 		if(!this.profiles.find(Filters.eq(Profile.USER_ID_FIELD, userId2)).iterator().hasNext())
 			return error(NOT_FOUND);
 		
